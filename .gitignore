@@ -1,0 +1,50 @@
+# Built files
+bin/
+obj/
+
+# Visual Studio files
+.vs/
+*.suo
+*.user
+*.userprefs
+
+# Rider files
+.idea/
+
+# DotNet Core
+project.lock.json
+project.fragment.lock.json
+*.db
+*.db-journal
+
+# NPM
+node_modules/
+
+# Logs
+*.log
+
+# Publish files
+publish/
+publish/*
+*.publish.xml
+
+# User-specific files
+*.pfx
+*.publishsettings
+
+# Visual Studio Code files
+.vscode/
+
+# Others
+*.cache
+*.tmp
+
+
+# ASP.NET Core configuration files
+appsettings.json
+appsettings.Development.json
+appsettings.Production.json
+launchSettings.json
+
+# User secrets (thông tin nhạy cảm)
+secrets.json
