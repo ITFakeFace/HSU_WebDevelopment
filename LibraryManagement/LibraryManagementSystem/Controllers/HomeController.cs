@@ -1,4 +1,6 @@
 using LibraryManagementSystem.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
@@ -13,6 +15,7 @@ namespace LibraryManagementSystem.Controllers
             _logger = logger;
         }
 
+        [Authorize(Roles = "ADMINISTRATOR")]
         public IActionResult Index()
         {
             return View();
