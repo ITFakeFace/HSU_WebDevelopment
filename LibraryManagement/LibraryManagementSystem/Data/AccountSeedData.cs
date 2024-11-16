@@ -7,7 +7,7 @@ namespace LibraryManagementSystem.Data
     {
         public static async Task Initialize(IServiceProvider serviceProvider, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
-            var roleNames = new[] { "ADMINISTRATOR", "LIBRARIAN" };
+            var roleNames = new[] { "ADMINISTRATOR", "LIBRARIAN", "CUSTOMER" };
 
             // Tạo các role nếu chưa có
             foreach (var roleName in roleNames)

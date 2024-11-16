@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 
-namespace LibraryManagementSystem.Models;
+namespace LMS_ServerAPI.Models;
 
-public partial class LibraryDbContext : IdentityDbContext<User, Role, string, UserClaim, UserRole, UserLogin, RoleClaim, UserToken>
+public partial class LibraryDbContext : DbContext
 {
     public LibraryDbContext()
     {
@@ -42,9 +39,23 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
     public virtual DbSet<Publisher> Publishers { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<RoleClaim> RoleClaims { get; set; }
+
     public virtual DbSet<Series> Series { get; set; }
 
     public virtual DbSet<Street> Streets { get; set; }
+
+    public virtual DbSet<User> Users { get; set; }
+
+    public virtual DbSet<UserClaim> UserClaims { get; set; }
+
+    public virtual DbSet<UserLogin> UserLogins { get; set; }
+
+    public virtual DbSet<UserRole> UserRoles { get; set; }
+
+    public virtual DbSet<UserToken> UserTokens { get; set; }
 
     public virtual DbSet<Vendor> Vendors { get; set; }
 
@@ -52,12 +63,10 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.,1433;Database=LibraryManagementSystem;User=sa;Password=123;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=.,1433;Database=LibraryManagementSystem;User Id=sa;Password=123;Trusted_Connection=true;TrustServerCertificate=true;");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
-
         modelBuilder.Entity<Address>(entity =>
         {
             entity.ToTable("Address");
@@ -70,12 +79,6 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
                 .HasForeignKey(d => d.Street)
                 .HasConstraintName("FK_Address_Street");
         });
-
-        /*var keysProperties = modelBuilder.Model.GetEntityTypes().Select(x => x.FindPrimaryKey()).SelectMany(x => x.Properties);
-        foreach (var property in keysProperties)
-        {
-            property.ValueGenerated = ValueGenerated.OnAdd;
-        }*/
 
         modelBuilder.Entity<Age>(entity =>
         {
@@ -312,7 +315,6 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.Property(e => e.Id).ValueGeneratedOnAdd(); // Đảm bảo Id tự động được sinh
             entity.Property(e => e.Email).HasMaxLength(256);
             entity.Property(e => e.Fullname).HasMaxLength(100);
             entity.Property(e => e.NormalizedEmail).HasMaxLength(256);
@@ -351,6 +353,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
         modelBuilder.Entity<UserRole>(entity =>
         {
+            entity.HasKey(e => new { e.UserId, e.RoleId });
 
             entity.HasOne(d => d.LibraryNavigation).WithMany(p => p.UserRoles)
                 .HasForeignKey(d => d.Library)
@@ -399,15 +402,6 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
                 .HasConstraintName("FK_Ward_District");
         });
 
-        // cắt chuỗi AspNet trước tên của table
-        foreach (var entityType in modelBuilder.Model.GetEntityTypes())
-        {
-            var tblName = entityType.GetTableName();
-            if (tblName.StartsWith("AspNet"))
-            {
-                entityType.SetTableName(tblName.Substring(6));
-            }
-        }
         OnModelCreatingPartial(modelBuilder);
     }
 
