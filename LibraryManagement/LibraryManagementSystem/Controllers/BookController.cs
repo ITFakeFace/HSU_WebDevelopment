@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using LibraryManagementSystem.Models;
+using System;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -17,14 +19,14 @@ namespace LibraryManagementSystem.Controllers
         {
             return _context.Books != null ?
                 View(await _context.Books.ToListAsync()) :
-                Poblem("Book not found.");
+                Problem("Book not found.");
         }
 
         public async Task<IActionResult> Details(int? Id)
         {
             if (Id == null || _context.Books == null)
             {
-                return Notfound();
+                return View();
             }
             var book = await _context.Books
                 .FirstOrDefaultAsync(b=>b.Id == Id);
