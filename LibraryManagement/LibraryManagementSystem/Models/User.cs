@@ -17,6 +17,9 @@ public partial class User : IdentityUser<string>
 
     public int? Status { get; set; }
 
+    public byte[]? Avatar { get; set; }
+    public byte[]? CoverAvatar { get; set; }
+
     public virtual Address? AddressNavigation { get; set; }
 
     public virtual ICollection<BookLoan> BookLoans { get; set; } = new List<BookLoan>();

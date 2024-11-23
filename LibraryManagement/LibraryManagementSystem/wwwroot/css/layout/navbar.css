@@ -1,0 +1,180 @@
+﻿body {
+    display: block;
+    margin: 0;
+    min-height: 100vh;
+    padding: 0;
+}
+
+.navbar-container {
+    display: flex;
+    justify-content: space-between;
+    vertical-align: middle;
+    padding: 10px 0px 0px 0px;
+    background-color: #104a2f;
+}
+
+.navbar-middle {
+    display: flex;
+    align-items: center;
+}
+
+.navbar-logo {
+    width: 60px;
+    height: auto;
+    border-radius: 50%;
+    margin-left: 10px;
+}
+
+.navbar-menu {
+    display: flex;
+    list-style: none;
+    vertical-align: middle;
+    align-items: center;
+    gap: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+.navbar-right-menu{
+    margin-right:20px;
+}
+
+.navbar-user-avatar {
+    width: 60px;
+    height: auto;
+    margin-right: 20px;
+    border-radius: 25%;
+}
+
+.navbar-link-custom {
+    font-size: 1.3vw;
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.navbar-user-dropdown-container {
+    margin-top: 5px;
+    display: none;
+    position: absolute;
+    right: 0px;
+    margin-right: 5px;
+    background-color: rgb(255, 237, 202);
+    border-radius: 5px;
+    border: double gray 2px;
+}
+
+.navbar-user-dropdown-container hr {
+    margin: 0 auto;
+    width: 80%;
+}
+
+.navbar-user-dropdown-menu {
+    list-style: none;
+    vertical-align: middle;
+    align-items: center;
+    padding: 0;
+}
+
+.navbar-user-dropdown-item {
+    padding: 2px 30px;
+    margin: 5px;
+    font-weight: bold;
+}
+
+.navbar-underline-box {
+    height: 10px;
+    width: 100%;
+    background-color: #104a2f;
+    border-radius: 0 0 3px 3px;
+}
+
+.navbar-underline-line {
+    width: 70%;
+    display: block;
+    border-bottom: solid rgb(202, 202, 202) 1px;
+    margin: 0 auto;
+}
+
+.navbar-user-info {
+    display: flex;
+    align-items: center;
+    text-align: right;
+    gap: 10px;
+}
+
+.navbar-user-username {
+    display: block;
+    width: 100px;
+    /* Chiều rộng tối đa của khung văn bản */
+    white-space: nowrap;
+    /* Không cho phép văn bản xuống dòng */
+    overflow: hidden;
+    /* Ẩn phần văn bản tràn ra ngoài */
+    text-overflow: ellipsis;
+    /* Thêm dấu "..." cho phần văn bản bị cắt */
+    position: relative;
+}
+
+.navbar-submenu-book-container {
+    background-color: rgb(255, 237, 202);
+    padding: 15px 20px;
+    display: none;
+    position:absolute;
+    width:100%;
+}
+
+.navbar-submenu-book-group {
+    text-align: center;
+}
+
+.navbar-submenu-book-main {
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
+.navbar-submenu-book-sub {
+    list-style: none;
+    margin: 0;
+    padding-left: 10px;
+}
+
+.navbar-submenu-book-sub li a {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar-search-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 60px;
+    padding: 5px 10px;
+    max-width: 600px;
+    background-color: white;
+    width: 60%;
+    margin: 0 20px;
+}
+
+    .navbar-search-box i {
+        color: #666;
+        margin-right: 8px;
+        background-color: white;
+    }
+
+    .navbar-search-box input {
+        border: none;
+        outline: none;
+        flex: 1;
+    }
+
+.navbar-search-form {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+}
+
+.navbar-dropdown-link {
+    text-decoration: none;
+    color: black;
+}

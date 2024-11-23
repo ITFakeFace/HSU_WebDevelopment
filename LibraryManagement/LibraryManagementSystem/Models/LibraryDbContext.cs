@@ -322,7 +322,8 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
                 .IsUnicode(false)
                 .HasColumnName("PID");
             entity.Property(e => e.UserName).HasMaxLength(256);
-
+            entity.Property(e => e.Avatar);
+            entity.Property(e => e.CoverAvatar);
             entity.HasOne(d => d.AddressNavigation).WithMany(p => p.Users)
                 .HasForeignKey(d => d.Address)
                 .HasConstraintName("FK_Users_Address");

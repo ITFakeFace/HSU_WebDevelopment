@@ -33,7 +33,7 @@ namespace LibraryManagementSystem.Data
                     Id = Guid.NewGuid().ToString(),
                     UserName = "admin@gmail.com",
                     Email = "admin@gmail.com",
-                    Fullname = "Admin User"
+                    Fullname = "Admin User",
                 };
 
                 await userManager.CreateAsync(user, "123");

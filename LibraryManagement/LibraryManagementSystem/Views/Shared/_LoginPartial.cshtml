@@ -3,25 +3,42 @@
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
 
-<ul class="navbar-nav">
+<ul class="navbar-menu navbar-right-menu">
 @if (SignInManager.IsSignedIn(User))
 {
-    <li class="nav-item">
-        <a id="manage" class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">Hello @UserManager.GetUserName(User)!</a>
-    </li>
-    <li class="nav-item">
-        <form id="logoutForm" class="form-inline" asp-controller="Account" asp-action="Logout" asp-route-returnUrl="@Url.Action("Logout", "Account", new { area = "" })">
-            <button id="logout" type="submit" class="nav-link btn btn-link text-dark border-0">Logout</button>
-        </form>
-    </li>
+        <ul class="navbar-menu navbar-right-menu">
+            <li class="navbar-item">
+                <a href="#user-profile" class="navbar-link-custom navbar-user-info">
+                    <span class="navbar-user-username">@UserManager.GetUserName(User)!</span>
+                <img src="~/assets/image/default/ava1.png" alt="User Avatar" class="navbar-user-avatar">
+                </a>
+                <div class="navbar-user-dropdown-container">
+                    <ul class="navbar-user-dropdown-menu">
+                        <li class="navbar-user-dropdown-item"><a href="" class="navbar-dropdown-link">PROFILE</a></li>
+                        <li class="navbar-user-dropdown-item">
+                            <a href="" class="navbar-dropdown-link">ĐỔI MẬT KHẨU</a>
+                        </li>
+                    </ul>
+                    <hr>
+                    <ul class="navbar-user-dropdown-menu">
+                        <li class="navbar-user-dropdown-item"><a href="" class="navbar-dropdown-link">ĐĂNG XUẤT</a></li>
+                    </ul>
+                    <!-- <ul>
+                      <li></li>
+                      <li></li>
+                    </ul> -->
+                </div>
+                <!-- <span class="">This is a long Username</span> -->
+            </li>
+        </ul>
 }
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" id="register" asp-controller="Account" asp-action="Register">Register</a>
+        <a class="navbar-link-custom" id="register" asp-controller="Account" asp-action="Register">ĐĂNG KÝ</a>
     </li>
     <li class="nav-item">
-            <a class="nav-link text-dark" id="login" asp-controller="Account" asp-action="Login">Login</a>
+        <a class="navbar-link-custom" id="login" asp-controller="Account" asp-action="Login">ĐĂNG NHẬP</a>
     </li>
 }
 </ul>
