@@ -48,4 +48,14 @@ public partial class Book
     public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
+    public override string ToString()
+    {
+        return $"{this.Name}\r\n" +
+            $"{this.Language}\r\n" +
+            $"{this.PublishYear}\r\n" +
+            $"{this.Isbn}\r\n" +
+            $"{this.PageNumber}\r\n" +
+            $"{this.Version}\r\n";
+    }
 }
