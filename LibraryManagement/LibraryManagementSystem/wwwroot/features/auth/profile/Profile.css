@@ -1,0 +1,290 @@
+﻿@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap");
+
+:root {
+    --body-font: "Montserrat", system-ui;
+}
+
+body {
+    font-family: var(--body-font);
+}
+
+.profile-container {
+    display: flex;
+    gap: 20px;
+    padding: 150px 50px 50px 50px;
+    z-index: 500;
+    width: 100%;
+}
+
+.right-box, .left-box, .form-personal {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media only screen and (min-width: 0px) {
+    .profile-container {
+        flex-direction: column;
+        row-gap: 50px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .left-box,
+    .right-box {
+        flex: 1;
+    }
+
+    .personal-info-title, .general-info-title {
+        /* position: relative; */
+        font-size: 24px;
+    }
+}
+
+@media only screen and (min-width: 768px) {
+    .profile-container {
+        flex-direction: unset;
+        justify-content: center;
+        align-items: normal;
+    }
+
+    .left-box {
+        flex: 1;
+    }
+
+    .right-box {
+        flex: 2;
+    }
+
+    .personal-info-title, .general-info-title {
+        /* position: absolute; */
+        font-size: 20px;
+    }
+}
+
+.user-avatar {
+    width: 100%;
+    height: auto;
+    border-radius: 25%;
+    display: block;
+    margin: 0 auto;
+}
+
+.information-box {
+    background-color: rgb(255, 255, 255);
+    padding: 30px 50px;
+    border-radius: 30px;
+    border: double rgb(73, 73, 73) 2px;
+    box-shadow: rgb(73, 73, 73) 2px 2px 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-box {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+    vertical-align: middle;
+    align-items: center;
+}
+
+.icon {
+    font-size: 2.5vw;
+}
+
+.info-title {
+    font-weight: bold;
+}
+
+/* .personal-info-title{
+  display: block;
+  transform: translateY(-115%);
+  background: white;
+  padding: 0px 5px;
+  margin: 0 auto;
+}
+
+.general-info-title {
+  display: block;
+  background: white;
+  transform: translateY(-115%);
+  padding: 0px 5px;
+  margin: 0 auto;
+} */
+
+.user-username {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    display: -webkit-box;
+    /* Sử dụng mô hình box của WebKit */
+    -webkit-line-clamp: 2;
+    /* Hiển thị tối đa 2 dòng */
+    -webkit-box-orient: vertical;
+    /* Hướng box theo chiều dọc */
+    overflow: hidden;
+    /* Ẩn phần văn bản vượt quá */
+    text-overflow: ellipsis;
+    /* Thêm dấu "..." nếu bị cắt */
+    /* -webkit-mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0));
+  mask-image: linear-gradient(90deg, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0));
+  mask-composite: exclude; */
+}
+
+.cover-img {
+    z-index: 1;
+    width: 100%;
+    /* Chiều rộng 100% viewport */
+    max-height: 300px;
+    /* Chiều cao tối đa */
+    object-fit: cover;
+    /* Cắt ảnh để giữ tỉ lệ */
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Hiệu ứng đổ bóng (tùy chọn) */
+    position: relative;
+}
+
+.avatar-box {
+    position: relative;
+    /* Đặt container ở vị trí tương đối */
+    width: 75%;
+    /* Kích thước container (bằng với avatar) */
+    aspect-ratio: 1/1;
+    margin: 0 auto;
+}
+
+.user-avatar {
+    width: 100%;
+    height: 100%;
+    border-radius: 25%;
+    /* Bo tròn avatar */
+    object-fit: cover;
+    display: block;
+}
+
+.btn-avatar {
+    position: absolute;
+    /* Đặt icon ở vị trí tuyệt đối */
+    bottom: 5%;
+    /* Cách mép dưới một khoảng */
+    right: -5%;
+    /* Cách mép phải một khoảng */
+    background-color: white;
+    /* Nền trắng */
+    border: 2px solid #ddd;
+    /* Viền cho icon */
+    border-radius: 50%;
+    /* Bo tròn icon */
+    padding: 15px;
+    /* Kích thước icon */
+    cursor: pointer;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    /* Tạo đổ bóng */
+    font-size: 2vw;
+    /* Kích thước font của icon */
+    color: #333;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+    .btn-avatar:hover {
+        transform: scale(1.1);
+        /* Phóng to icon khi hover */
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        /* Tăng đổ bóng khi hover */
+    }
+
+.form-avatar-selection-box {
+    position: absolute;
+    display: none;
+    /* Đặt icon ở vị trí tuyệt đối */
+    bottom: -15%;
+    /* Cách mép dưới một khoảng */
+    right: -5%;
+}
+
+.btn-avatar-icon-yes, .btn-avatar-icon-no {
+    font-size: 2vw;
+    color: white;
+}
+
+.btn-avatar-no, .btn-avatar-yes {
+    padding: 10px;
+    aspect-ratio: 1/1;
+    aspect-ratio: 1/1;
+    border: solid rgb(112, 112, 112) 1px;
+    /* box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2); */
+    border-radius: 50%;
+}
+
+.btn-avatar-no {
+    background-color: rgb(248, 94, 94);
+}
+
+.btn-avatar-yes {
+    background-color: rgb(19, 130, 76);
+}
+
+.inp-personal {
+    width: 100%;
+}
+
+.inp-no-decor {
+    background-color: transparent;
+    border: none;
+}
+
+.info-content {
+    display: block;
+    width: 100%;
+}
+
+.info-value-address {
+    word-wrap: break-word;
+    text-wrap: wrap;
+}
+
+.personal-edit-btn {
+    background-color: transparent;
+    border: none;
+    font-size: 16px;
+}
+
+.btn-personal-box {
+    display: block;
+    text-align: right;
+    display: none;
+}
+
+.form-personal {
+    width: 100%;
+}
+
+.btn-no-decor {
+    background-color: transparent;
+    border: none;
+}
+
+dialog::backdrop {
+    background-color: #333;
+    opacity: 0.5;
+}
+
+#dialog-confirm-email {
+    width: 50%;
+    padding: 30px;
+    border-radius: 30px;
+}
+
+#dialog-confirm-phone {
+    width: 40%;
+    padding: 30px;
+    border-radius: 30px;
+}
+
+#optStatus {
+    display: none;
+}

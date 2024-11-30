@@ -1,8 +1,12 @@
-﻿using LibraryManagementSystem.Models;
+﻿using LibraryManagementSystem.Helper;
+using LibraryManagementSystem.Models;
 using LibraryManagementSystem.Models.AuthenticationModels;
+using LibraryManagementSystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -11,12 +15,14 @@ namespace LibraryManagementSystem.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly IEmailSender _emailSender;
-
-        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, IEmailSender emailSender)
+        private readonly LibraryDbContext _ctx;
+        private static string GeneratedOTP = "";
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager, IEmailSender emailSender, LibraryDbContext ctx)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _emailSender = emailSender;
+            _ctx = ctx;
         }
 
         public IActionResult Index()
@@ -154,22 +160,150 @@ namespace LibraryManagementSystem.Controllers
             return View();
         }
 
-
-        [ValidateAntiForgeryToken]
         public IActionResult Logout()
         {
             _signInManager.SignOutAsync();
             return RedirectToAction("Login");
         }
 
-        [ValidateAntiForgeryToken]
         public IActionResult AccessDenied()
         {
             return View();
         }
 
-        [ValidateAntiForgeryToken]
         public IActionResult ConfirmEmailSuccess()
+        {
+            return View();
+        }
+
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<IActionResult> Profile(string id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user.Id != id && !_userManager.GetRolesAsync(user).Result.Contains("ADMINISTRATOR"))
+            {
+                return RedirectToAction("AccessDenied");
+            }
+            AddressService addrService = new AddressService(_ctx);
+
+            var userProfileModel = new UserProfileModel
+            {
+                CoverAvatar = user.CoverAvatar,
+                Avatar = user.Avatar,
+                Gender = user.Gender,
+                Address = await addrService.GetAddressString(user.Address),
+                Dob = user.Dob,
+                Email = user.Email,
+                Phone = user.PhoneNumber,
+                Fullname = user.Fullname,
+                Pid = user.Pid,
+                Status = user.Status
+            };
+            return View(userProfileModel);
+        }
+
+        [HttpPost]
+        public async Task<String> SendOTP([FromBody] EmailConfirmRequest request)
+        {
+            Console.WriteLine($"\n\n{request.Email}\n\n");
+            // Tạo mã OTP ngẫu nhiên
+            var random = new Random();
+            GeneratedOTP = random.Next(100000, 999999).ToString(); // Tạo OTP 6 chữ số
+
+            // Gửi OTP qua email
+            try
+            {
+                await _emailSender.SendEmailAsync(request.Email, "Confirm your email", GeneratedOTP);
+                return JsonConvert.SerializeObject(new ResponseHandler<string>
+                {
+                    IsSuccess = true,
+                    StatusCode = "200",
+                    Message = "OTP Success",
+                    Data = ""
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonConvert.SerializeObject(new ResponseHandler<string>
+                {
+                    IsSuccess = false,
+                    StatusCode = "500",
+                    Message = "OTP Failed",
+                    Data = ""
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<String> CheckOTP([FromBody] EmailConfirmRequest request)
+        {
+            try
+            {
+                Console.WriteLine($"\n\n{request.OTP}  {GeneratedOTP}\n\n");
+
+                return JsonConvert.SerializeObject(new ResponseHandler<string>
+                {
+                    IsSuccess = request.OTP == GeneratedOTP,
+                    StatusCode = request.OTP == GeneratedOTP ? "200" : "500",
+                    Message = "OTP",
+                    Data = ""
+                });
+            }
+            catch (Exception ex)
+            {
+                return JsonConvert.SerializeObject(new ResponseHandler<string>
+                {
+                    IsSuccess = false,
+                    StatusCode = "500",
+                    Message = "OTP False",
+                    Data = ""
+                });
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateAvatar()
+        {
+            return RedirectToAction("Profile");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePersonalInfo(UserProfileModel profileModel)
+        {
+            var user = await _ctx.Users.Where(u => u.Id == _signInManager.UserManager.GetUserId(User)).FirstOrDefaultAsync();
+            user.Pid = profileModel.Pid;
+            user.Gender = profileModel.Gender;
+            user.Dob = profileModel.Dob;
+            user.Fullname = profileModel.Fullname;
+            await _signInManager.UserManager.UpdateAsync(user);
+            return RedirectToAction("Profile", new { id = _userManager.GetUserId(User) });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateEmail(UserProfileModel profileModel)
+        {
+            var user = await _signInManager.UserManager.GetUserAsync(User);
+            Console.WriteLine($"\n\n{profileModel.OTP}  {GeneratedOTP}\n\n");
+            Console.WriteLine($"\n\n{profileModel.NewEmail}\n\n");
+            if (profileModel.NewEmail == null)
+            {
+                return RedirectToAction("Profile", new { id = _userManager.GetUserId(User) });
+            }
+            if (profileModel.OTP.Trim() == GeneratedOTP.Trim())
+            {
+                Console.WriteLine("\n\nOTP Confirmed\n\n");
+                user.Email = profileModel.NewEmail;
+                user.EmailConfirmed = true;
+                Console.WriteLine($"\n\n{user.Email}\n\n");
+                await _signInManager.UserManager.UpdateAsync(user);
+                return RedirectToAction("Profile", new { id = _userManager.GetUserId(User) });
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePhone()
         {
             return View();
         }

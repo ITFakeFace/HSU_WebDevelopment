@@ -21,4 +21,8 @@
     <PackageReference Include="MimeKit" Version="4.8.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="wwwroot\assets\image\default\" />
+  </ItemGroup>
+
 </Project>
