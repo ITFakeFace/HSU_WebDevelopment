@@ -2,7 +2,17 @@
 
 @inject SignInManager<User> SignInManager
 @inject UserManager<User> UserManager
-
+@{
+    string avatarBase64 = "/assets/image/default/ava1.png"; // Đường dẫn mặc định
+    if (SignInManager.IsSignedIn(User))
+    {
+        var currentUser = await UserManager.GetUserAsync(User);
+        if (currentUser?.Avatar != null)
+        {
+            avatarBase64 = $"data:image/png;base64,{Convert.ToBase64String(currentUser.Avatar)}";
+        }
+    }
+}
 <ul class="navbar-menu navbar-right-menu">
 @if (SignInManager.IsSignedIn(User))
 {
@@ -10,18 +20,22 @@
             <li class="navbar-item">
                 <a href="#user-profile" class="navbar-link-custom navbar-user-info">
                     <span class="navbar-user-username">@UserManager.GetUserName(User)!</span>
-                <img src="~/assets/image/default/ava1.png" alt="User Avatar" class="navbar-user-avatar">
+                    <img src="@avatarBase64" alt="User Avatar" class="navbar-user-avatar">
                 </a>
                 <div class="navbar-user-dropdown-container">
                     <ul class="navbar-user-dropdown-menu">
-                        <li class="navbar-user-dropdown-item"><a href="" class="navbar-dropdown-link">PROFILE</a></li>
                         <li class="navbar-user-dropdown-item">
-                            <a href="" class="navbar-dropdown-link">ĐỔI MẬT KHẨU</a>
+                            <a asp-action="Profile" asp-controller="Account" asp-route-id="@UserManager.GetUserId(User)" class="navbar-dropdown-link">Profile</a>
+                        </li>
+                        <li class="navbar-user-dropdown-item">
+                            <a href="" class="navbar-dropdown-link">Đổi Mật Khẩu</a>
                         </li>
                     </ul>
                     <hr>
                     <ul class="navbar-user-dropdown-menu">
-                        <li class="navbar-user-dropdown-item"><a href="" class="navbar-dropdown-link">ĐĂNG XUẤT</a></li>
+                        <li class="navbar-user-dropdown-item">
+                            <a asp-action="Logout" asp-controller="Account" class="navbar-dropdown-link">Đăng Xuất</a>
+                        </li>
                     </ul>
                     <!-- <ul>
                       <li></li>
@@ -35,10 +49,10 @@
 else
 {
     <li class="nav-item">
-        <a class="navbar-link-custom" id="register" asp-controller="Account" asp-action="Register">ĐĂNG KÝ</a>
+        <a class="navbar-link-custom" id="register" asp-controller="Account" asp-action="Register">Đăng Ký</a>
     </li>
     <li class="nav-item">
-        <a class="navbar-link-custom" id="login" asp-controller="Account" asp-action="Login">ĐĂNG NHẬP</a>
+        <a class="navbar-link-custom" id="login" asp-controller="Account" asp-action="Login">Đăng Nhập</a>
     </li>
 }
 </ul>

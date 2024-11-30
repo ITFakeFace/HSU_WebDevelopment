@@ -19,6 +19,7 @@ public partial class User : IdentityUser<string>
 
     public byte[]? Avatar { get; set; }
     public byte[]? CoverAvatar { get; set; }
+    public string? Gender { get; set; }
 
     public virtual Address? AddressNavigation { get; set; }
 

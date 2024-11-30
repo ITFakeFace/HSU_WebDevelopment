@@ -3,11 +3,8 @@ using System.Collections.Generic;
 
 namespace LibraryManagementSystem.Models;
 
-public partial class Ward
+public partial class Ward : AddressType
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; } = null!;
 
     public int? District { get; set; }
 

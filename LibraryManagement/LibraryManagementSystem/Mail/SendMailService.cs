@@ -32,34 +32,53 @@ namespace LibraryManagementSystem.Mail
             message.To.Add(MailboxAddress.Parse(email));
             message.Subject = subject;
 
-            // body
-            var bodyBuilder = new BodyBuilder();
-            bodyBuilder.HtmlBody = htmlMessage;
+            var bodyBuilder = new BodyBuilder { HtmlBody = htmlMessage };
             message.Body = bodyBuilder.ToMessageBody();
 
             using var smtp = new SmtpClient();
 
             try
             {
-                smtp.Connect(mailSettings.Host, mailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
-                // xác thực
-                smtp.Authenticate(mailSettings.Mail, mailSettings.Password);
-                // gửi mail
+                Console.WriteLine("Connecting to email server...");
+                await smtp.ConnectAsync(mailSettings.Host, mailSettings.Port, MailKit.Security.SecureSocketOptions.StartTls);
+
+                Console.WriteLine("Authenticating...");
+                await smtp.AuthenticateAsync(mailSettings.Mail, mailSettings.Password);
+
+                Console.WriteLine($"Sending email to {email}...");
                 await smtp.SendAsync(message);
+
+                Console.WriteLine("Email sent successfully!");
+            }
+            catch (SmtpCommandException smtpEx)
+            {
+                Console.WriteLine($"SMTP Error: {smtpEx.Message} (Code: {smtpEx.StatusCode})");
+                Console.WriteLine(smtpEx.StackTrace);
+            }
+            catch (SmtpProtocolException protocolEx)
+            {
+                Console.WriteLine($"Protocol Error: {protocolEx.Message}");
+                Console.WriteLine(protocolEx.StackTrace);
             }
             catch (Exception ex)
             {
-                // lỗi gửi mail => lưu lại nội dung bức mail
+                Console.WriteLine($"Unexpected Error: {ex.Message}");
+                Console.WriteLine(ex.StackTrace);
+
                 if (!Directory.Exists("mailssave"))
                 {
                     Directory.CreateDirectory("mailssave");
                 }
                 var emailSaveFile = $"mailssave/{Guid.NewGuid()}.eml";
                 await message.WriteToAsync(emailSaveFile);
+                Console.WriteLine($"Email saved to {emailSaveFile}");
             }
-
-            smtp.Disconnect(true);
+            finally
+            {
+                await smtp.DisconnectAsync(true);
+            }
         }
+
 
     }
 }

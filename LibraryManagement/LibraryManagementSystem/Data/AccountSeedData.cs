@@ -34,6 +34,7 @@ namespace LibraryManagementSystem.Data
                     UserName = "admin@gmail.com",
                     Email = "admin@gmail.com",
                     Fullname = "Admin User",
+                    EmailConfirmed = true,
                 };
 
                 await userManager.CreateAsync(user, "123");
@@ -51,13 +52,32 @@ namespace LibraryManagementSystem.Data
                     Id = Guid.NewGuid().ToString(),
                     UserName = "librarian@gmail.com",
                     Email = "librarian@gmail.com",
-                    Fullname = "Librarian User"
+                    Fullname = "Librarian User",
+                    EmailConfirmed = true,
                 };
 
                 await userManager.CreateAsync(librarian, "123");
 
                 // Gán user vào role Librarian
                 await userManager.AddToRoleAsync(librarian, "LIBRARIAN");
+            }
+
+            var customer = await userManager.FindByEmailAsync("customer@gmail.com");
+            if (librarian == null)
+            {
+                librarian = new User
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    UserName = "customer@gmail.com",
+                    Email = "customer@gmail.com",
+                    Fullname = "Customer User",
+                    EmailConfirmed = true,
+                };
+
+                await userManager.CreateAsync(librarian, "123");
+
+                // Gán user vào role Librarian
+                await userManager.AddToRoleAsync(librarian, "CUSTOMER");
             }
         }
     }

@@ -3,12 +3,8 @@ using System.Collections.Generic;
 
 namespace LibraryManagementSystem.Models;
 
-public partial class Address
+public partial class Address : AddressType
 {
-    public int Id { get; set; }
-
-    public string Name { get; set; } = null!;
-
     public int? Street { get; set; }
 
     public virtual ICollection<Library> Libraries { get; set; } = new List<Library>();
