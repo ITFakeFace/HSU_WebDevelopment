@@ -64,6 +64,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.MapControllerRoute(
+    name: "book",
+    pattern: "{controller=Book}/{action=Search}");
 //Configuring Authentication Middleware to the Request Pipeline
 app.UseAuthentication();
 app.UseAuthorization();
