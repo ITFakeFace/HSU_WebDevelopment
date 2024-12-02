@@ -1,5 +1,121 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model LibraryManagementSystem.Models.Book
+
 @{
+    ViewData["Title"] = "Detail";
 }
+<link rel="stylesheet" href="~/features/Book/Detail/book.css" />
+<div class="book-detail">
+    <div class="book-detail-left">
+        <div class="book-detail-left-img">
+            <img src="https://covers.openlibrary.org/b/id/9267686-L.jpg" alt="book-cover" width="200px" height="300px" />
+        </div>
+        <div>
+            <button class="borrow-book-button">Borrow</button>
+        </div>
+    </div>
+    <div class="book-detail-right">
+
+        <!--contain book's name and authors's name-->
+        <div class="book-detail-right-name">
+            <h1> @Html.DisplayFor(model=>model.Name) </h1>
+        </div>
+        <div class="book-detail-right-authors">
+            <p> Tác giả: 
+                @{
+                    var isFirstAuth = true;
+                    foreach (var auth in Model.Authors)
+                    {
+                        @if (!isFirstAuth)
+                        {
+                            <a>, @auth.Name</a>
+                        }
+                        else
+                        {
+                            <a>@auth.Name</a>
+                            isFirstAuth = !isFirstAuth;
+                        }
+                    }
+                }
+            </p>
+        </div>
+
+        <div class="book-detail-right-desc">
+            <p class="info-title"> Mô tả: </p>
+            <p>
+                @Html.DisplayFor(model=> model.Description )
+            </p>
+        </div>
+
+        <!--contain simple publisher information -->
+        <div class="book-detail-right-publisher-info">
+            <div id="book-detail-right-publisher-info-date">
+                <p class="info-title"> Ngày phát hành </p>
+                <p> @Html.DisplayFor(model=>model.PublishYear) </p>
+            </div>
+            <div id="book-detail-right-publisher-info-name">
+                <p class="info-title"> Nhà phát hành </p>
+                <p> @Html.DisplayFor(model => model.PublisherNavigation.Name) </p>
+            </div>
+        </div>
+
+        <!--contain infomation language and pages-->
+        <div class="book-detail-right-simple-info">
+            <div id="book-detail-right-simple-info-lang">
+                <p class="info-title"> Ngôn ngữ </p>
+                <p> @Html.DisplayFor(model => model.Language) </p>
+            </div>
+            <div id="book-detail-right-simple-info-page">
+                <p class="info-title"> Số trang </p>
+                <p> @Html.DisplayFor(model => model.PageNumber) </p>
+            </div>
+        </div>
+
+        <!--contain book's category -->
+        <div>
+            <div id="book-detail-right-category">
+                <p>
+                    <b> Thể loại: </b>
+                    @{
+                        var isFirstCateg = true;
+                        foreach (var categ in Model.Categories)
+                        {
+                            @if (!isFirstCateg)
+                            {
+                                <a>, @categ.Name</a>
+                            }
+                            else
+                            {
+                                <a>@categ.Name</a>
+                                isFirstCateg = !isFirstCateg;
+                            }
+                        }
+                    }
+                </p>
+            </div>
+        </div>
+
+        <div class="book-detail-series">
+            <div id="book-detail-right-series">
+                <p>
+                    <b> Thuộc về series: </b>
+                    @Html.DisplayFor(model=>model.Series)
+                </p>
+            </div>
+            
+            
+        </div>
+            @if (User.IsInRole("ADMINISTRATOR"))
+            {
+                <div class="admin-options">
+                    @Html.DisplayFor(model=>model.Vendor)
+                    @foreach (var user in Model.BookLoans) {
+
+                    }
+                </div>
+            }
+
+    </div>
+
+</div>
+
+
