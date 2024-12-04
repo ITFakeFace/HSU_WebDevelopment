@@ -1,0 +1,84 @@
+﻿@model List<LibraryManagementSystem.Models.Book>
+@{
+    ViewData["Title"] = "Search Books";
+}
+
+<link href="~/assets/search.css" rel="stylesheet" />
+
+
+
+<div class="all">
+   
+    <form method="get" action="/Book/Search" class="formsearch">
+        <h2>Search Books</h2>
+        <div class="Namelang">
+        <div class="Bookname">
+            <label for="name">Book Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter book name" />
+        </div>
+            <div class="Lang">
+            <label for="language">Language:</label>
+            <select name="language" id="language">
+                <option value="EN">EN</option>
+                <option value="VN">VN</option>
+                <option value="ALL">ALL</option>
+            </select>
+        </div>
+        </div>
+        <div>
+            <label for="vendor">Vendor:</label>
+            <input type="text" id="vendor" name="vendor" placeholder="Enter vendor" />
+        </div>
+        <div>
+            <label for="publishYear">Publish Year:</label>
+            <input type="text" id="publishYear" name="publishYear" placeholder="Enter publish year" />
+        </div>
+        <div>
+            <label for="version">Version:</label>
+            <input type="text" id="version" name="version" placeholder="Enter version" />
+        </div>
+        <div>
+            <label for="series">Series:</label>
+            <input type="text" id="series" name="series" placeholder="Enter series" />
+        </div>
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+@if (ViewBag.Message != null)
+{
+    <p>@ViewBag.Message</p>
+}
+
+@if (Model.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Language</th>
+                <th>Publish Year</th>
+                <th>Vendor</th>
+                <th>Version</th>
+                <th>Series</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model)
+            {
+                <tr>
+                    <td>@book.Id</td>
+                    <td>@book.Name</td>
+                    <td>@book.Description</td>
+                    <td>@book.Language</td>
+                    <td>@book.PublishYear</td>
+                    <td>@book.VendorNavigation?.Name</td>
+                    <td>@book.Version</td>
+                    <td>@book.Series</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
