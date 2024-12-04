@@ -1,84 +1,112 @@
-﻿@model List<LibraryManagementSystem.Models.Book>
+﻿@model IEnumerable<LibraryManagementSystem.Models.Book>
 @{
     ViewData["Title"] = "Search Books";
 }
-
 <link href="~/assets/search.css" rel="stylesheet" />
-
-
-
-<div class="all">
-   
+<div class="container">
     <form method="get" action="/Book/Search" class="formsearch">
-        <h2>Search Books</h2>
-        <div class="Namelang">
-        <div class="Bookname">
+        <div class="form-group">
             <label for="name">Book Name:</label>
             <input type="text" id="name" name="name" placeholder="Enter book name" />
         </div>
-            <div class="Lang">
-            <label for="language">Language:</label>
-            <select name="language" id="language">
-                <option value="EN">EN</option>
-                <option value="VN">VN</option>
-                <option value="ALL">ALL</option>
-            </select>
+
+        <div id="additionalSearchFields" style="display: none;">
+            <div class="vendor-row">
+                <div class="form-group">
+                    <label for="Authors">Authors:</label>
+                    <input type="text" id="Authors" name="Authors" placeholder="Enter Authors" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <select name="language" id="language">
+                        <option value="ALL">ALL</option>
+                        <option value="EN">EN</option>
+                        <option value="VN">VN</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="publishYear">Publish Year:</label>
+                    <input type="text" id="publishYear" name="publishYear" placeholder="Enter publish year" />
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="version">Version:</label>
+                    <input type="text" id="version" name="version" placeholder="Enter version" />
+                </div>
+                <div class="form-group">
+                    <label for="series">Series:</label>
+                    <input type="text" id="series" name="series" placeholder="Enter series" />
+                </div>
+            </div>
         </div>
-        </div>
-        <div>
-            <label for="vendor">Vendor:</label>
-            <input type="text" id="vendor" name="vendor" placeholder="Enter vendor" />
-        </div>
-        <div>
-            <label for="publishYear">Publish Year:</label>
-            <input type="text" id="publishYear" name="publishYear" placeholder="Enter publish year" />
-        </div>
-        <div>
-            <label for="version">Version:</label>
-            <input type="text" id="version" name="version" placeholder="Enter version" />
-        </div>
-        <div>
-            <label for="series">Series:</label>
-            <input type="text" id="series" name="series" placeholder="Enter series" />
-        </div>
+
+        <span id="toggleSearchFields" class="toggle-text">Show more filters</span>
+
         <button type="submit">Search</button>
     </form>
-</div>
 
-@if (ViewBag.Message != null)
-{
-    <p>@ViewBag.Message</p>
-}
-
-@if (Model.Any())
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Language</th>
-                <th>Publish Year</th>
-                <th>Vendor</th>
-                <th>Version</th>
-                <th>Series</th>
-            </tr>
-        </thead>
-        <tbody>
+    @if (Model.Any())
+    {
+        <div class="bookcard-container">
             @foreach (var book in Model)
             {
-                <tr>
-                    <td>@book.Id</td>
-                    <td>@book.Name</td>
-                    <td>@book.Description</td>
-                    <td>@book.Language</td>
-                    <td>@book.PublishYear</td>
-                    <td>@book.VendorNavigation?.Name</td>
-                    <td>@book.Version</td>
-                    <td>@book.Series</td>
-                </tr>
+                <div class="bookcard">
+                    <!-- Phần hình ảnh sách -->
+                    <div class="bookcard-img">
+                        @if (book.Image != null)
+                        {
+                            <img src="data:image/jpeg;base64,@Convert.ToBase64String(book.Image)" alt="@book.Name" />
+                        }
+                        else
+                        {
+                            <img src="/assets/default-book.jpg" alt="Default Image" />
+                        }
+                    </div>
+
+                    <!-- Phần thông tin sách -->
+                    <div class="bookcard-information">
+                        <h3>@book.Name</h3>
+                        <p><strong>Language:</strong> @book.Language</p>
+                        <p><strong>Publish Year:</strong> @book.PublishYear</p>
+                        <p>
+                            <strong>Authors:</strong>
+                            @string.Join(", ", book.Authors.Select(a => a.Name))
+                        </p>
+                        <p><strong>Version:</strong> @book.Version</p>
+
+                        <p>
+                            <strong>Series</strong> @book.SeriesNavigation?.Name
+                        </p>
+
+
+
+
+
+
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
-}
+
+        </div>
+    }
+</div>
+
+<script>
+    document.getElementById('toggleSearchFields').addEventListener('click', function () {
+        const additionalFields = document.getElementById('additionalSearchFields');
+        const isHidden = additionalFields.style.display === 'none';
+
+        additionalFields.style.display = isHidden ? 'block' : 'none';
+
+        sessionStorage.setItem('additionalFiltersVisible', !isHidden);
+
+        this.textContent = isHidden ? 'ẨN THÔNG TIN' : 'THÊM THÔNG TIN TÌM KIẾM';
+    });
+
+
+</script>

@@ -1,100 +1,413 @@
-﻿
+﻿* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: "Poppins", Arial, sans-serif;
     background-color: #f9f9f9;
     color: #333;
 }
 
-h2 {
-    text-align: center;
-    color: #4CAF50;
-}
-
-.Namelang {
+.container {
     width: 100%;
-    display: flex;
-    gap:10px;
+    padding: 5px;
 }
 
-.Bookname {
-    width: 90%;
-    height:100%
-}
-
-.Lang {
-    width: 10%;
-    height: 100%;
-    
-}
 .formsearch {
-    padding: 20px;
+    padding: 30px;
     border: 1px solid #ddd;
     background-color: #fff;
-    border-radius: 8px;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    margin: 0 auto 30px;
+    transition: transform 0.2s ease;
 }
-
-
     .formsearch label {
         display: block;
         font-weight: bold;
-        
+        margin-bottom: 8px;
+        color: #4CAF50;
+        font-size: 1rem;
+    }
+
+    .formsearch input[type="text"],
+    .formsearch select {
+        padding: 14px 18px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background-color: #f9f9f9;
+        font-size: 1rem;
+        width: 100%;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .formsearch input[type="text"]:focus,
+        .formsearch select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+        }
+
+    .formsearch button {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .formsearch button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .formsearch button:active {
+            transform: translateY(0);
+        }
+
+    .formsearch .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    .formsearch .form-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+        .formsearch .form-row .form-group {
+            width: 48%;
+        }
+
+    .formsearch .vendor-row .form-group {
+        width: 100%;
+    }
+.bookcard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.bookcard {
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 630px;
+    height: 300px; /* Chiều cao cố định */
+    background-color: #fff;
+    border: 1px solid #4CAF50;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+    .bookcard:hover {
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.container {
+    width: 100%;
+    padding: 5px;
+}
+
+.formsearch {
+    padding: 30px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    margin: 0 auto 30px;
+    transition: transform 0.2s ease;
+}
+    .formsearch label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #4CAF50;
+        font-size: 1rem;
+    }
+
+    .formsearch input[type="text"],
+    .formsearch select {
+        padding: 14px 18px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        background-color: #f9f9f9;
+        font-size: 1rem;
+        width: 100%;
+        margin-bottom: 15px;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .formsearch input[type="text"]:focus,
+        .formsearch select:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+        }
+
+    .formsearch button {
+        display: block;
+        width: 100%;
+        padding: 14px 20px;
+        background-color: #4CAF50;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+        .formsearch button:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .formsearch button:active {
+            transform: translateY(0);
+        }
+
+    .formsearch .form-group {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 15px;
+    }
+
+    .formsearch .form-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+        .formsearch .form-row .form-group {
+            width: 48%;
+        }
+
+    .formsearch .vendor-row .form-group {
+        width: 100%;
+    }
+.bookcard-container {
+    user-select: none !important;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.bookcard {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    width: 630px;
+    height: 300px; /* Chiều cao cố định */
+    background-color: #fff;
+    border: 1px solid #4CAF50;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+    .bookcard:hover {
+        cursor: pointer;
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+
+.bookcard-img {
+    width: auto; /* Chiếm 35% chiều ngang của thẻ */
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+    .bookcard-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Duy trì tỉ lệ hình ảnh */
+    }
+
+.bookcard-information {
+    user-select: none !important;
+    width: 65%; /* Chiếm 65% chiều ngang của thẻ */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center; /* Canh trái nội dung */
+}
+
+    .bookcard-information h3 {
+        font-size: 1.2rem;
+        color: #4CAF50;
+        margin-bottom: 10px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .bookcard-information p {
+        font-size: 0.9rem;
+        color: #555;
+        margin: 4px 0;
+        line-height: 1.4;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+#toggleSearchFields {
+    display: block;
+    margin-bottom: 10px;
+    color: #4CAF50;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: right;
+    transition: color 0.3s ease;
+}
+
+    #toggleSearchFields:hover {
+        color: #45a049;
+    }
+
+    #toggleSearchFields:active {
+        transform: translateY(0);
+    }
+
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    .formsearch, #toggleSearchFields {
+        max-width: 100%;
+        margin: 10px auto;
+    }
+
+    .bookcard-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
 
     .formsearch input[type="text"],
     .formsearch select {
         width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
     }
-    .formsearch option{
-        padding:10px
-    }
-
-    .formsearch button {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background-color: #4CAF50;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-        ..formsearch button:hover {
-            background-color: #45a049;
-        }
-
-table.table {
-    margin: 20px auto;
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
 }
 
-    table.table th,
-    table.table td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: left;
+        transform: translateY(-5px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
     }
 
-    table.table th {
-        background-color: #f4f4f4;
+.bookcard-img {
+    width: auto; /* Chiếm 35% chiều ngang của thẻ */
+    overflow: hidden;
+    border-radius: 12px;
+}
+
+    .bookcard-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* Duy trì tỉ lệ hình ảnh */
     }
 
-    table.table tr:nth-child(even) {
-        background-color: #f9f9f9;
+.bookcard-information {
+    width: 65%; /* Chiếm 65% chiều ngang của thẻ */
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center; /* Canh trái nội dung */
+}
+
+    .bookcard-information h3 {
+        font-size: 1.2rem;
+        color: #4CAF50;
+        margin-bottom: 10px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
-    table.table tr:hover {
-        background-color: #f1f1f1;
+    .bookcard-information p {
+        font-size: 0.9rem;
+        color: #555;
+        margin: 4px 0;
+        line-height: 1.4;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
     }
 
-p {
-    text-align: center;
-    font-size: 1.1em;
-    color: red;
-    margin-top: 20px;
+#toggleSearchFields {
+    display: block;
+    margin-bottom: 10px;
+    color: #4CAF50;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: right;
+    transition: color 0.3s ease;
+}
+
+    #toggleSearchFields:hover {
+        color: #45a049;
+    }
+
+    #toggleSearchFields:active {
+        transform: translateY(0);
+    }
+
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+
+    .formsearch, #toggleSearchFields {
+        max-width: 100%;
+        margin: 10px auto;
+    }
+
+    .bookcard-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .formsearch input[type="text"],
+    .formsearch select {
+        width: 100%;
+    }
 }

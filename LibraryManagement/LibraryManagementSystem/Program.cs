@@ -62,7 +62,11 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 
-app.UseRouting();
+app.UseRouting(); 
+app.MapControllerRoute(
+    name: "book",
+    pattern: "{controller=Book}/{action=Index}/{id?}");
+
 
 //Configuring Authentication Middleware to the Request Pipeline
 app.UseAuthentication();
