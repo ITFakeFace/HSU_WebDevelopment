@@ -4,6 +4,7 @@
     Layout = null;
 }
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.2.0/remixicon.css">
 <link href="~/features/auth/login/Login.css" rel="stylesheet" />
 
 <!--=============== LOGIN IMAGE ===============-->
@@ -30,7 +31,7 @@
 <div class="login container grid" id="loginAccessRegister">
     <!--===== LOGIN ACCESS =====-->
     <div class="login__access">
-        <h1 class="login__title">Log in to your account.</h1>
+        <h1 class="login__title">Đăng nhập vào tài khoản của bạn.</h1>
 
         <div class="login__area">
             <form asp-action="Login" asp-controller="Account" method="post" class="login__form">
@@ -55,67 +56,23 @@
                         <label asp-for="RememberMe" class="form-check-label">Ghi nhớ đăng nhập</label>
                     </div>
                     <div>
-                        <a href="#" class="login__forgot">Forgot your password?</a>
+                        <a asp-action="ForgotPassword" asp-controller="Account" class="login__forgot">Quên mật khẩu?</a>
                     </div>
                 </div>
 
-                <button type="submit" class="login__button">Login</button>
+                <button type="submit" class="login__button">Đăng nhập</button>
             </form>
 
             <p class="login__switch">
-                Don't have an account?
-                <button id="loginButtonRegister">Create Account</button>
+                Chưa có tài khoản?
+                <a asp-action="Register" asp-controller="Account">
+                <button id="loginButtonRegister">Tạo tài khoản</button>
+                </a>
             </p>
         </div>
     </div>
 
-    <!--===== LOGIN REGISTER =====-->
-    <div class="login__register">
-        <h1 class="login__title">Create new account.</h1>
-
-        <div class="login__area">
-            <form asp-action="Register" asp-controller="Account" method="post" class="login__form">
-                <div class="login__content grid">
-                    <div class="login__group grid">
-                        <div class="login__box">
-                            <input type="text" id="names" required placeholder=" " class="login__input">
-                            <label for="names" class="login__label">Names</label>
-
-                            <i class="ri-id-card-fill login__icon"></i>
-                        </div>
-
-                        <div class="login__box">
-                            <input type="text" id="surnames" required placeholder=" " class="login__input">
-                            <label for="surnames" class="login__label">Surnames</label>
-
-                            <i class="ri-id-card-fill login__icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="login__box">
-                        <input type="email" id="emailCreate" required placeholder=" " class="login__input">
-                        <label for="emailCreate" class="login__label">Email</label>
-
-                        <i class="ri-mail-fill login__icon"></i>
-                    </div>
-
-                    <div class="login__box">
-                        <input type="password" id="passwordCreate" required placeholder=" " class="login__input">
-                        <label for="passwordCreate" class="login__label">Password</label>
-
-                        <i class="ri-eye-off-fill login__icon login__password" id="loginPasswordCreate"></i>
-                    </div>
-                </div>
-
-                <button type="submit" class="login__button">Create account</button>
-            </form>
-
-            <p class="login__switch">
-                Already have an account?
-                <button id="loginButtonAccess">Log In</button>
-            </p>
-        </div>
-    </div>
+    
 </div>
 
 <partial name="_ValidationScriptsPartial" />

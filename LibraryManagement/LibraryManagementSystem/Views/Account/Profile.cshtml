@@ -38,10 +38,10 @@
                         </button>
                     </div>
 
-                    <input type="file" id="inp-avatar" name="inp-avatar" hidden />
+                    <input type="file" id="inp-avatar" name="inpAvatar" hidden />
                 </div>
             </form>
-            <div class="user-username">@Model.Fullname</div>
+            <div class="user-username">@Model.UserName</div>
             <!-- <div class="user-username">Đỗ Thanh Hùng</div> -->
             <div class="general-infomations">
                 <div class="general-info">
@@ -167,7 +167,7 @@
                         <form asp-action="UpdatePhone" asp-controller="Account" class="form-confirm-phone">
                             <div class="mb-3">
                                 <label for="inp-phone-confirm" class="form-label">Số điện thoại</label>
-                                <input type="text" pattern="[0-9]{10}" id="inp-phone-confirm" required placeholder="0903030303" class="form-control" />
+                                <input type="text" asp-for="NewPhone" pattern="[0-9]{10}" id="inp-phone-confirm" required placeholder="0903030303" class="form-control" />
                             </div>
                             <div>
                                 <button type="submit" class="btn-phone-save btn btn-success">Lưu</button>

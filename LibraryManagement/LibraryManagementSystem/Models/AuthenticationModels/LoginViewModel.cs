@@ -12,5 +12,7 @@ namespace LibraryManagementSystem.Models.AuthenticationModels
         public string Password { get; set; }
 
         public bool RememberMe { get; set; }
+
+
     }
 }

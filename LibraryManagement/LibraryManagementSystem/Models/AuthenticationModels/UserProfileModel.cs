@@ -4,6 +4,7 @@ namespace LibraryManagementSystem.Models.AuthenticationModels
 {
     public class UserProfileModel
     {
+        public string UserName { get; set; }
         public string Email { get; set; }
         public string NewEmail { get; set; }
         public string OTP { get; set; }
