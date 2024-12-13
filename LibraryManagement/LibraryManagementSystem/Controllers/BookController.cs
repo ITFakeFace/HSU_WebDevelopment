@@ -2,6 +2,9 @@
 using LibraryManagementSystem.Models;
 using System;
 using Microsoft.EntityFrameworkCore;
+using LibraryManagementSystem.DTO.BookDTO;
+using LibraryManagementSystem.DTO;
+using System.Text.RegularExpressions;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -31,6 +34,52 @@ namespace LibraryManagementSystem.Controllers
             var book = await _context.Books
                 .FirstOrDefaultAsync(b=>b.Id == Id);
             return View();
+        }
+
+        [method: HttpPost]
+        public IActionResult Create(CreateBookDTO createBookDTO) 
+        {
+            if((Regex.IsMatch(createBookDTO.ISBN!, @"^\d{3}-\d-\d{2}-\d{5}-\d$"))) 
+            {
+                ViewBag["Error"] = "ISBN Wrong format";
+                return View(); 
+            } 
+            
+            try
+            {
+                Author author = _context.Authors.FirstOrDefault(e => e.Id == createBookDTO.AuthorId)!;
+                Publisher publisher = _context.Publishers.FirstOrDefault(e => e.Id == createBookDTO.AuthorId)!;
+                Vendor vendor = _context.Vendors.FirstOrDefault(e => e.Id == createBookDTO.VendorId)!;
+                Book book = new Book()
+                {
+                    Name = createBookDTO.Title,
+                    Authors = new List<Author> { author},
+                    PublisherNavigation = publisher,
+                    Description = createBookDTO.Description,
+                    PublishYear = createBookDTO.PublishYear,
+                    PageNumber = createBookDTO.PageNumber,
+                    Language = createBookDTO.Language,
+                    Version = createBookDTO.Version,
+                    Series = createBookDTO.SeriesId,
+                    Vendor = createBookDTO.VendorId,                    
+                };
+                _context.Books.AddAsync(book);
+                _context.SaveChanges();
+                return Redirect("/");
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            return View();
+
+        }
+        public IActionResult Create() 
+        {
+            
+            return View();
+
         }
     }
 }

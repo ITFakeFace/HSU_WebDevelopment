@@ -1,6 +1,20 @@
-@LMS_ServerAPI_HostAddress = http://localhost:5292
+@LMS_ServerAPI_HostAddress = https://localhost:50282
 
-GET {{LMS_ServerAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
+GET {{LMS_ServerAPI_HostAddress}}/api/author/getall
+Accept:application/json
+###
+GET {{LMS_ServerAPI_HostAddress}}/api/publisher/getall
+Accept:application/json
+###
+GET {{LMS_ServerAPI_HostAddress}}/api/publisher/getnoparent
+Accept:application/json
+###
+GET {{LMS_ServerAPI_HostAddress}}/api/publisher/getchilds/1
+Accept:application/json
+###
+GET {{LMS_ServerAPI_HostAddress}}/api/vendor/getall
+Accept:application/json
+###
+GET {{LMS_ServerAPI_HostAddress}}/api/series/getall
+Accept:application/json
 ###
