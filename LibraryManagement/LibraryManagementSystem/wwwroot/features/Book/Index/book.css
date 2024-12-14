@@ -1,0 +1,68 @@
+﻿.book-list {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.per-book-display {
+    display: table-row;
+    border-bottom: 1px solid #ddd;
+}
+
+.book-info {
+    display: table-cell;
+    padding: 10px;
+    vertical-align: middle;
+}
+
+.book-info-name,
+.book-info-authors,
+.book-info-publish-year,
+.book-management {
+    padding: 5px 10px;
+    display: inline-block;
+    max-height:auto;
+}
+
+    .book-info-name{
+        width: 500px;
+    }
+
+    .book-info-authors {
+        width: 200px;
+    }
+
+.book-management {
+    text-align: right;
+}
+.book-info-status {
+    width: 150px;
+}
+.book-management-option {
+    width: 150px;
+    margin-right: 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+    .book-management-option div {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        transition: background-color 0.3s ease;
+    }
+
+        .book-management-option div:hover {
+            background-color: #e2e6ea;
+        }
+
+.book-info-authors a {
+    text-decoration: none;
+    color: #007bff;
+}
+
+    .book-info-authors a:hover {
+        text-decoration: underline;
+    }

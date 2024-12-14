@@ -1,0 +1,28 @@
+﻿@model LibraryManagementSystem.Models.Book
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1> Deactivate/Delete Book </h1>
+<div>
+    <div>
+        <img src="#" alt="Book cover" class="book-image" />
+    </div>
+    <div>
+        <h2>
+            <span>Title: </span>
+            @Html.DisplayFor(model => model.Name)
+        </h2>
+        <div>
+            @Html.DisplayFor(model => model.Description)
+        </div>
+    </div>
+</div>
+
+<form>
+    <input type="hidden" asp-for="Id"/>
+</form>
+
+
+

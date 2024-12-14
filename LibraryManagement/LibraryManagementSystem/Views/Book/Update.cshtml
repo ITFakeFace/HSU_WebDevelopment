@@ -1,0 +1,58 @@
+﻿@model LibraryManagementSystem.Models.Book
+
+@{
+    ViewData["Title"] = "Update";
+}
+
+<link rel="stylesheet" href="~/features/Book/Update/book.css" />
+
+<h1> Update Book </h1>
+
+<div class="book-update">
+    <form asp-action="Update">
+        <div class="book-update-left">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label>Tên tác phẩm: </label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Mô tả tác phẩm: </label>
+                <input asp-for="Description" class="form-control" />
+                <span asp-validation-for="Description" class=" text-danger"></span>
+            </div>
+            <div class="choose-group">
+                <label>Năm phát hành: </label>
+                @{
+                    var selectListPublishYear =
+                    new SelectList(Enumerable.Range(0, (DateTime.Now.Year - 0) + 1).Reverse()
+                    , Model?.PublishYear
+                    );
+
+                }
+                @Html.DropDownList(
+                    "PublishYear",
+                    selectListPublishYear,
+                    "Chọn Năm",
+                    new {
+                            @class = "form-control selectpicker",
+                            onchange = "document.getElementById('MyForm').submit();"
+                    })
+                <span asp-validation-for="PublishYear" class=" text-danger"></span>
+            </div>
+            <div class="choose-group">
+                <label> Nhà phát hành: </label>
+                <select id="Publisher" name="PublisherId" class="form-control" asp-items="ViewBag.PublisherList"></select>
+                <span asp-validation-for="PublishYear" class=" text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Số trang: </label>
+                <input asp-for="PageNumber" class="form-control" />
+                <span asp-validation-for="PageNumber" class=" text-danger"></span>
+            </div>
+        </div>
+    </form>
+</div>

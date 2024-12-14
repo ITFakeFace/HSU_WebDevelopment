@@ -1,24 +1,89 @@
 @model IEnumerable<LibraryManagementSystem.Models.Book>
 
-<h1>Book List</h1>
+@{
+    ViewData["Title"] = "Index";
+}
+<link rel="stylesheet" href="~/features/Book/Index/book.css" />
+<h1> Welcome to Library</h1>
+<div class="book-list">
+    <div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tên sách</th>
+                    <th>Tác giả</th>
+                    <th>Năm phát hành</th>
+                    <th>Trạng thái</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
 
-<table>
-    <tr>
-        <th>Id</th>
-        <th>Name</th>
-        <th>Publisher</th>
-        <th>Vendor</th>
-        <th>Year</th>
-    </tr>
-    @foreach (var book in Model)
-    {
-        <tr>
-            <td>@book.Id</td>
-            <td>@book.Image</td>
-            <td>@book.Name</td>
-            <td>@book.PublisherNavigation?.Name</td>
-            <td>@book.VendorNavigation?.Name</td>
-            <td>@book.PublishYear</td>
-        </tr>
-    }
-</table>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>
+                        @{
+                            var isFirstAuth = true;
+
+                            foreach (var auth in item.Authors)
+                            {
+                                @if (!isFirstAuth)
+                                {
+                                    <a>, @auth.Name</a>
+                                }
+                                else
+                                {
+                                    <a>@auth.Name</a>
+                                    isFirstAuth = !isFirstAuth;
+                                }
+                            }
+                        }
+                    </td>
+                    <td><span>Publish year</span> @item.PublishYear</td>
+                    <td>
+                        @if(item.Status == 1){
+                            <a asp-action="Deactive" asp-controller="Book" asp-route-id="@item.Id" class="btn btn-success">Active</a>
+                        } else {
+                            <a asp-action="Deactive" asp-controller="Book" asp-route-id="@item.Id" class="btn btn-danger">Deactive</a>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-outline-secondary">
+                            <div>
+                                Detail
+                            </div>
+                        </a>
+                        <a asp-action="Update" asp-route-id="@item.Id" class="btn btn-outline-primary">
+                            <div>
+                                Update
+                            </div>
+                        </a>
+                        @{
+                            var isExist = false;
+                            foreach (var bookLoan in item.BookLoans)
+                            {
+                                if (bookLoan.BookNavigation.Id == item.Id)
+                                {
+                                    isExist = true;
+                                }
+                            }
+
+                            if (isExist)
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
+                                    <div>
+                                        Delete
+                                    </div>
+                                </a>
+                            }
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>
+

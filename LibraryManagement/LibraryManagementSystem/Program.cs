@@ -75,7 +75,7 @@ app.MapControllerRoute(
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Book}/{action=Index}/{id?}");
 
 // Seed dữ liệu (roles và users)
 using (var scope = app.Services.CreateScope())
