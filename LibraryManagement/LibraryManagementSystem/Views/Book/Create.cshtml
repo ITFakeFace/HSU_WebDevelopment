@@ -74,7 +74,7 @@
     <script>
         // Hàm kiểm tra định dạng ISBN
         function validateISBN(isbn) {
-            const isbnRegex = /^\d{3}-\d-\d{2}-\d{5}-\d$/; // Định dạng ISBN: 978-0-30-640615-7
+            const isbnRegex = /^(?=(?:[^0-9]*[0-9]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\d-]+$/;
             return isbnRegex.test(isbn);
         }
 
