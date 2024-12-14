@@ -1,0 +1,77 @@
+﻿@model LibraryManagementSystem.Models.Author
+
+@{
+    ViewData["Title"] = "CreateAuthor";
+}
+<link rel="stylesheet" href="~/features/author/list/author.css" />
+
+<div class="container"><br />
+<h1>Thêm tác giả mới</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="control-label"></label>
+                <select asp-for="Gender" class="form-control">
+                    <option value="">Chọn Giới tính</option>
+                    <option value="1">Nam</option>
+                    <option value="0">Nữ</option>
+                    <option value="">Không tiết lộ</option>
+                </select>
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Nation" class="control-label"></label>
+                <select asp-for="Nation" class="form-control">
+                    <option value="00">Chọn quốc tịch</option>
+                    <option value="VN">Việt Nam</option>
+                    <option value="EN">Anh</option>
+                    <option value="US">Hoa Kỳ</option>
+                    <option value="FR">Pháp</option>
+                    <option value="JP">Nhật Bản</option>
+                    <option value="KR">Hàn Quốc</option>
+                    <option value="CN">Trung Quốc</option>
+                    <option value="DE">Đức</option>
+                    <option value="AU">Úc</option>
+                    <option value="IT">Ý</option>
+                    <option value="ES">Tây Ban Nha</option>
+                    <option value="CA">Canada</option>
+                    <option value="IN">Ấn Độ</option>
+                    <option value="BR">Brazil</option>
+                </select>
+                <span asp-validation-for="Nation" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="">Chọn Tình trạng</option>
+					<option value="1">Đang hoạt động</option>
+                    <option value="0">Ngừng hoạt động</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Thêm" class="btn btn-success" style="font-size: 14px; padding: 10px 20px;" />
+            </div>
+        </form>
+    </div>
+</div>
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<hr />
+<div>
+    <a asp-action="Index" class="btn btn-primary" style="font-size: 14px; padding: 10px 20px;">Quay về trang chủ</a>
+</div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
