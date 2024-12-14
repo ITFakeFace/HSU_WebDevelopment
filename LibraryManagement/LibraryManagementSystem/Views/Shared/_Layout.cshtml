@@ -1,3 +1,17 @@
+@using Microsoft.AspNetCore.Identity
+
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    var currentUser = await UserManager.GetUserAsync(User);
+    bool isAdmin = false;
+    if(currentUser != null )
+    {
+        isAdmin = currentUser.Fullname!.Equals("Librarian User") || currentUser.Fullname.Equals("Admin User");
+        Console.WriteLine(isAdmin.ToString());
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,6 +60,10 @@
                         <li class="navbar-item">
                             <a asp-action="Index" asp-controller="Author" class="navbar-link-custom">Danh sách tác giả</a>
                         </li>
+                        @if (isAdmin)
+                        {
+                            <a asp-action="Create" asp-controller="Book" class="navbar-link-custom">Thêm sách</a>
+                        }
                     </ul>
                 </div>
                 <div class="navbar-middle d-none d-md-flex flex-grow-1 d-none d-md-flex">
@@ -143,7 +161,6 @@
             &copy; 2024 - LibraryManagementSystem - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer> *@
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
