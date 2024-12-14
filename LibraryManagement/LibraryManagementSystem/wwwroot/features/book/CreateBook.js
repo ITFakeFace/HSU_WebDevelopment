@@ -72,8 +72,32 @@ async function initializeSelect2(htmlElement, controller, placeholder) {
     }
 }
 
+async function initializeSelect2MultiChoice(htmlElement, controller, placeholder) {
+    try {
+        const builder = new ApiBuilder();
+        const api = builder.setController(controller).setAction("getAll").build();
+        const data = await callAPI(api, "get");
+
+        $(htmlElement).select2({
+            placeholder: `Select ${placeholder}`,
+            width: "100%",
+            tags: true,
+            //allowClear:true,
+            closeOnSelect: false,
+            dropdownCssClass: "custom-dropdown",
+            selectionCssClass: "custom-selection",
+            data: data.map((item) => ({
+                id: item.Id,
+                text: item.Name,
+            })),
+        });
+    } catch (error) {
+        console.error(`Error initializing Select2 for ${htmlElement}:`, error);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", function () {
-    initializeSelect2("#author", "author", "Author");
+    initializeSelect2MultiChoice("#author", "author", "Author");
     initializeSelect2("#publisher", "publisher", "Publisher");
     initializeSelect2("#vendor", "vendor", "Vendor");
     initializeSelect2("#series", "series", "Series");

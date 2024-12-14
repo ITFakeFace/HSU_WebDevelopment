@@ -30,8 +30,8 @@ builder.Services.AddCors(options =>
 				"http://127.0.0.1:5500",
 				"https://localhost",
 				"http://localhost",
-                "https://localhost:50283"
-                )
+				"https://localhost:50283"
+				)
 			.AllowAnyHeader()
 			.AllowAnyMethod();
 		});
@@ -64,7 +64,7 @@ if (app.Environment.IsDevelopment())
 	app.UseSwaggerUI();
 }
 app.UseAuthorization();
-app.UseCors("AllowAll");
+app.UseCors("_myAllowSpecificOrigins");
 app.MapControllers();
 
 app.Run();

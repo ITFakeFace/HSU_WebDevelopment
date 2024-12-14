@@ -180,6 +180,18 @@
         padding: 0px 0px;
     }
 
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    width: 20%;
+    height: 20%;
+    padding: 0px;
+    margin: 0px;
+    position: relative;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    padding-left: 0px;
+}
+
     /*Responsive*/
     @media screen and (max-width: 500px) {
         .form .column {
