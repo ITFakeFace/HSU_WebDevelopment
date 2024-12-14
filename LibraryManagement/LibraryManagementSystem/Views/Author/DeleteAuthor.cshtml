@@ -1,27 +1,29 @@
 ﻿@model LibraryManagementSystem.Models.Author
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "DeleteAuthor";
     var countryNames = new Dictionary<string, string>
     {
         { "00", "Không rõ" },
-        { "VN", "Vietnam" },
-        { "EN", "England" },
-        { "US", "United States" },
-        { "FR", "France" },
-        { "JP", "Japan" },
-        { "KR", "South Korea" },
-        { "CN", "China" },
-        { "DE", "Germany" },
-        { "AU", "Australia" },
-        { "IT", "Italy" },
-        { "ES", "Spain" },
+        { "VN", "Việt Nam" },
+        { "EN", "Anh" },
+        { "US", "Hoa Kỳ" },
+        { "FR", "Pháp" },
+        { "JP", "Nhật Bản" },
+        { "KR", "Hàn Quốc" },
+        { "CN", "Trung Quốc" },
+        { "DE", "Đức" },
+        { "AU", "Úc" },
+        { "IT", "Ý" },
+        { "ES", "Tây Ban Nha" },
         { "CA", "Canada" },
-        { "IN", "India" },
+        { "IN", "Ấn Độ" },
         { "BR", "Brazil" }
     };
 }
+<link rel="stylesheet" href="~/features/author/list/author.css" />
 
+<div class="container"><br />
 <h3>Bạn có chắc muốn xóa tác giả @Html.DisplayFor(modelItem => modelItem.Name)</h3>
 <div>
     <hr />
@@ -80,10 +82,42 @@
             }
         </dd>
     </dl>
+    @if (ViewBag.ErrorMessage != null)
+{
+            <!-- Thông báo  -->
+            <div class="tab-content" id="errorTabContent">
+                <div class="tab-pane fade show active" id="errorContent" role="tabpanel" aria-labelledby="error-tab">
+                    <div class="alert alert-danger mt-3">
+                        @ViewBag.ErrorMessage
+                        @if (Model.Books != null && Model.Books.Any())
+                        {
+                            <ul style="padding-left: 0;">
+                                @foreach (var book in Model.Books)
+                                {
+                                    <li style="list-style-type: none; padding-left: 20px;">- &nbsp;<a href="@Url.Action("Detail", "Book", new { id = book.Id })" class="custom-link">@book.Name</a></li>
+                                }
+                            </ul>
+                        }
+                        @if (Model.Status != 0)
+                        {
+                            <div>Sẽ chuyển đổi trạng thái thành "Ngừng hoạt động" nếu xác nhận.</div>
+                        }
+                    </div>
+                </div>
+            </div>
+}
     <br />
+    @if (Model.Status != 0)
+    {
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Quay về trang chủ</a>
+        <input type="submit" value="Xác nhận" class="btn btn-danger" style="font-size: 14px; padding: 10px 20px;" /> 
     </form>
+    }
+    <div>
+        <hr />
+        <a class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;" href="javascript:history.back()">Quay lại trang trước</a> &nbsp;&nbsp;&nbsp;&nbsp;
+        <a asp-action="Index" class="btn btn-primary" style="font-size: 14px; padding: 10px 20px;">Quay về trang chủ</a>
+    </div>
+</div>
 </div>

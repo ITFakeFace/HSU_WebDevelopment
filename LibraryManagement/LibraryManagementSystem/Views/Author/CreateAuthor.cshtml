@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "CreateAuthor";
 }
+<link rel="stylesheet" href="~/features/author/list/author.css" />
 
+<div class="container"><br />
 <h1>Thêm tác giả mới</h1>
 
 <hr />
@@ -29,20 +31,20 @@
             <div class="form-group">
                 <label asp-for="Nation" class="control-label"></label>
                 <select asp-for="Nation" class="form-control">
-                    <option value="00">Select Country</option>
-                    <option value="VN">Vietnam</option>
-                    <option value="EN">England</option>
-                    <option value="US">United States</option>
-                    <option value="FR">France</option>
-                    <option value="JP">Japan</option>
-                    <option value="KR">South Korea</option>
-                    <option value="CN">China</option>
-                    <option value="DE">Germany</option>
-                    <option value="AU">Australia</option>
-                    <option value="IT">Italy</option>
-                    <option value="ES">Spain</option>
+                    <option value="00">Chọn quốc tịch</option>
+                    <option value="VN">Việt Nam</option>
+                    <option value="EN">Anh</option>
+                    <option value="US">Hoa Kỳ</option>
+                    <option value="FR">Pháp</option>
+                    <option value="JP">Nhật Bản</option>
+                    <option value="KR">Hàn Quốc</option>
+                    <option value="CN">Trung Quốc</option>
+                    <option value="DE">Đức</option>
+                    <option value="AU">Úc</option>
+                    <option value="IT">Ý</option>
+                    <option value="ES">Tây Ban Nha</option>
                     <option value="CA">Canada</option>
-                    <option value="IN">India</option>
+                    <option value="IN">Ấn Độ</option>
                     <option value="BR">Brazil</option>
                 </select>
                 <span asp-validation-for="Nation" class="text-danger"></span>
@@ -58,15 +60,16 @@
             </div>
             <br />
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Thêm" class="btn btn-success" style="font-size: 14px; padding: 10px 20px;" />
             </div>
         </form>
     </div>
 </div>
 @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-<br />
+<hr />
 <div>
-    <a asp-action="Index">Quay về trang chủ</a>
+    <a asp-action="Index" class="btn btn-primary" style="font-size: 14px; padding: 10px 20px;">Quay về trang chủ</a>
+</div>
 </div>
 
 @section Scripts {

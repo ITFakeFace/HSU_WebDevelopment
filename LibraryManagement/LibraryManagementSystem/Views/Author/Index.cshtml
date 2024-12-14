@@ -2,23 +2,23 @@
 @model IEnumerable<LibraryManagementSystem.Models.Author>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Tác giả";
     var countryNames = new Dictionary<string, string>
     {
         { "00", "Không rõ" },
-        { "VN", "Vietnam" },
-        { "EN", "England" },
-        { "US", "United States" },
-        { "FR", "France" },
-        { "JP", "Japan" },
-        { "KR", "South Korea" },
-        { "CN", "China" },
-        { "DE", "Germany" },
-        { "AU", "Australia" },
-        { "IT", "Italy" },
-        { "ES", "Spain" },
+        { "VN", "Việt Nam" },
+        { "EN", "Anh" },
+        { "US", "Hoa Kỳ" },
+        { "FR", "Pháp" },
+        { "JP", "Nhật Bản" },
+        { "KR", "Hàn Quốc" },
+        { "CN", "Trung Quốc" },
+        { "DE", "Đức" },
+        { "AU", "Úc" },
+        { "IT", "Ý" },
+        { "ES", "Tây Ban Nha" },
         { "CA", "Canada" },
-        { "IN", "India" },
+        { "IN", "Ấn Độ" },
         { "BR", "Brazil" }
     };
     int pageNumber = ViewBag.PageNumber ?? 1;
@@ -26,32 +26,43 @@
     int totalPages = ViewBag.TotalPages ?? 1;
 }
 
-<h1>Tác giả</h1>
+<link rel="stylesheet" href="~/features/author/list/author.css?v=@DateTime.Now.Ticks" /> <!--fix css-->
+<form>
+    @Html.AntiForgeryToken()
+</form>
 
-<p>
-    <a asp-action="Create">Thêm tác giả mới</a>
-    <th class="col-md-2">&nbsp;</th>
+
+<div class="container">
+<h1 style="margin-top: 10px;">Tác giả</h1>
+<div class="d-flex align-items-center">
+    <div>
+        <a class="btn btn-primary" asp-action="Create">Thêm tác giả mới</a>&nbsp;
+    </div>
+    <div class="d-flex align-items-center">
     @if (ViewBag.PageNumber > 1)
     {
-        <th class="col-md-2">&nbsp;</th>
-        <a asp-action="Index" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
+        <div>
+        <a asp-action="Index" id="prev-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
            asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
            asp-route-NhaXuatBan="@ViewData["Status"]">
             Trang trước
         </a>
+        &nbsp;
+        </div>
     }
     @if (ViewBag.PageNumber < ViewBag.TotalPages)
     {
-        <th class="col-md-2">&nbsp;</th>
-        <a asp-action="Index" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
+        <div>
+        <a asp-action="Index" id="next-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
            asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
            asp-route-NhaXuatBan="@ViewData["Status"]">
             Trang sau
         </a>
+        </div>
     }
     <div class="d-flex align-items-center">
         <!-- Hiển thị số trang -->
@@ -64,18 +75,20 @@
         {
             @for (int i = startPage; i <= endPage; i++)
             {
-                <th class="col-md-1">
-                    &nbsp;
+                <div class="text-center">
                     @if (i == ViewBag.PageNumber)
-                    {
+                    {   
+                        <div>&nbsp;
                         <!-- Hiển thị ô input cho trang hiện tại -->
                         <input type="number" id="pageNumberInput" min="1" max="@ViewBag.TotalPages" value="@ViewBag.PageNumber" size="1" class="form-control d-inline" style="width: auto;" />
-                        <a id="pageLink" class="btn btn-warning ms-2" href="#">
+                        <a id="pageLink" class="btn btn-warning ms-2" style="margin-bottom:3px" href="#">
                             GO
                         </a>
+                        </div>
                     }
                     else
                     {
+                        <div>&nbsp;
                         <!-- Hiển thị các trang khác dưới dạng link -->
                         <a class="btn btn-outline-primary"
                            asp-action="Index"
@@ -84,112 +97,98 @@
                            asp-route-Id="@ViewData["Id"]"
                            asp-route-Name="@ViewData["Name"]"
                            asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
-                           asp-route-NhaXuatBan="@ViewData["Status"]">
+                           asp-route-Status="@ViewData["Status"]">
                             @i
                         </a>
+                        </div>
                     }
-                </th>
+                </div>
             }
         }
     </div>
-    </tr>
-</p>
-
+    </div>
+</div>
+<button id="toggleFilter" class="btn-secondary btn" style="margin-bottom: 10px; margin-top:5px">Hiển thị bộ lọc</button>
 <!-- Form lọc -->
+<div id="filterForm" style="display: block;">
 <form method="get" action="@Url.Action("Index")" class="mb-4">
     <div class="row">
         <hr />
-        <div class="col-md-2">
+        <div class="col-md-1 text-center">
+            Lọc theo: Id
             <input type="text" name="Id" class="form-control" placeholder="ID" value="@ViewData["Id"]" />
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 text-center">
+            Tên tác giả
             <input type="text" name="Name" class="form-control" placeholder="Tên tác giả" value="@ViewData["Name"]" />
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 text-center">
+            Giới tính
             <select name="Gender" class="form-control" asp-items="ViewBag.GenderOptions"></select>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 text-center">
+            Quốc tịch
             <select name="Nation" class="form-control" asp-items="ViewBag.NationOptions"></select>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 text-center">
+            Trạng thái
             <select name="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select>
         </div>
-        <div class="form-group">
-            <label for="pageSize">Số lượng tác giả hiển thị tối đa trong trang</label>
-            <input type="number" class="form-control" id="pageSize" name="pageSize" value="@ViewBag.PageSize" min="1" />
+        <div class="form-group col-md-2">
+            <label for="pageSize">Số lượng hiển thị tối đa</label>
+            <input type="number" class="form-control" id="pageSize" name="pageSize" value="@ViewBag.PageSize" min="1" style="width: auto;" />
         </div>
-        <div class="col-md-2">
-            <br />
-            <button type="submit" class="btn btn-primary">Lọc</button> Tổng sách: @ViewBag.TotalBooks
+        <div class="col-md-2" style="margin-top: 20px;">
+            Tìm thấy @ViewBag.TotalAuthors tác giả
         </div>
-        <hr />
+        <div class="col-md-8 text-center" style="margin-top: 10px;">
+            <button type="submit" class="btn btn-primary" style="padding: 5px 15px;">&nbsp;&nbsp;Lọc&nbsp;&nbsp;</button>
+        </div>
+        <hr style="margin-top: 5px;" />
     </div>
 </form>
+</div>
+<div class="styled-table-container" style="max-height: 500px; overflow-y: auto;">
+    <!-- Header -->
+        <div class="styled-table-header" style="position: sticky; top: 0; background-color: #6aa84f; z-index: 2; color:whitesmoke">
+            <div style="text-align: center;">STT</div>
+            <div style="text-align: center;">ID</div>
+            <div>@Html.DisplayNameFor(model => model.Name)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Gender)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Nation)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Status)</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sách liên kết</div>
+            <div style="text-align: center;">Hành động</div>
+        </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th class="text-center">STT</th>
-            <th class="text-center">@Html.DisplayNameFor(model => model.Id)</th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                Sách liên kết
-            </th>
-            <th class="text-center">
-                @Html.DisplayNameFor(model => model.Gender)
-            </th>
-            <th class="text-center">
-                @Html.DisplayNameFor(model => model.Nation)
-            </th>
-                <th class="text-center">
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @{
-          int stt = (pageNumber - 1) * pageSize + 1;
-          foreach (var item in Model)
-          {
-            <tr>
-                <td class="text-center">@stt</td>
-                <td class="text-center">@Html.DisplayFor(modelItem => item.Id)</td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                    <td>
-                        @if (item.Books != null && item.Books.Any())
-                        {
-                            <ul style=" padding-left: 0;">
-                                @foreach (var book in item.Books)
-                                {
-                                    <li>@book.Name</li>
-                                }
-                            </ul>
-                        }
-                        else
-                        {
-                            <span>Không có sách liên kết</span>
-                        }
-                    </td>
-                <td class="text-center">
-                        @if (item.Gender == 1)
-                        {
+
+    <!-- Body -->
+    @if (Model != null && Model.Any())
+    {
+        
+            int stt = (pageNumber - 1) * pageSize + 1;
+        
+        @foreach (var item in Model)
+        {
+            <div class="styled-table-row">
+                <div class="text-center">@stt</div>
+                <div class="text-center">@Html.DisplayFor(modelItem => item.Id)</div>
+                <div>@Html.DisplayFor(modelItem => item.Name)</div>
+                <div class="text-center">
+                    @if (item.Gender == 1)
+                    {
                         <span>Nam</span>
-                        }
-                        else if (item.Gender == 0)
-                        {
+                    }
+                    else if (item.Gender == 0)
+                    {
                         <span>Nữ</span>
-                        }
-                        else
-                        {
+                    }
+                    else
+                    {
                         <span>Không tiết lộ</span>
-                        }
-                </td>
-                <td class="text-center">
+                    }
+                </div>
+                <div class="text-center">
                     @if (countryNames.ContainsKey(item.Nation))
                     {
                         <span>@countryNames[item.Nation]</span>
@@ -198,36 +197,57 @@
                     {
                         <span>Unknown</span>
                     }
-                </td>
-                
-                        <td class="text-center">
-                            @if (item.Status == 1)
-                            {
-                                <span>Đang hoạt động</span>
-                            }
-                            else if (item.Status == 0)
-                            {
-                                <span>Ngừng hoạt động</span>
-                            }
-                            else
-                            {
-                                <span>Không rõ</span>
-                            }
-                        </td>
-                <td class="text-center">
-                            <div style="white-space: nowrap;">
-                                |<a style="text-decoration: none;" asp-action="Edit" asp-route-id="@item.Id">Chỉnh sửa</a>|<br />
-                                |<a style="text-decoration: none;" asp-action="Delete" asp-route-id="@item.Id">Xóa</a>|
+                </div>
+                <div class="text-center">
+                        <div style="display: flex; align-items: center;">
+                            <div id="status-indicator-@item.Id"
+                                 style="width: 15px; height: 15px; background-color: @(item.Status == 1 ? "green" : item.Status == 0 ? "red" : "white"); border: 1px solid black; margin-right: 5px;">
                             </div>
-                </td>
-            </tr>
+                            <span id="status-text-@item.Id">
+                                @(item.Status == 1 ? "Đang hoạt động" : item.Status == 0 ? "Ngừng hoạt động" : "Không rõ")
+                            </span>
+                        </div>
+                </div>
+                    <div>
+                        @if (item.Books != null && item.Books.Any())
+                        {
+                            <ul class="styled-list">
+                                @foreach (var book in item.Books)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Detail", "Book", new { id = book.Id })" class="custom-link">@book.Name</a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+                    </div>
+                <div class="text-center">
+                    <div style="white-space: normal;">
+                            <button class="btn btn-secondary btn-sm mt-2" style="width: 114px;" onclick="toggleStatus(@item.Id)">
+                                @(item.Status == 1 ? "Ngừng hoạt động" : "Kích hoạt")
+                            </button>
+                        <a class="btn btn-primary btn-sm" style="margin-top:5px" asp-action="Edit" asp-route-id="@item.Id">Chỉnh sửa</a>
+                        <a class="btn btn-danger btn-sm" style="margin-top:5px" asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+                    </div>
+                </div>
+            </div>
             stt++;
-          }
         }
-    </tbody>
-</table>
+    }
+    else
+    {
+        <div class="styled-table-none">
+             <div class="text-center">Không có dữ liệu nào được tìm thấy.</div>
+        </div>
+    }
+</div>
 
-<div id="pagination-buttons" style="text-align: right;">
+
+<div id="pagination-buttons" style="text-align: right; margin-top: 10px;">
     @if (ViewBag.PageNumber > 1)
     {
         <a id="prev-button" class="btn btn-success"
@@ -252,12 +272,12 @@
     }
     <button id="scrollToTop2" class="btn btn-secondary ms-2">↑</button>
 </div>
-<div class="text-center" class="d-flex align-items-center">
+<div class="d-flex align-items-center text-center justify-content-center">
     @if (ViewBag.TotalPages > 1)
     {
         @for (int i = startPage; i <= endPage; i++)
         {
-            <th class="col-md-1">
+            <div class="text-center">
                 &nbsp;
                 @if (i == ViewBag.PageNumber)
                 {
@@ -277,19 +297,13 @@
                         @i
                     </a>
                 }
-            </th>
+            </div>
         }
     }
-    <h4>Trang @ViewBag.PageNumber / @ViewBag.TotalPages</h4>
-</div>
-<hr />
-@if (User.IsInRole("Admin"))
-{
-    <div>
-        <a asp-action="Create" class="btn btn-success">Thêm sách mới</a>
     </div>
-}
-
+    <h4 class="d-flex align-items-center text-center justify-content-center" style="margin-top: 10px;">Trang @ViewBag.PageNumber / @ViewBag.TotalPages</h4>
+<hr />
+</div>
 
 <script>
     document.addEventListener('keydown', function (event) {
@@ -308,45 +322,84 @@
 </script>
 
 <script>
-    // JavaScript để giữ lại các tham số lọc khi thay đổi trang
+    document.addEventListener('scroll', () => {
+        const container = document.querySelector('.styled-table-container');
+        const thead = container.querySelector('thead');
+        const tableRect = container.getBoundingClientRect();
+        const theadRect = thead.getBoundingClientRect();
+
+        if (tableRect.top <= 0 && tableRect.bottom > theadRect.height) {
+            thead.style.position = 'fixed';
+            thead.style.top = '0px';
+            thead.style.left = `${tableRect.left}px`;
+            thead.style.width = `${tableRect.width}px`;
+            thead.style.zIndex = '1000'; // Đảm bảo header nằm trên các thành phần khác
+        } else {
+            thead.style.position = 'relative';
+            thead.style.top = 'unset';
+            thead.style.left = 'unset';
+            thead.style.width = 'unset';
+        }
+    });
+
+</script>
+
+<script>
+            document.addEventListener('DOMContentLoaded', function () {
+        var toggleButton = document.getElementById('toggleFilter');
+        var filterForm = document.getElementById('filterForm');
+
+        // Đặt trạng thái hiển thị ban đầu theo localStorage hoặc mặc định 'block'
+        var formState = localStorage.getItem('filterFormState') || 'block';
+        filterForm.style.display = formState;
+        toggleButton.textContent = (formState === 'block') ? 'Ẩn bộ lọc' : 'Hiển thị bộ lọc';
+
+        if (toggleButton) {
+            toggleButton.addEventListener('click', function () {
+                // Chuyển đổi trạng thái hiển thị
+                if (filterForm.style.display === 'none') {
+                    filterForm.style.display = 'block';
+                    toggleButton.textContent = 'Ẩn bộ lọc';
+                } else {
+                    filterForm.style.display = 'none';
+                    toggleButton.textContent = 'Hiển thị bộ lọc';
+                }
+
+                // Lưu trạng thái hiển thị vào localStorage
+                localStorage.setItem('filterFormState', filterForm.style.display);
+            });
+        }
+    });
+
+</script>
+
+<script>
     document.getElementById("pageLink").addEventListener("click", function (event) {
-        event.preventDefault(); // Ngăn chặn hành động mặc định của liên kết
+        event.preventDefault(); // Ngăn hành động mặc định của nút
 
-        // Lấy giá trị nhập từ input
-        let pageNumber = parseInt(document.getElementById("pageNumberInput").value);
+        // Lấy giá trị số trang từ input
+        const pageNumberInput = document.getElementById("pageNumberInput");
+        let pageNumber = parseInt(pageNumberInput.value);
 
-        // Kiểm tra giá trị nhập hợp lệ
+        // Kiểm tra giá trị hợp lệ
         if (isNaN(pageNumber) || pageNumber < 1) {
-            pageNumber = 1;  // Nếu không hợp lệ, mặc định về 1
+            pageNumber = 1; // Mặc định về trang 1 nếu giá trị không hợp lệ
         }
         if (pageNumber > @ViewBag.TotalPages) {
-            pageNumber = @ViewBag.TotalPages;  // Nếu lớn hơn số trang tổng, chỉnh về max
+            pageNumber = @ViewBag.TotalPages; // Chỉnh về trang cuối nếu vượt quá tổng số trang
         }
 
-        // Cập nhật lại giá trị input để phản ánh trang đang chọn
-        document.getElementById("pageNumberInput").value = pageNumber;
+        // Lấy URL hiện tại
+        const currentUrl = new URL(window.location.href);
 
-        // Lấy tất cả các tham số lọc từ form
-        const form = document.querySelector('form');
-        const formData = new FormData(form);
+        // Cập nhật giá trị tham số `pageNumber` trong URL
+        currentUrl.searchParams.set("pageNumber", pageNumber);
 
-        // Xây dựng URL với các tham số lọc hiện tại và trang
-        let newUrl = `@Url.Action("Index", "Author")?`;
-
-        // Duyệt qua các tham số lọc và thêm vào URL
-        for (let [key, value] of formData.entries()) {
-            if (value) {
-                newUrl += `${key}=${encodeURIComponent(value)}&`;
-            }
-        }
-
-        // Thêm pageNumber vào URL
-        newUrl += `pageNumber=${pageNumber}`;
-
-        // Điều hướng trang đến URL mới
-        window.location.href = newUrl;
+        // Điều hướng tới URL mới
+        window.location.href = currentUrl.toString();
     });
 </script>
+
 <script>
     document.getElementById("scrollToTop").addEventListener("click", function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -356,4 +409,38 @@
     document.getElementById("scrollToTop2").addEventListener("click", function () {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     });
+</script>
+
+<script>
+    function toggleStatus(authorId) {
+        fetch(`/Author/ToggleStatus/${authorId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Lỗi khi cập nhật trạng thái');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const statusIndicator = document.getElementById(`status-indicator-${authorId}`);
+            const statusText = document.getElementById(`status-text-${authorId}`);
+            const button = document.querySelector(`button[onclick="toggleStatus(${authorId})"]`);
+
+            if (data.status === 1) {
+                statusIndicator.style.backgroundColor = 'green';
+                statusText.textContent = 'Đang hoạt động';
+                button.textContent = 'Ngừng hoạt động';
+            } else {
+                statusIndicator.style.backgroundColor = 'red';
+                statusText.textContent = 'Ngừng hoạt động';
+                button.textContent = 'Kích hoạt';
+            }
+        })
+        .catch(error => alert(error.message));
+    }
 </script>

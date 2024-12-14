@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagementSystem.Models;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagementSystem.Controllers
 {
+    [Authorize(Roles = "ADMINISTRATOR")]
     public class AuthorController : Controller
     {
         private readonly LibraryDbContext _context;
@@ -56,12 +58,13 @@ namespace LibraryManagementSystem.Controllers
                 .OrderBy(a => a.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
+                .Include(a => a.Books)
                 .ToListAsync();
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
             ViewBag.TotalPages = (int)Math.Ceiling((double)authors.Count() / pageSize);
-            ViewBag.TotalBooks = (double)authors.Count();
+            ViewBag.TotalAuthors = (double)authors.Count();
 
             ViewData["Id"] = Id;
             ViewData["Name"] = Name;
@@ -74,19 +77,19 @@ namespace LibraryManagementSystem.Controllers
                 {
                             new SelectListItem { Value = "", Text = "Chọn quốc tịch" },
                             new SelectListItem { Value = "00", Text = "Không rõ" },
-                            new SelectListItem { Value = "VN", Text = "Vietnam" },
-                            new SelectListItem { Value = "EN", Text = "England" },
-                            new SelectListItem { Value = "US", Text = "United States" },
-                            new SelectListItem { Value = "FR", Text = "France" },
-                            new SelectListItem { Value = "JP", Text = "Japan" },
-                            new SelectListItem { Value = "KR", Text = "South Korea" },
-                            new SelectListItem { Value = "CN", Text = "China" },
-                            new SelectListItem { Value = "DE", Text = "Germany" },
-                            new SelectListItem { Value = "AU", Text = "Australia" },
-                            new SelectListItem { Value = "IT", Text = "Italy" },
-                            new SelectListItem { Value = "ES", Text = "Spain" },
+                            new SelectListItem { Value = "VN", Text = "Việt Nam" },
+                            new SelectListItem { Value = "EN", Text = "Anh" },
+                            new SelectListItem { Value = "US", Text = "Hoa Kỳ" },
+                            new SelectListItem { Value = "FR", Text = "Pháp" },
+                            new SelectListItem { Value = "JP", Text = "Nhật Bản" },
+                            new SelectListItem { Value = "KR", Text = "Hàn Quốc" },
+                            new SelectListItem { Value = "CN", Text = "Trung Quốc" },
+                            new SelectListItem { Value = "DE", Text = "Đức" },
+                            new SelectListItem { Value = "AU", Text = "Úc" },
+                            new SelectListItem { Value = "IT", Text = "Ý" },
+                            new SelectListItem { Value = "ES", Text = "Tây Ban Nha" },
                             new SelectListItem { Value = "CA", Text = "Canada" },
-                            new SelectListItem { Value = "IN", Text = "India" },
+                            new SelectListItem { Value = "IN", Text = "Ấn Độ" },
                             new SelectListItem { Value = "BR", Text = "Brazil" }
                 },
                 "Value",
@@ -121,6 +124,28 @@ namespace LibraryManagementSystem.Controllers
             return View(paginatedAuthors);
 
         }
+
+        [HttpPost]
+        [Route("Author/ToggleStatus/{id}")]
+        public async Task<IActionResult> ToggleStatus(int id)
+        {
+            var author = await _context.Authors.FirstOrDefaultAsync(a => a.Id == id);
+
+            if (author != null)
+            {
+                // Nếu trạng thái là null, mặc định chuyển thành 1 (Kích hoạt)
+                author.Status = author.Status == null || author.Status == 0 ? 1 : 0;
+
+                _context.Authors.Update(author);
+                await _context.SaveChangesAsync();
+
+                // Trả về trạng thái mới dưới dạng JSON
+                return Json(new { success = true, status = author.Status });
+            }
+
+            return Json(new { success = false, message = "Không tìm thấy mục." });
+        }
+
 
         // GET: Authors/Create
         public IActionResult Create()
@@ -179,21 +204,22 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.NationOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                            new SelectListItem { Value = "00", Text = "Select Country" },
-                            new SelectListItem { Value = "VN", Text = "Vietnam" },
-                            new SelectListItem { Value = "EN", Text = "England" },
-                            new SelectListItem { Value = "US", Text = "United States" },
-                            new SelectListItem { Value = "FR", Text = "France" },
-                            new SelectListItem { Value = "JP", Text = "Japan" },
-                            new SelectListItem { Value = "KR", Text = "South Korea" },
-                            new SelectListItem { Value = "CN", Text = "China" },
-                            new SelectListItem { Value = "DE", Text = "Germany" },
-                            new SelectListItem { Value = "AU", Text = "Australia" },
-                            new SelectListItem { Value = "IT", Text = "Italy" },
-                            new SelectListItem { Value = "ES", Text = "Spain" },
+                            new SelectListItem { Value = "00", Text = "Chọn quốc tịch" },
+                            new SelectListItem { Value = "VN", Text = "Việt Nam" },
+                            new SelectListItem { Value = "EN", Text = "Anh" },
+                            new SelectListItem { Value = "US", Text = "Hoa Kỳ" },
+                            new SelectListItem { Value = "FR", Text = "Pháp" },
+                            new SelectListItem { Value = "JP", Text = "Nhật Bản" },
+                            new SelectListItem { Value = "KR", Text = "Hàn Quốc" },
+                            new SelectListItem { Value = "CN", Text = "Trung Quốc" },
+                            new SelectListItem { Value = "DE", Text = "Đức" },
+                            new SelectListItem { Value = "AU", Text = "Úc" },
+                            new SelectListItem { Value = "IT", Text = "Ý" },
+                            new SelectListItem { Value = "ES", Text = "Tây Ban Nha" },
                             new SelectListItem { Value = "CA", Text = "Canada" },
-                            new SelectListItem { Value = "IN", Text = "India" },
+                            new SelectListItem { Value = "IN", Text = "Ấn Độ" },
                             new SelectListItem { Value = "BR", Text = "Brazil" }
+
                 },
                 "Value",
                 "Text",
@@ -272,20 +298,20 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.CountryOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                            new SelectListItem { Value = "00", Text = "Select Country" },
-                            new SelectListItem { Value = "VN", Text = "Vietnam" },
-                            new SelectListItem { Value = "EN", Text = "England" },
-                            new SelectListItem { Value = "US", Text = "United States" },
-                            new SelectListItem { Value = "FR", Text = "France" },
-                            new SelectListItem { Value = "JP", Text = "Japan" },
-                            new SelectListItem { Value = "KR", Text = "South Korea" },
-                            new SelectListItem { Value = "CN", Text = "China" },
-                            new SelectListItem { Value = "DE", Text = "Germany" },
-                            new SelectListItem { Value = "AU", Text = "Australia" },
-                            new SelectListItem { Value = "IT", Text = "Italy" },
-                            new SelectListItem { Value = "ES", Text = "Spain" },
+                            new SelectListItem { Value = "00", Text = "Chọn quốc tịch" },
+                            new SelectListItem { Value = "VN", Text = "Việt Nam" },
+                            new SelectListItem { Value = "EN", Text = "Anh" },
+                            new SelectListItem { Value = "US", Text = "Hoa Kỳ" },
+                            new SelectListItem { Value = "FR", Text = "Pháp" },
+                            new SelectListItem { Value = "JP", Text = "Nhật Bản" },
+                            new SelectListItem { Value = "KR", Text = "Hàn Quốc" },
+                            new SelectListItem { Value = "CN", Text = "Trung Quốc" },
+                            new SelectListItem { Value = "DE", Text = "Đức" },
+                            new SelectListItem { Value = "AU", Text = "Úc" },
+                            new SelectListItem { Value = "IT", Text = "Ý" },
+                            new SelectListItem { Value = "ES", Text = "Tây Ban Nha" },
                             new SelectListItem { Value = "CA", Text = "Canada" },
-                            new SelectListItem { Value = "IN", Text = "India" },
+                            new SelectListItem { Value = "IN", Text = "Ấn Độ" },
                             new SelectListItem { Value = "BR", Text = "Brazil" }
                 },
                 "Value",
@@ -328,10 +354,17 @@ namespace LibraryManagementSystem.Controllers
             }
 
             var author = await _context.Authors
+                .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (author == null)
             {
                 return NotFound();
+            }
+
+            // Kiểm tra nếu tác giả có sách liên kết
+            if (author.Books.Any())
+            {
+                ViewBag.ErrorMessage = $"Không thể xóa tác giả '{author.Name}' vì có sách liên kết:";
             }
 
             return View("DeleteAuthor", author);

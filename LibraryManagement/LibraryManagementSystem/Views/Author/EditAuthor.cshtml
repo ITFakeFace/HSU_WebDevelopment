@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "EditAuthor";
 }
+<link rel="stylesheet" href="~/features/author/list/author.css" />
 
+<div class="container"><br />
 <h4>Chỉnh sửa tác giả @Html.DisplayFor(modelItem => modelItem.Name)</h4>
 <hr />
 <div class="row">
@@ -33,14 +35,16 @@
             </div>
             <br />
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Xác nhận lưu" class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;" />
             </div>
         </form>
     </div>
 </div>
-<br />
 <div>
-    <a asp-action="Index">Quay về trang chủ</a>
+    <hr />
+    <a class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;" href="javascript:history.back()">Quay lại trang trước</a> &nbsp;&nbsp;&nbsp;&nbsp;
+    <a asp-action="Index" class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;">Quay về trang chủ</a>
+</div>
 </div>
 
 @section Scripts {

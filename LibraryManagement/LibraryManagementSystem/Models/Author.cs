@@ -8,7 +8,7 @@ public partial class Author
 {
     public int Id { get; set; }
 
-    [Display(Name = "Tên Tác giả")]
+    [Display(Name = "Tên tác giả")]
     [Required(ErrorMessage = "Tên tác giả bắt buộc phải có.")]
     public string? Name { get; set; }
 
