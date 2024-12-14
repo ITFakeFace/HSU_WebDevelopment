@@ -48,3 +48,4 @@ launchSettings.json
 
 # User secrets (thông tin nhạy cảm)
 secrets.json
+*.sql

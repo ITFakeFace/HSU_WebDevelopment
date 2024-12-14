@@ -1,0 +1,101 @@
+﻿<link rel="stylesheet" href="~/features/book/createbook.css" />
+<div class="create-book-body">
+    <section class="container">
+        <header>Registration Form</header>
+        <form action="/Book/Create" method="post" class="form">
+            <div class="input-box">
+                <label>Book Name</label>
+                <input type="text" name="Title" placeholder="Enter book name" required />
+            </div>
+
+            <div class="input-box">
+                <label>Description</label>
+                <input type="text" name="Description" placeholder="Enter book description" />
+            </div>
+
+            <div class="input-box">
+                <label>ISBN</label>
+                <input type="text" name="ISBN" placeholder="Enter ISBN number" />
+                <div id="isbn-error" class="error-message"></div> 
+
+            </div>
+
+            <div class="input-box">
+                <div>Author</div>
+                <select id="author" name="AuthorId">
+    
+                </select>
+            </div>
+
+            <div class="input-box">
+                <div>Vendor</div>
+                <select id="vendor" name="VendorId">
+                </select>
+            </div>
+
+            <div class="input-box">
+                <div>Publisher</div>
+                <select id="publisher" name="PublisherId">
+                </select>
+            </div>
+
+            <div class="input-box">
+                <label>Publish year</label>
+                <input type="text" name="PublishYear" placeholder="Enter Publish year" required />
+            </div>
+
+            <div class="input-box">
+                <label>Version</label>
+                <input type="text" name="Version" placeholder="Enter Version" required />
+            </div>
+
+            <div class="input-box">
+                <label>Page Number</label>
+                <input type="text" name="PageNumber" placeholder="Enter Page Number" required />
+            </div>
+
+            <div class="input-box">
+                <div>Series</div>
+                <select id="series" name="SeriesId">
+                </select>
+            </div>
+
+            <div class="input-box">
+                <label>Language</label>
+                <input type="text" name="Language" placeholder="Enter Book Language" required />
+            </div>
+
+      
+
+            <button type="submit">Submit</button>
+
+        </form>
+    </section>
+    <script>
+        // Hàm kiểm tra định dạng ISBN
+        function validateISBN(isbn) {
+            const isbnRegex = /^\d{3}-\d-\d{2}-\d{5}-\d$/; // Định dạng ISBN: 978-0-30-640615-7
+            return isbnRegex.test(isbn);
+        }
+
+        $(document).ready(function () {
+            // Xử lý sự kiện submit form
+            $('form').on('submit', function (event) {
+                const isbnInput = $('input[name="ISBN"]').val();
+                const errorDiv = $('#isbn-error');
+
+                if (!validateISBN(isbnInput)) {
+                    event.preventDefault(); // Ngăn chặn việc submit form
+                    errorDiv.text("Invalid ISBN format. Example: 978-0-30-640615-7");
+                    errorDiv.css('color', 'red');
+                } else {
+                    errorDiv.text(''); // Xóa lỗi nếu đúng định dạng
+                }
+            });
+        });
+    </script>
+   
+</div>
+
+
+
