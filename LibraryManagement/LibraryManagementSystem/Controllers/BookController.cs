@@ -19,9 +19,6 @@ namespace LibraryManagementSystem.Controllers
 {
     public class BookController : Controller
     {
-        private readonly LibraryDbContext _context;
-
-        public BookController(LibraryDbContext context)
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly LibraryDbContext _context;
