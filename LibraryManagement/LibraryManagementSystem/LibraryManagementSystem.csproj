@@ -7,6 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="wwwroot\features\Book\NewFolder1\**" />
+    <Compile Remove="wwwroot\features\Book\NewFolder\**" />
+    <Content Remove="wwwroot\features\Book\NewFolder1\**" />
+    <Content Remove="wwwroot\features\Book\NewFolder\**" />
+    <EmbeddedResource Remove="wwwroot\features\Book\NewFolder1\**" />
+    <EmbeddedResource Remove="wwwroot\features\Book\NewFolder\**" />
+    <None Remove="wwwroot\features\Book\NewFolder1\**" />
+    <None Remove="wwwroot\features\Book\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />

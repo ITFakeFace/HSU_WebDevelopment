@@ -177,7 +177,6 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpGet]
-        [Route("{id}")]
         public async Task<IActionResult> Profile(string id)
         {
             var user = await _userManager.GetUserAsync(User);
