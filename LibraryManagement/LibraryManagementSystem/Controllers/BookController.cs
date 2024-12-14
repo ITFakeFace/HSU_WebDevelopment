@@ -39,15 +39,6 @@ namespace LibraryManagementSystem.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var books = await _context.Books
-                .Include(b => b.PublisherNavigation)
-                .Include(b => b.VendorNavigation)
-                .Include(b => b.BookImgs)
-                .ToListAsync();
-            return View(books); 
-        }
 
         public async Task<IActionResult> Search(string name, string language, int? vendor,int? Publisher , int? publishYear, string version, int? series, int? status)
         {
