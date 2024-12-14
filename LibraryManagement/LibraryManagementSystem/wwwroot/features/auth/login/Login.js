@@ -14,6 +14,8 @@ const passwordAccess = (loginPass, loginEye) => {
     })
 }
 passwordAccess('password', 'loginPassword')
+passwordAccess('passwordCreate', 'loginPasswordCreate')
+passwordAccess('confirmPasswordCreate', 'loginConfirmPasswordCreate')
 
 /*=============== SHOW HIDE PASSWORD CREATE ACCOUNT ===============*/
 const passwordRegister = (loginPass, loginEye) => {

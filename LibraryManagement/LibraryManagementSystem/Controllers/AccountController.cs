@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 
 namespace LibraryManagementSystem.Controllers
@@ -89,20 +91,22 @@ namespace LibraryManagementSystem.Controllers
         {
             if (ModelState.IsValid)
             {
+                if (model.Password != model.ConfirmPassword)
+                {
+                    ModelState.AddModelError("ConfirmPassword", "Mật khẩu xác nhận không khớp.");
+                    return View(model);
+                }
                 var user = new User
                 {
+                    Pid = model.PId,
+                    PhoneNumber = model.Phone,
                     UserName = model.UserName,
                     Email = model.Email,
-                    Fullname = model.Fullname
+                    Status = 1,
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
-                    // Gửi email xác thực
-                    var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
-                    await _emailSender.SendEmailAsync(user.Email, "Confirm your email", $"Please confirm your email by clicking this link: <a href='{confirmationLink}'>link</a>");
-
                     // Đăng nhập ngay sau khi đăng ký
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("RequestConfirmEmail", "Account", new { email = model.Email });
@@ -136,12 +140,19 @@ namespace LibraryManagementSystem.Controllers
             return View("Error");
         }
 
-        public IActionResult RequestConfirmEmail(string email)
+        public async Task<IActionResult> RequestConfirmEmail(string email)
         {
             if (string.IsNullOrEmpty(email))
             {
-                return BadRequest("Email không hợp lệ.");
+                return BadRequest("email không hợp lệ.");
             }
+
+            var user = await _signInManager.UserManager.GetUserAsync(User);
+            // Gửi email xác thực
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            var confirmationLink = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, token = token }, Request.Scheme);
+            await _emailSender.SendEmailAsync(user.Email, "Confirm your email", $"Please confirm your email by clicking this link: <a href='{confirmationLink}'>link</a>");
+
 
             // Lấy ba ký tự đầu
             var emailPrefix = email.Substring(0, 3);
@@ -150,7 +161,7 @@ namespace LibraryManagementSystem.Controllers
             int atIndex = email.IndexOf('@');
             if (atIndex == -1)
             {
-                return BadRequest("Email không hợp lệ.");
+                return BadRequest("email không hợp lệ.");
             }
 
             // Tạo chuỗi ẩn bằng dấu *
@@ -188,6 +199,7 @@ namespace LibraryManagementSystem.Controllers
 
             var userProfileModel = new UserProfileModel
             {
+                UserName = user.UserName,
                 CoverAvatar = user.CoverAvatar,
                 Avatar = user.Avatar,
                 Gender = user.Gender,
@@ -262,8 +274,61 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateAvatar()
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateAvatar(IFormFile inpAvatar)
         {
+            if (inpAvatar == null || inpAvatar.Length == 0)
+            {
+                TempData["Error"] = "Vui lòng chọn một file ảnh hợp lệ.";
+                return RedirectToAction("Profile");
+            }
+
+            try
+            {
+                // Kiểm tra loại file hợp lệ
+                var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var fileExtension = Path.GetExtension(inpAvatar.FileName).ToLower();
+
+                if (!allowedExtensions.Contains(fileExtension))
+                {
+                    TempData["Error"] = "Định dạng file không hợp lệ. Chỉ hỗ trợ JPG, PNG, GIF.";
+                    return RedirectToAction("Profile");
+                }
+
+                // Đọc file vào mảng byte (blob)
+                using var memoryStream = new MemoryStream();
+                await inpAvatar.CopyToAsync(memoryStream);
+                var avatarBlob = memoryStream.ToArray();
+
+                // Lấy thông tin người dùng hiện tại
+                var userId = _userManager.GetUserId(User);
+                var user = await _userManager.FindByIdAsync(userId);
+
+                if (user == null)
+                {
+                    TempData["Error"] = "Không tìm thấy thông tin người dùng.";
+                    return RedirectToAction("Login");
+                }
+
+                // Cập nhật Avatar
+                user.Avatar = avatarBlob;
+                var result = await _userManager.UpdateAsync(user);
+
+                if (result.Succeeded)
+                {
+                    TempData["Success"] = "Avatar đã được cập nhật thành công.";
+                }
+                else
+                {
+                    TempData["Error"] = "Đã xảy ra lỗi khi cập nhật avatar.";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Đã xảy ra lỗi không mong muốn.";
+                Console.WriteLine(ex.Message);
+            }
+
             return RedirectToAction("Profile");
         }
 
@@ -302,9 +367,66 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePhone()
+        public async Task<IActionResult> UpdatePhone(UserProfileModel profileModel)
+        {
+            var user = await _ctx.Users.Where(u => u.Id == _signInManager.UserManager.GetUserId(User)).FirstOrDefaultAsync();
+            user.PhoneNumber = profileModel.NewPhone;
+            await _signInManager.UserManager.UpdateAsync(user);
+            return RedirectToAction("Profile", new { id = _userManager.GetUserId(User) });
+        }
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult ForgotPassword(ForgotPasswordModel model)
+        {
+            return RedirectToAction("ChangePassword", new { email = model.Email });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ChangePassword(ForgotPasswordModel model)
+        {
+            var random = new Random();
+            GeneratedOTP = random.Next(100000, 999999).ToString(); // Tạo OTP 6 chữ số
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            await _emailSender.SendEmailAsync(user.Email, "Change Password", GeneratedOTP);
+
+            // Lấy ba ký tự đầu
+            var emailPrefix = user.Email.Substring(0, 3);
+
+            // Xác định vị trí của ký tự @
+            int atIndex = user.Email.IndexOf('@');
+            if (atIndex == -1)
+            {
+                return BadRequest("Email không hợp lệ.");
+            }
+
+            // Tạo chuỗi ẩn bằng dấu *
+            var maskedEmail = emailPrefix + new string('*', atIndex - 3) + user.Email.Substring(atIndex);
+
+            ViewBag.MaskedEmail = maskedEmail;
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user != null)
+            {
+                if (model.ConfirmPassword == model.NewPassword && model.OTP == GeneratedOTP)
+                {
+                    await _userManager.RemovePasswordAsync(user);
+                    await _userManager.AddPasswordAsync(user, model.NewPassword);
+                    return RedirectToAction("Login");
+                }
+            }
+            return View(model);
         }
     }
 }
