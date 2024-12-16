@@ -90,17 +90,17 @@ namespace LibraryManagementSystem.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index","Book");
+            return RedirectToAction("Index", "Book");
         }
 
 
-        public async Task<IActionResult> Search(string name, string language, int? vendor,int? Publisher , int? publishYear, string version, int? series, int? status)
+        public async Task<IActionResult> Search(string name, string language, int? vendor, int? Publisher, int? publishYear, string version, int? series, int? status)
         {
-           
+
             if (string.IsNullOrEmpty(name) &&
                 string.IsNullOrEmpty(language) &&
                 vendor == null &&
-                Publisher==null &&
+                Publisher == null &&
                 publishYear == null &&
                 string.IsNullOrEmpty(version) &&
                 series == null &&
@@ -167,14 +167,14 @@ namespace LibraryManagementSystem.Controllers
 
 
         [method: HttpPost]
-        public IActionResult Create(CreateBookDTO createBookDTO) 
+        public IActionResult Create(CreateBookDTO createBookDTO)
         {
-            if((Regex.IsMatch(createBookDTO.ISBN!, @"^\d{3}-\d-\d{2}-\d{5}-\d$"))) 
+            if ((Regex.IsMatch(createBookDTO.ISBN!, @"^\d{3}-\d-\d{2}-\d{5}-\d$")))
             {
                 ViewBag["Error"] = "ISBN Wrong format";
-                return View(); 
-            } 
-            
+                return View();
+            }
+
             try
             {
                 Author author = _context.Authors.FirstOrDefault(e => e.Id == createBookDTO.AuthorId)!;
@@ -183,7 +183,7 @@ namespace LibraryManagementSystem.Controllers
                 Book book = new Book()
                 {
                     Name = createBookDTO.Title,
-                    Authors = new List<Author> { author},
+                    Authors = new List<Author> { author },
                     PublisherNavigation = publisher,
                     Description = createBookDTO.Description,
                     PublishYear = createBookDTO.PublishYear,
@@ -191,7 +191,7 @@ namespace LibraryManagementSystem.Controllers
                     Language = createBookDTO.Language,
                     Version = createBookDTO.Version,
                     Series = createBookDTO.SeriesId,
-                    Vendor = createBookDTO.VendorId,                    
+                    Vendor = createBookDTO.VendorId,
                 };
                 _context.Books.AddAsync(book);
                 _context.SaveChanges();
@@ -205,12 +205,88 @@ namespace LibraryManagementSystem.Controllers
             return View();
 
         }
-        public IActionResult Create() 
+        public IActionResult Create()
         {
-            
+
             return View();
 
         }
-    }
 
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
+        {
+            if (bookId <= 0)
+            {
+                TempData["Message"] = "Invalid Book ID.";
+                return RedirectToAction("Index");
+            }
+
+            // Check if the book exists
+            var book = await _context.Books
+                .Include(b => b.BookImgs) // Include related images
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (book == null)
+            {
+                TempData["Message"] = "Book not found.";
+                return RedirectToAction("Index");
+            }
+
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                await imageFile.CopyToAsync(ms);
+                var imageBytes = ms.ToArray();
+
+                // Check if an image already exists for this book
+                var existingBookImg = book.BookImgs.FirstOrDefault();
+                if (existingBookImg != null)
+                {
+                    // Update existing image
+                    existingBookImg.Image = imageBytes;
+                    _context.BookImgs.Update(existingBookImg);
+                }
+                else
+                {
+                    // Add new image
+                    var newBookImg = new BookImg
+                    {
+                        Book = bookId,
+                        Image = imageBytes
+                    };
+                    _context.BookImgs.Add(newBookImg);
+                }
+
+                TempData["Message"] = $"Updated image for book ID '{bookId}'.";
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                TempData["Message"] = "No image file selected.";
+            }
+
+            return RedirectToAction("Index", "Book");
+        }
+
+        [HttpGet]
+        public IActionResult GetBookImage(int bookId)
+        {
+            var bookImg = _context.BookImgs.FirstOrDefault(b => b.Book == bookId);
+
+            if (bookImg == null || bookImg.Image == null)
+            {
+                // Return a placeholder image if no image exists
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "");
+                return PhysicalFile(placeholderPath, "image/png");
+            }
+
+            return File(bookImg.Image, "image/jpeg"); // Adjust MIME type as needed
+        }
+
+    }
 }

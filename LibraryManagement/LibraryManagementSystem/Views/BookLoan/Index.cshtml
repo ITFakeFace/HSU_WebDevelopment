@@ -1,0 +1,67 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.BookLoan>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<div class="book-loan-list" style="padding:30px">
+    <h1>Welcome to Book Loan</h1>
+    <table class="table table-striped" style="padding:20px">
+        <thead>
+            <tr>
+                <th>Tên</th>
+                <th>Email</th>
+                <th>SDT</th>
+                <th>Tên Sách mượn</th>
+                <th>ISBN</th>
+                <th>Ngày mượn</th>
+                <th>Ngày dự kiến trả</th>
+                <th>Tình trạng</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model){
+                <tr>
+                    <td>@item.UserNavigation.Fullname</td>
+                    <td>@item.UserNavigation.Email</td>
+                    @if (@item.UserNavigation.PhoneNumberConfirmed)
+                    {
+                        <td>@item.UserNavigation.PhoneNumber (đã xác minh)</td>
+                    } else {
+                        if (@item.UserNavigation.PhoneNumber == null)
+                        {
+                            <td>Không có số điện thoại</td>
+                        }
+                        else
+                        {
+                            <td>@item.UserNavigation.PhoneNumber (chưa xác minh)</td>
+                        }
+                    }
+                    
+                    <td>
+                        @item.BookNavigation.Name
+                    </td>
+                    <td> @item.BookNavigation.Isbn</td>
+                    <td> @item.FromDate</td>
+                    <td> @item.ToDate</td>
+                    @if (item.IsReturned == 1) {
+                        <td><a asp-action="DeactiveReturn" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-success">Đã trả</a></td>
+                    } else {
+                        if(item.IsReturned == 0 && item.ToDate < DateTime.Now) {
+                            <td>
+                                <a asp-action="DeactiveReturn" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-danger">Trễ hẹn trả</a>
+                            </td>
+                        } else {
+                            <td><a asp-action="DeactiveReturn" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-danger">Chưa trả</a></td>
+                        }
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
+    <script>
+
+    </script>
+</div>
+
+
