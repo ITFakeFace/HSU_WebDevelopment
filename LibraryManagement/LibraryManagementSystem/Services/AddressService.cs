@@ -23,19 +23,19 @@ namespace LibraryManagementSystem.Services
 
             //Get Street
             currentPointAddress = await _ctx.Streets.Where(o => o.Id == ((Address)currentPointAddress).Street).FirstOrDefaultAsync();
-            address += " " + currentPointAddress.Name;
+            address += " Đường " + currentPointAddress.Name;
 
             //Get Ward
             currentPointAddress = await _ctx.Wards.Where(o => o.Id == ((Street)currentPointAddress).Ward).FirstOrDefaultAsync();
-            address += ", " + currentPointAddress.Name;
+            address += ", P." + currentPointAddress.Name;
 
             //Get District
             currentPointAddress = await _ctx.Districts.Where(o => o.Id == ((Ward)currentPointAddress).District).FirstOrDefaultAsync();
-            address += ", " + currentPointAddress.Name;
+            address += ", Q." + currentPointAddress.Name;
 
-            //Get District
+            //Get City
             currentPointAddress = await _ctx.Cities.Where(o => o.Id == ((District)currentPointAddress).City).FirstOrDefaultAsync();
-            address += ", " + currentPointAddress.Name;
+            address += ", TP." + currentPointAddress.Name;
 
             return address;
         }
