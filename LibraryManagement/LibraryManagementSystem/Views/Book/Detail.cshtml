@@ -2,6 +2,24 @@
 
 @{
     ViewData["Title"] = "Detail";
+    var countryNames = new Dictionary<string, string>
+    {
+        { "00", "Không rõ" },
+        { "VN", "Tiếng Việt" },
+        { "EN", "Anh" },
+        { "US", "Hoa Kỳ" },
+        { "FR", "Pháp" },
+        { "JP", "Nhật Bản" },
+        { "KR", "Hàn Quốc" },
+        { "CN", "Trung Quốc" },
+        { "DE", "Đức" },
+        { "AU", "Úc" },
+        { "IT", "Ý" },
+        { "ES", "Tây Ban Nha" },
+        { "CA", "Canada" },
+        { "IN", "Ấn Độ" },
+        { "BR", "Brazil" }
+    };
 }
 <link rel="stylesheet" href="~/features/Book/Detail/book.css" />
 <div class="book-detail">
@@ -68,11 +86,20 @@
             }
         </div>
 
-        <!--contain infomation language and pages-->
+        <!--contain infomation language and pagesmodel.Language-->
         <div class="book-detail-right-simple-info">
             <div id="book-detail-right-simple-info-lang">
                 <p class="info-title"> Ngôn ngữ </p>
-                <p> @Html.DisplayFor(model => model.Language) </p>
+                <p>
+                    @if (countryNames.ContainsKey(Model.Language))
+                    {
+                        <span>@countryNames[Model.Language]</span>
+                    }
+                    else
+                    {
+                        <span>Unknown</span>
+                    }
+                </p>
             </div>
             <div id="book-detail-right-simple-info-page">
                 <p class="info-title"> Số trang </p>
