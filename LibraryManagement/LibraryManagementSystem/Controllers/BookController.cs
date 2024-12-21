@@ -72,7 +72,18 @@ namespace LibraryManagementSystem.Controllers
             return dest.All(author => source.Any(a => a.Name.Contains(author)));
         }
 
-        public async Task<IActionResult> Search(string name, string language, int? vendor, int? publisher, int? publishYearFrom, int? publishYearTo, string version, int? series, int? status, string authors, List<int> categoryIds)
+        public async Task<IActionResult> Search(
+      string name,
+      string language,
+      int? vendor,
+      int? publisher,
+      int? publishYearFrom,
+      int? publishYearTo,
+      string version,
+      int? series,
+      int? status,
+      string authors,
+      List<int> categoryIds)
         {
             var query = _context.Books
                 .Include(b => b.PublisherNavigation)
@@ -80,6 +91,7 @@ namespace LibraryManagementSystem.Controllers
                 .Include(b => b.BookImgs)
                 .Include(b => b.Categories)
                 .Include(b => b.Authors)
+                 .Where(b => b.Authors.All(a => a.Status == 1))
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
@@ -92,9 +104,9 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Language == language);
             }
 
-            if (vendor != null)
+            if (vendor.HasValue)
             {
-                query = query.Where(b => b.Vendor == vendor);
+                query = query.Where(b => b.Vendor == vendor.Value);
             }
 
             if (publishYearFrom.HasValue && publishYearTo.HasValue)
@@ -115,14 +127,19 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Version.Contains(version));
             }
 
-            if (series != null)
+            if (series.HasValue)
             {
-                query = query.Where(b => b.Series == series);
+                query = query.Where(b => b.Series == series.Value);
             }
 
-            if (status != null)
+            // Default to only show books with Status = 1
+            if (status.HasValue)
             {
-                query = query.Where(b => b.Status == status);
+                query = query.Where(b => b.Status == status.Value);
+            }
+            else
+            {
+                query = query.Where(b => b.Status == 1);
             }
 
             if (categoryIds != null && categoryIds.Any())
@@ -130,13 +147,12 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => categoryIds.All(c => b.Categories.Select(cat => cat.Id).Contains(c)));
             }
 
-
             var books = await query.ToListAsync();
-            List<Book> result = new List<Book>();
+            var result = new List<Book>();
 
             if (!string.IsNullOrEmpty(authors))
             {
-                var authorList = authors.Split(",").Select(a => a.Trim()).ToList();
+                var authorList = authors.Split(',').Select(a => a.Trim()).ToList();
                 foreach (var book in books)
                 {
                     if (IncludeAll(book.Authors.ToList(), authorList))
@@ -146,6 +162,7 @@ namespace LibraryManagementSystem.Controllers
                 }
                 books = result;
             }
+
             if (!books.Any())
             {
                 ViewBag.Message = "Không tìm thấy sách nào!";
@@ -249,15 +266,27 @@ namespace LibraryManagementSystem.Controllers
             return NotFound("Image not found");
         }
 
-        public async Task<IActionResult> Index(string name, string language, int? vendor, int? publisher, int? publishYearFrom, int? publishYearTo, string version, int? series, int? status, string authors, List<int> categoryIds)
+        public async Task<IActionResult> Index(
+      string name,
+      string language,
+      int? vendor,
+      int? publisher,
+      int? publishYearFrom,
+      int? publishYearTo,
+      string version,
+      int? series,
+      int? status,
+      string authors,
+      List<int> categoryIds)
         {
             var query = _context.Books
-                 .Include(b => b.PublisherNavigation)
-                 .Include(b => b.VendorNavigation)
-                 .Include(b => b.BookImgs)
-                 .Include(b => b.Categories)
-                 .Include(b => b.Authors)
-                 .AsQueryable();
+                .Include(b => b.PublisherNavigation)
+                .Include(b => b.VendorNavigation)
+                .Include(b => b.BookImgs)
+                .Include(b => b.Categories)
+                .Include(b => b.Authors)
+                 .Where(b => b.Authors.All(a => a.Status == 1))
+                .AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
             {
@@ -269,9 +298,9 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Language == language);
             }
 
-            if (vendor != null)
+            if (vendor.HasValue)
             {
-                query = query.Where(b => b.Vendor == vendor);
+                query = query.Where(b => b.Vendor == vendor.Value);
             }
 
             if (publishYearFrom.HasValue && publishYearTo.HasValue)
@@ -292,14 +321,19 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Version.Contains(version));
             }
 
-            if (series != null)
+            if (series.HasValue)
             {
-                query = query.Where(b => b.Series == series);
+                query = query.Where(b => b.Series == series.Value);
             }
 
-            if (status != null)
+            // Default to only show books with Status = 1
+            if (status.HasValue)
             {
-                query = query.Where(b => b.Status == status);
+                query = query.Where(b => b.Status == status.Value);
+            }
+            else
+            {
+                query = query.Where(b => b.Status == 1);
             }
 
             if (categoryIds != null && categoryIds.Any())
@@ -307,13 +341,12 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => categoryIds.All(c => b.Categories.Select(cat => cat.Id).Contains(c)));
             }
 
-
             var books = await query.ToListAsync();
-            List<Book> result = new List<Book>();
+            var result = new List<Book>();
 
             if (!string.IsNullOrEmpty(authors))
             {
-                var authorList = authors.Split(",").Select(a => a.Trim()).ToList();
+                var authorList = authors.Split(',').Select(a => a.Trim()).ToList();
                 foreach (var book in books)
                 {
                     if (IncludeAll(book.Authors.ToList(), authorList))
@@ -323,6 +356,7 @@ namespace LibraryManagementSystem.Controllers
                 }
                 books = result;
             }
+
             if (!books.Any())
             {
                 ViewBag.Message = "Không tìm thấy sách nào!";
@@ -331,7 +365,7 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.Categories = await _context.Categories.ToListAsync();
 
             return View(books);
-
         }
+
     }
 }
