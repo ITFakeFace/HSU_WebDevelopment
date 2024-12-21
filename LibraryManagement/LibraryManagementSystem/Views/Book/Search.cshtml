@@ -1,53 +1,68 @@
 ﻿@model IEnumerable<LibraryManagementSystem.Models.Book>
 @{
-    ViewData["Title"] = "Search Books";
+    ViewData["Title"] = "indext book";
 }
+<link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
 <link href="~/assets/search.css" rel="stylesheet" />
+
 <div class="container">
     <form method="get" action="/Book/Search" class="formsearch">
         <div class="form-group">
-            <label for="name">Book Name:</label>
-            <input type="text" id="name" name="name" placeholder="Enter book name" />
+            <label for="name">Tên sách:</label>
+            <input type="text" id="name" name="name" placeholder="Nhập tên sách" class="form-control" />
         </div>
-
-        <div id="additionalSearchFields" style="display: none;">
-            <div class="vendor-row">
-                <div class="form-group">
-                    <label for="Authors">Authors:</label>
-                    <input type="text" id="Authors" name="Authors" placeholder="Enter Authors" />
+        <div class="form-row" id="additionalFields" style="display: none;">
+            <div class="authors">
+                <label for="authors">Tác Giả:</label>
+                <div id="authors-container"></div>
+                <div class="input-area">
+                    <input type="text" id="author-input" placeholder="Nhập Tên Tác Giả" class="form-control" />
+                    <span id="add-author" class="add-icon">✓</span>
                 </div>
             </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="language">Language:</label>
-                    <select name="language" id="language">
-                        <option value="ALL">ALL</option>
+            <div class="publish-year-lang-group">
+                <div class="form-group year-group">
+                    <label for="publishYearFrom">Năm Xuất Bản:</label>
+                    <div class="year-inputs">
+                        <input type="text" id="publishYearFrom" name="publishYearFrom" placeholder="Từ Năm" class="form-control" />
+                        <input type="text" id="publishYearTo" name="publishYearTo" placeholder="Đến Năm" class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group language-group">
+                    <label for="language">Ngôn ngữ:</label>
+                    <select name="language" id="language" class="form-control">
+                        <option value="ALL">Tất cả</option>
                         <option value="EN">EN</option>
                         <option value="VN">VN</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="publishYear">Publish Year:</label>
-                    <input type="text" id="publishYear" name="publishYear" placeholder="Enter publish year" />
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="version">Version:</label>
-                    <input type="text" id="version" name="version" placeholder="Enter version" />
-                </div>
-                <div class="form-group">
-                    <label for="series">Series:</label>
-                    <input type="text" id="series" name="series" placeholder="Enter series" />
-                </div>
             </div>
         </div>
+        <div id="additionalSearchFields" style="display: none;">
+            <div class="form-group">
+                <label for="categories">Thể loại:</label>
+                <div id="categories">
+                    @foreach (var category in ViewBag.Categories as List<LibraryManagementSystem.Models.Category>)
+                    {
+                        <div class="category-item">
+                            <div class="form-check">
+                                <input style="cursor:pointer " type="checkbox" name="categoryIds" value="@category.Id" class="form-check-input" id="category-@category.Id" />
+                                <label style="cursor:pointer ; color:#4CAF50" for="category-@category.Id" class="form-check-label">@category.Name</label>
+                            </div>
+                        </div>
+                    }
+                </div>
 
-        <span id="toggleSearchFields" class="toggle-text">Show more filters</span>
+            </div>
 
-        <button type="submit">Search</button>
+        </div>
+        <input type="hidden" id="authorsList" name="authors" />
+        <span id="toggleSearchFields" class="toggle-text">Thêm thông tin tìm kiếm</span>
+        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
     </form>
 
     @if (Model.Any())
@@ -56,7 +71,6 @@
             @foreach (var book in Model)
             {
                 <div class="bookcard">
-                    <!-- Phần hình ảnh sách -->
                     <div class="bookcard-img">
                         @if (book.Image != null)
                         {
@@ -64,49 +78,118 @@
                         }
                         else
                         {
-                            <img src="/assets/default-book.jpg" alt="Default Image" />
+                            <img src="/assets/default-book.jpg" alt="Ảnh mặc định" />
                         }
                     </div>
-
-                    <!-- Phần thông tin sách -->
                     <div class="bookcard-information">
-                        <h3>@book.Name</h3>
-                        <p><strong>Language:</strong> @book.Language</p>
-                        <p><strong>Publish Year:</strong> @book.PublishYear</p>
-                        <p>
-                            <strong>Authors:</strong>
-                            @string.Join(", ", book.Authors.Select(a => a.Name))
-                        </p>
-                        <p><strong>Version:</strong> @book.Version</p>
+                        <h4 class="name"><b>@book.Name</b></h4>
+                        <p><strong>Ngôn Ngữ:</strong> @book.Language</p>
+      
+                            <strong>thể loại:</strong> @string.Join(", ", book.Categories.Select(a => a.Name))
+              
+                        <div class="admin_button">
 
-                        <p>
-                            <strong>Series</strong> @book.SeriesNavigation?.Name
-                        </p>
+                            @if (User.IsInRole("ADMINISTRATOR"))
+                            {
+                                <button class="btn_update">Cập Nhật</button>
+                                <button class="btn_delete">Xóa</button>
 
-
-
-
-
-
+                            }
+                        </div>
                     </div>
                 </div>
             }
-
         </div>
+    }
+    else
+    {
+        <p>Không tìm thấy sách nào!</p>
     }
 </div>
 
 <script>
-    document.getElementById('toggleSearchFields').addEventListener('click', function () {
-        const additionalFields = document.getElementById('additionalSearchFields');
-        const isHidden = additionalFields.style.display === 'none';
+    const authorsContainer = document.getElementById('authors-container');
+    const authorInput = document.getElementById('author-input');
+    const addAuthorButton = document.getElementById('add-author');
+    const authorsList = document.getElementById('authorsList');
 
-        additionalFields.style.display = isHidden ? 'block' : 'none';
+    addAuthorButton.addEventListener('click', () => {
+        const authorName = authorInput.value.trim();
+        if (authorName) {
+            const tag = document.createElement('div');
+            tag.className = 'tag';
+            tag.textContent = authorName;
 
-        sessionStorage.setItem('additionalFiltersVisible', !isHidden);
+            const removeBtn = document.createElement('span');
+            removeBtn.textContent = '✖';
+            removeBtn.onclick = () => {
+                authorsContainer.removeChild(tag);
+                updateAuthorsList();
+            };
 
-        this.textContent = isHidden ? 'ẨN THÔNG TIN' : 'THÊM THÔNG TIN TÌM KIẾM';
+            tag.appendChild(removeBtn);
+            authorsContainer.appendChild(tag);
+
+            authorInput.value = '';
+            updateAuthorsList();
+        }
     });
 
+    function updateAuthorsList() {
+        const authorNames = Array.from(authorsContainer.children).map(tag => tag.textContent.replace('✖', '').trim());
+        authorsList.value = authorNames.join(',');
+    }
+
+    authorInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addAuthorButton.click();
+        }
+    });
+
+    $(document).ready(function () {
+        $('#toggleSearchFields').click(function () {
+            const additionalFields = $('#additionalFields');
+            const additionalSearchFields = $('#additionalSearchFields');
+            const isHidden = additionalFields.is(':hidden');
+            additionalFields.toggle();
+            additionalSearchFields.toggle();
+            sessionStorage.setItem('additionalFiltersVisible', !isHidden);
+            $(this).text(isHidden ? 'ẨN THÔNG TIN' : 'THÊM THÔNG TIN TÌM KIẾM');
+        });
+
+        const isFiltersVisible = sessionStorage.getItem('additionalFiltersVisible') === 'true';
+        if (isFiltersVisible) {
+            $('#additionalFields').show();
+            $('#additionalSearchFields').show();
+            $('#toggleSearchFields').text('ẨN THÔNG TIN');
+        } else {
+            $('#additionalFields').hide();
+            $('#additionalSearchFields').hide();
+            $('#toggleSearchFields').text('THÊM THÔNG TIN TÌM KIẾM');
+        }
+    });
+
+    $(document).ready(function () {
+        $('select').select2();
+    });
+    document.querySelector('form').addEventListener('submit', function (e) {
+        const yearFrom = document.getElementById('publishYearFrom').value;
+        const yearTo = document.getElementById('publishYearTo').value;
+
+        if (yearFrom && isNaN(yearFrom)) {
+            alert('Năm bắt đầu phải là số!');
+            e.preventDefault();
+        }
+
+        if (yearTo && isNaN(yearTo)) {
+            alert('Năm kết thúc phải là số!');
+            e.preventDefault();
+        }
+
+        if (yearFrom && yearTo && parseInt(yearFrom) > parseInt(yearTo)) {
+            alert('Năm bắt đầu không được lớn hơn năm kết thúc!');
+            e.preventDefault();
+        }
+    });
 
 </script>
