@@ -1,0 +1,43 @@
+﻿@model LibraryManagementSystem.Models.Category
+
+
+@{
+    ViewData["Title"] = "EditCategory";
+}
+<link rel="stylesheet" href="~/features/Category/list/Category.css" />
+
+<div class="container"><br />
+<h4>Chỉnh sửa bộ sách @Html.DisplayFor(modelItem => modelItem.Name)</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" maxlength="255" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Xác nhận lưu" class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;" />
+            </div>
+        </form>
+    </div>
+</div>
+<div>
+    <hr />
+    <a class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;" href="javascript:history.back()">Quay lại trang trước</a> &nbsp;&nbsp;&nbsp;&nbsp;
+    <a asp-action="Index" class="btn-primary btn" style="font-size: 14px; padding: 10px 20px;">Quay về trang chủ</a>
+</div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

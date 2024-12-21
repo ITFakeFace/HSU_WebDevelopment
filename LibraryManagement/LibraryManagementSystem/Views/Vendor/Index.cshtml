@@ -1,42 +1,24 @@
 ﻿
-@model IEnumerable<LibraryManagementSystem.Models.Author>
+@model IEnumerable<LibraryManagementSystem.Models.Vendor>
 
 @{
-    ViewData["Title"] = "Tác giả";
-    var countryNames = new Dictionary<string, string>
-    {
-        { "00", "Không rõ" },
-        { "VN", "Việt Nam" },
-        { "EN", "Anh" },
-        { "US", "Hoa Kỳ" },
-        { "FR", "Pháp" },
-        { "JP", "Nhật Bản" },
-        { "KR", "Hàn Quốc" },
-        { "CN", "Trung Quốc" },
-        { "DE", "Đức" },
-        { "AU", "Úc" },
-        { "IT", "Ý" },
-        { "ES", "Tây Ban Nha" },
-        { "CA", "Canada" },
-        { "IN", "Ấn Độ" },
-        { "BR", "Brazil" }
-    };
+    ViewData["Title"] = "Nhà cung cấp";
     int pageNumber = ViewBag.PageNumber ?? 1;
     int pageSize = ViewBag.PageSize ?? 10;
     int totalPages = ViewBag.TotalPages ?? 1;
 }
 
-<link rel="stylesheet" href="~/features/author/list/author.css?v=@DateTime.Now.Ticks" /> <!--fix css-->
+<link rel="stylesheet" href="~/features/Vendor/list/Vendor.css?v=@DateTime.Now.Ticks" /> <!--fix css-->
 <form>
     @Html.AntiForgeryToken()
 </form>
 
 
 <div class="container">
-<h1 style="margin-top: 10px;">Tác giả</h1>
+<h1 style="margin-top: 10px;">Nhà cung cấp</h1>
 <div class="d-flex align-items-center">
     <div>
-        <a class="btn btn-primary" asp-action="Create">Thêm tác giả mới</a>&nbsp;
+        <a class="btn btn-primary" asp-action="Create">Thêm nhà cung cấp mới</a>&nbsp;
     </div>
     <div class="d-flex align-items-center">
     @if (ViewBag.PageNumber > 1)
@@ -45,7 +27,7 @@
         <a asp-action="Index" id="prev-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
+           asp-route-Email="@ViewData["Email"]" asp-route-Phone="@ViewData["Phone"]"
            asp-route-Status="@ViewData["Status"]">
             Trang trước
         </a>
@@ -58,7 +40,7 @@
         <a asp-action="Index" id="next-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
+           asp-route-Email="@ViewData["Email"]" asp-route-Phone="@ViewData["Phone"]"
            asp-route-Status="@ViewData["Status"]">
             Trang sau
         </a>
@@ -96,7 +78,7 @@
                            asp-route-pageSize="@ViewBag.PageSize"
                            asp-route-Id="@ViewData["Id"]"
                            asp-route-Name="@ViewData["Name"]"
-                           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
+                           asp-route-Email="@ViewData["Email"]" asp-route-Phone="@ViewData["Phone"]"
                            asp-route-Status="@ViewData["Status"]">
                             @i
                         </a>
@@ -119,16 +101,16 @@
             <input type="text" name="Id" class="form-control" placeholder="ID" value="@ViewData["Id"]" />
         </div>
         <div class="col-md-2 text-center">
-            Tên tác giả
-            <input type="text" name="Name" class="form-control" placeholder="Tên tác giả" value="@ViewData["Name"]" />
+            Nhà cung cấp
+            <input type="text" name="Name" class="form-control" placeholder="Tên nhà cung cấp" value="@ViewData["Name"]" />
         </div>
         <div class="col-md-2 text-center">
-            Giới tính
-            <select name="Gender" class="form-control" asp-items="ViewBag.GenderOptions"></select>
+            Email
+            <input type="email" name="Email" class="form-control" placeholder="Email" value="@ViewData["Email"]" />
         </div>
         <div class="col-md-2 text-center">
-            Quốc tịch
-            <select name="Nation" class="form-control" asp-items="ViewBag.NationOptions"></select>
+            Số điện thoại
+            <input type="number" name="Phone" class="form-control" placeholder="Phone" value="@ViewData["Phone"]" />
         </div>
         <div class="col-md-2 text-center">
             Trạng thái
@@ -139,7 +121,7 @@
             <input type="number" class="form-control" id="pageSize" name="pageSize" value="@ViewBag.PageSize" min="1" style="width: auto;" />
         </div>
         <div class="col-md-2" style="margin-top: 20px;">
-            Tìm thấy @ViewBag.TotalAuthors tác giả
+            Tìm thấy @ViewBag.TotalVendors nhà cung cấp
         </div>
         <div class="col-md-8 text-center" style="margin-top: 10px;">
             <button type="submit" class="btn btn-primary" style="padding: 5px 15px;">&nbsp;&nbsp;Lọc&nbsp;&nbsp;</button>
@@ -153,9 +135,9 @@
         <div class="styled-table-header" style="position: sticky; top: 0; background-color: #6aa84f; z-index: 2; color:whitesmoke">
             <div style="text-align: center;">STT</div>
             <div style="text-align: center;">ID</div>
-            <div>@Html.DisplayNameFor(model => model.Name)</div>
-            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Gender)</div>
-            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Nation)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Name)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Email)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Phone)</div>
             <div style="text-align: center;">@Html.DisplayNameFor(model => model.Status)</div>
             <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sách liên kết</div>
             <div style="text-align: center;">Hành động</div>
@@ -174,29 +156,11 @@
                 <div class="text-center">@stt</div>
                 <div class="text-center">@Html.DisplayFor(modelItem => item.Id)</div>
                 <div>@Html.DisplayFor(modelItem => item.Name)</div>
-                <div class="text-center">
-                    @if (item.Gender == 1)
-                    {
-                        <span>Nam</span>
-                    }
-                    else if (item.Gender == 0)
-                    {
-                        <span>Nữ</span>
-                    }
-                    else
-                    {
-                        <span>Không tiết lộ</span>
-                    }
+                <div>
+                    @Html.DisplayFor(modelItem => item.Email)
                 </div>
                 <div class="text-center">
-                    @if (countryNames.ContainsKey(item.Nation))
-                    {
-                        <span>@countryNames[item.Nation]</span>
-                    }
-                    else
-                    {
-                        <span>Unknown</span>
-                    }
+                    @Html.DisplayFor(modelItem => item.Phone) 
                 </div>
                 <div class="text-center">
                         <div style="display: flex; align-items: center;">
@@ -255,8 +219,8 @@
            asp-action="Index" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
-           asp-route-Status="@ViewData["Status"]">
+               asp-route-Email="@ViewData["Email"]" asp-route-Phone="@ViewData["Phone"]"
+               asp-route-Status="@ViewData["Status"]">
             Trang trước
         </a>
     }
@@ -266,8 +230,8 @@
            asp-action="Index" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
-           asp-route-Status="@ViewData["Status"]">
+               asp-route-Email="@ViewData["Email"]" asp-route-Phone="@ViewData["Phone"]"
+               asp-route-Status="@ViewData["Status"]">
             Trang sau
         </a>
     }
@@ -293,8 +257,8 @@
                        asp-route-pageSize="@ViewBag.PageSize"
                        asp-route-Id="@ViewData["Id"]"
                        asp-route-Name="@ViewData["Name"]"
-                       asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
-                       asp-route-Status="@ViewData["Status"]">
+                           asp-route-Email="@ViewData["Email"]" asp-route-Phone="@ViewData["Phone"]"
+                           asp-route-Status="@ViewData["Status"]">
                         @i
                     </a>
                 }
@@ -413,8 +377,8 @@
 </script>
 
 <script>
-    function toggleStatus(authorId) {
-        fetch(`/Author/ToggleStatus/${authorId}`, {
+    function toggleStatus(vendorId) {
+        fetch(`/Vendor/ToggleStatus/${vendorId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -428,9 +392,9 @@
             return response.json();
         })
         .then(data => {
-            const statusIndicator = document.getElementById(`status-indicator-${authorId}`);
-            const statusText = document.getElementById(`status-text-${authorId}`);
-            const button = document.querySelector(`button[onclick="toggleStatus(${authorId})"]`);
+            const statusIndicator = document.getElementById(`status-indicator-${vendorId}`);
+            const statusText = document.getElementById(`status-text-${vendorId}`);
+            const button = document.querySelector(`button[onclick="toggleStatus(${vendorId})"]`);
 
             if (data.status === 1) {
                 statusIndicator.style.backgroundColor = 'green';

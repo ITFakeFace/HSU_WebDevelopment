@@ -1,0 +1,56 @@
+﻿@model LibraryManagementSystem.Models.Vendor
+
+@{
+    ViewData["Title"] = "CreateVendor";
+}
+<link rel="stylesheet" href="~/features/Vendor/list/Vendor.css" />
+
+<div class="container"><br />
+<h1>Thêm nhà cung cấp mới</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" maxlength="511"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" type="email" class="form-control" maxlength="255"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" type="number" class="form-control" maxlength="15"/>
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control">
+                    <option value="">Chọn Tình trạng</option>
+					<option value="1">Đang hoạt động</option>
+                    <option value="0">Ngừng hoạt động</option>
+                </select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <br />
+            <div class="form-group">
+                <input type="submit" value="Thêm" class="btn btn-success" style="font-size: 14px; padding: 10px 20px;" />
+            </div>
+        </form>
+    </div>
+</div>
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<hr />
+<div>
+    <a asp-action="Index" class="btn btn-primary" style="font-size: 14px; padding: 10px 20px;">Quay về trang chủ</a>
+</div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

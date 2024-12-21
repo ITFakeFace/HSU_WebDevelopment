@@ -11,41 +11,41 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagementSystem.Controllers
 {
-    [Authorize(Roles = "ADMINISTRATOR")]
-    public class CategoryController : Controller
+    [Authorize(Roles = "ADMINISTRATOR,LIBRARIAN")]
+    public class SeriesController : Controller
     {
         private readonly LibraryDbContext _context;
 
-        public CategoryController(LibraryDbContext context)
+        public SeriesController(LibraryDbContext context)
         {
             _context = context;
         }
 
-        // GET: Category
+        // GET: Series
         public async Task<IActionResult> Index(string Id, string Name, string Status, int pageNumber = 1, int pageSize = 10)
         {
-            var category = _context.Categories.AsQueryable();
+            var series = _context.Series.AsQueryable();
             if (!string.IsNullOrEmpty(Id))
             {
                 int parsedId;
                 if (int.TryParse(Id, out parsedId))
                 {
-                    category = category.Where(a => a.Id == parsedId);
+                    series = series.Where(a => a.Id == parsedId);
                 }
             }
             if (!string.IsNullOrEmpty(Name))
-                category = category.Where(a => a.Name.Contains(Name));
-
+                series = series.Where(a => a.Name.Contains(Name));
+            
             if (!string.IsNullOrEmpty(Status))
             {
                 // Chuyển đổi chuỗi Status thành số để so sánh
                 if (int.TryParse(Status, out int statusValue))
                 {
-                    category = category.Where(a => a.Status == statusValue);
+                    series = series.Where(a => a.Status == statusValue);
                 }
             }
 
-            var paginatedCategory = await category
+            var paginatedSeries = await series
                 .OrderBy(a => a.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -54,8 +54,8 @@ namespace LibraryManagementSystem.Controllers
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)category.Count() / pageSize);
-            ViewBag.TotalCategory = (double)category.Count();
+            ViewBag.TotalPages = (int)Math.Ceiling((double)series.Count() / pageSize);
+            ViewBag.TotalSeries = (double)series.Count();
 
             ViewData["Id"] = Id;
             ViewData["Name"] = Name;
@@ -74,35 +74,35 @@ namespace LibraryManagementSystem.Controllers
                 Status
                 );
 
-
-            return View(paginatedCategory);
+           
+            return View(paginatedSeries);
 
         }
 
-
+       
 
         [HttpPost]
-        [Route("Category/ToggleStatus/{id}")]
+        [Route("Series/ToggleStatus/{id}")]
         public async Task<IActionResult> ToggleStatus(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(a => a.Id == id);
+            var serie = await _context.Series.FirstOrDefaultAsync(a => a.Id == id);
 
-            if (category != null)
+            if (serie != null)
             {
                 // Nếu trạng thái là null, mặc định chuyển thành 1 (Kích hoạt)
-                category.Status = category.Status == null || category.Status == 0 ? 1 : 0;
+                serie.Status = serie.Status == null || serie.Status == 0 ? 1 : 0;
 
-                _context.Categories.Update(category);
+                _context.Series.Update(serie);
                 await _context.SaveChangesAsync();
 
                 // Trả về trạng thái mới dưới dạng JSON
-                return Json(new { success = true, status = category.Status });
+                return Json(new { success = true, status = serie.Status });
             }
 
             return Json(new { success = false, message = "Không tìm thấy mục." });
         }
 
-        [Route("Category/DetailCategory")]
+        [Route("Vendor/DetailVendor")]
         public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
@@ -110,39 +110,38 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var vendor = await _context.Vendors
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (vendor == null)
             {
                 return NotFound();
             }
 
 
-            return View("DetailCategory", category);
+            return View("DetailVendor", vendor);
         }
 
-
-        // GET: Category/CreateCategory
-        [Route("Category/CreateCategory")]
+        // GET: Series/CreateSeries
+        [Route("Series/CreateSeries")]
         public IActionResult Create()
         {
-            return View("CreateCategory"); // Trả về view cụ thể
+            return View("CreateSeries"); // Trả về view cụ thể
         }
 
-        // POST: Category/CreateCategory
+        // POST: Series/CreateSeries
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Category/CreateCategory")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status")] Category Category)
+        [Route("Series/CreateSeries")]
+        public async Task<IActionResult> Create([Bind("Id,Name,Status")] Series Series)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(Category);
+                    _context.Add(Series);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -161,12 +160,12 @@ namespace LibraryManagementSystem.Controllers
             }
 
             // Trả lại form với thông tin đã nhập và thông báo lỗi
-            return View("CreateCategory", Category);
+            return View("CreateSeries", Series);
         }
 
 
-        // GET: Category/EditCategory/5
-        [Route("Category/EditCategory")]
+        // GET: Series/EditSeries/5
+        [Route("Series/EditSeries")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -174,8 +173,8 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var Category = await _context.Categories.FindAsync(id);
-            if (Category == null)
+            var Series = await _context.Series.FindAsync(id);
+            if (Series == null)
             {
                 return NotFound();
             }
@@ -190,9 +189,9 @@ namespace LibraryManagementSystem.Controllers
                 },
                 "Value",
                 "Text",
-                Category.Status
+                Series.Status
                 );
-            return View("EditCategory", Category);
+            return View("EditSeries", Series);
         }
 
         // POST: Authors/Edit/5
@@ -200,10 +199,10 @@ namespace LibraryManagementSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Category/EditCategory")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status")] Category Category)
+        [Route("Series/EditSeries")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status")] Series Series)
         {
-            if (id != Category.Id)
+            if (id != Series.Id)
             {
                 return NotFound();
             }
@@ -213,14 +212,14 @@ namespace LibraryManagementSystem.Controllers
             {
                 try
                 {
-                    _context.Update(Category);
+                    _context.Update(Series);
                     await _context.SaveChangesAsync();
                     // Sau khi lưu thành công, chuyển hướng đến trang Index
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(Category.Id))
+                    if (!SeriesExists(Series.Id))
                     {
                         return NotFound();
                     }
@@ -228,7 +227,7 @@ namespace LibraryManagementSystem.Controllers
                     {
                         // Ghi log lỗi khi có lỗi đồng thời (concurrency error)
                         ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.");
-                        Console.WriteLine("Concurrency error: " + Category.Id); // Ghi log lỗi
+                        Console.WriteLine("Concurrency error: " + Series.Id); // Ghi log lỗi
                     }
                 }
                 catch (Exception ex)
@@ -239,7 +238,7 @@ namespace LibraryManagementSystem.Controllers
                 }
                 //return View("EditAuthor",Author);
             }
-
+            
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
@@ -249,13 +248,13 @@ namespace LibraryManagementSystem.Controllers
                 },
                 "Value",
                 "Text",
-                Category.Status
+                Series.Status
                 );
-            return View("EditCategory", Category);
+            return View("EditSeries", Series);
         }
 
-        // GET: Category/DeleteCategory/5
-        [Route("Category/DeleteCategory")]
+        // GET: Series/DeleteSeries/5
+        [Route("Series/DeleteSeries")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -263,42 +262,42 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var series = await _context.Series
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (series == null)
             {
                 return NotFound();
             }
 
             // Kiểm tra nếu tác giả có sách liên kết
-            if (category.Books.Any())
+            if (series.Books.Any())
             {
-                ViewBag.ErrorMessage = $"Không thể xóa bộ sách '{category.Name}' vì có sách liên kết:";
+                ViewBag.ErrorMessage = $"Không thể xóa bộ sách '{series.Name}' vì có sách liên kết:";
             }
 
-            return View("DeleteCategory", category);
+            return View("DeleteSeries", series);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Route("Category/DeleteCategory")]
+        [Route("Series/DeleteSeries")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories
+            var series = await _context.Series
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (category != null)
+            if (series != null)
             {
-                if (category.Books.Any()) // Kiểm tra nếu có liên kết với Book
+                if (series.Books.Any()) // Kiểm tra nếu có liên kết với Book
                 {
-                    category.Status = 0; // Cập nhật trạng thái thành 0
-                    _context.Categories.Update(category);
+                    series.Status = 0; // Cập nhật trạng thái thành 0
+                    _context.Series.Update(series);
                 }
                 else
                 {
-                    _context.Categories.Remove(category); // Xóa nếu không có liên kết
+                    _context.Series.Remove(series); // Xóa nếu không có liên kết
                 }
             }
 
@@ -309,9 +308,9 @@ namespace LibraryManagementSystem.Controllers
 
 
 
-        private bool CategoryExists(int id)
+        private bool SeriesExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.Series.Any(e => e.Id == id);
         }
     }
 }

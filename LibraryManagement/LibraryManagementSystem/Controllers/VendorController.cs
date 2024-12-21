@@ -12,40 +12,44 @@ using Microsoft.AspNetCore.Authorization;
 namespace LibraryManagementSystem.Controllers
 {
     [Authorize(Roles = "ADMINISTRATOR")]
-    public class CategoryController : Controller
+    public class VendorController : Controller
     {
         private readonly LibraryDbContext _context;
 
-        public CategoryController(LibraryDbContext context)
+        public VendorController(LibraryDbContext context)
         {
             _context = context;
         }
 
-        // GET: Category
-        public async Task<IActionResult> Index(string Id, string Name, string Status, int pageNumber = 1, int pageSize = 10)
+        // GET: vendors
+        [Route("Vendor")]
+        public async Task<IActionResult> Index(string Id, string Name, string Email, string Phone, string Status, int pageNumber = 1, int pageSize = 10)
         {
-            var category = _context.Categories.AsQueryable();
+            var vendors = _context.Vendors.AsQueryable();
             if (!string.IsNullOrEmpty(Id))
             {
                 int parsedId;
                 if (int.TryParse(Id, out parsedId))
                 {
-                    category = category.Where(a => a.Id == parsedId);
+                    vendors = vendors.Where(a => a.Id == parsedId);
                 }
             }
             if (!string.IsNullOrEmpty(Name))
-                category = category.Where(a => a.Name.Contains(Name));
-
+                vendors = vendors.Where(a => a.Name.Contains(Name));
+            if (!string.IsNullOrEmpty(Email))
+                vendors = vendors.Where(a => a.Email.Contains(Email));
+            if (!string.IsNullOrEmpty(Phone))
+                vendors = vendors.Where(a => a.Phone.Contains(Phone));
             if (!string.IsNullOrEmpty(Status))
             {
                 // Chuyển đổi chuỗi Status thành số để so sánh
                 if (int.TryParse(Status, out int statusValue))
                 {
-                    category = category.Where(a => a.Status == statusValue);
+                    vendors = vendors.Where(a => a.Status == statusValue);
                 }
             }
 
-            var paginatedCategory = await category
+            var paginatedVendors = await vendors
                 .OrderBy(a => a.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
@@ -54,11 +58,13 @@ namespace LibraryManagementSystem.Controllers
 
             ViewBag.PageNumber = pageNumber;
             ViewBag.PageSize = pageSize;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)category.Count() / pageSize);
-            ViewBag.TotalCategory = (double)category.Count();
+            ViewBag.TotalPages = (int)Math.Ceiling((double)vendors.Count() / pageSize);
+            ViewBag.TotalVendors = (double)vendors.Count();
 
             ViewData["Id"] = Id;
             ViewData["Name"] = Name;
+            ViewData["Email"] = Email;
+            ViewData["Phone"] = Phone;
             ViewData["Status"] = Status;
 
 
@@ -74,35 +80,32 @@ namespace LibraryManagementSystem.Controllers
                 Status
                 );
 
-
-            return View(paginatedCategory);
+            return View(paginatedVendors);
 
         }
 
-
-
         [HttpPost]
-        [Route("Category/ToggleStatus/{id}")]
+        [Route("Vendor/ToggleStatus/{id}")]
         public async Task<IActionResult> ToggleStatus(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(a => a.Id == id);
+            var vendor = await _context.Vendors.FirstOrDefaultAsync(a => a.Id == id);
 
-            if (category != null)
+            if (vendor != null)
             {
                 // Nếu trạng thái là null, mặc định chuyển thành 1 (Kích hoạt)
-                category.Status = category.Status == null || category.Status == 0 ? 1 : 0;
+                vendor.Status = vendor.Status == null || vendor.Status == 0 ? 1 : 0;
 
-                _context.Categories.Update(category);
+                _context.Vendors.Update(vendor);
                 await _context.SaveChangesAsync();
 
                 // Trả về trạng thái mới dưới dạng JSON
-                return Json(new { success = true, status = category.Status });
+                return Json(new { success = true, status = vendor.Status });
             }
 
             return Json(new { success = false, message = "Không tìm thấy mục." });
         }
 
-        [Route("Category/DetailCategory")]
+        [Route("Vendor/DetailVendor")]
         public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
@@ -110,39 +113,40 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var vendor = await _context.Vendors
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (vendor == null)
             {
                 return NotFound();
             }
 
 
-            return View("DetailCategory", category);
+            return View("DetailVendor", vendor);
         }
 
-
-        // GET: Category/CreateCategory
-        [Route("Category/CreateCategory")]
+        // GET: Vendors/Create
+        [Route("Vendor/CreateVendor")]
         public IActionResult Create()
         {
-            return View("CreateCategory"); // Trả về view cụ thể
+            return View("CreateVendor"); // Trả về view cụ thể
         }
 
-        // POST: Category/CreateCategory
+       
+
+        // POST: Vendors/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Category/CreateCategory")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status")] Category Category)
+        [Route("Vendor/CreateVendor")]
+        public async Task<IActionResult> Create([Bind("Id,Name,Email,Phone,Status")] Vendor Vendor)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Add(Category);
+                    _context.Add(Vendor);
                     await _context.SaveChangesAsync();
                     return RedirectToAction(nameof(Index));
                 }
@@ -161,12 +165,12 @@ namespace LibraryManagementSystem.Controllers
             }
 
             // Trả lại form với thông tin đã nhập và thông báo lỗi
-            return View("CreateCategory", Category);
+            return View("CreateVendor", Vendor);
         }
 
 
-        // GET: Category/EditCategory/5
-        [Route("Category/EditCategory")]
+        // GET: Vendors/Edit/5
+        [Route("Vendor/EditVendor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -174,8 +178,8 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var Category = await _context.Categories.FindAsync(id);
-            if (Category == null)
+            var Vendor = await _context.Vendors.FindAsync(id);
+            if (Vendor == null)
             {
                 return NotFound();
             }
@@ -190,20 +194,20 @@ namespace LibraryManagementSystem.Controllers
                 },
                 "Value",
                 "Text",
-                Category.Status
+                Vendor.Status
                 );
-            return View("EditCategory", Category);
+            return View("EditVendor", Vendor);
         }
 
-        // POST: Authors/Edit/5
+        // POST: Vendors/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Category/EditCategory")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status")] Category Category)
+        [Route("Vendor/EditVendor")]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Email,Phone,Status")] Vendor Vendor)
         {
-            if (id != Category.Id)
+            if (id != Vendor.Id)
             {
                 return NotFound();
             }
@@ -213,14 +217,14 @@ namespace LibraryManagementSystem.Controllers
             {
                 try
                 {
-                    _context.Update(Category);
+                    _context.Update(Vendor);
                     await _context.SaveChangesAsync();
                     // Sau khi lưu thành công, chuyển hướng đến trang Index
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoryExists(Category.Id))
+                    if (!VendorExists(Vendor.Id))
                     {
                         return NotFound();
                     }
@@ -228,7 +232,7 @@ namespace LibraryManagementSystem.Controllers
                     {
                         // Ghi log lỗi khi có lỗi đồng thời (concurrency error)
                         ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.");
-                        Console.WriteLine("Concurrency error: " + Category.Id); // Ghi log lỗi
+                        Console.WriteLine("Concurrency error: " + Vendor.Id); // Ghi log lỗi
                     }
                 }
                 catch (Exception ex)
@@ -237,7 +241,7 @@ namespace LibraryManagementSystem.Controllers
                     ModelState.AddModelError("", "Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
                     Console.WriteLine(ex.Message); // Hoặc ghi log chi tiết lỗi
                 }
-                //return View("EditAuthor",Author);
+                //return View("EditVendor",Vendor);
             }
 
             ViewBag.StatusOptions = new SelectList(
@@ -249,13 +253,13 @@ namespace LibraryManagementSystem.Controllers
                 },
                 "Value",
                 "Text",
-                Category.Status
+                Vendor.Status
                 );
-            return View("EditCategory", Category);
+            return View("EditVendor", Vendor);
         }
 
-        // GET: Category/DeleteCategory/5
-        [Route("Category/DeleteCategory")]
+        // GET: Vendors/Delete/5
+        [Route("Vendor/DeleteVendor")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -263,42 +267,42 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
+            var vendor = await _context.Vendors
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (category == null)
+            if (vendor == null)
             {
                 return NotFound();
             }
 
-            // Kiểm tra nếu tác giả có sách liên kết
-            if (category.Books.Any())
+            // Kiểm tra nếu nhà cung cấp có sách liên kết
+            if (vendor.Books.Any())
             {
-                ViewBag.ErrorMessage = $"Không thể xóa bộ sách '{category.Name}' vì có sách liên kết:";
+                ViewBag.ErrorMessage = $"Không thể xóa nhà cung cấp '{vendor.Name}' vì có sách liên kết:";
             }
 
-            return View("DeleteCategory", category);
+            return View("DeleteVendor", vendor);
         }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Route("Category/DeleteCategory")]
+        [Route("Vendor/DeleteVendor")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories
+            var vendor = await _context.Vendors
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (category != null)
+            if (vendor != null)
             {
-                if (category.Books.Any()) // Kiểm tra nếu có liên kết với Book
+                if (vendor.Books.Any()) // Kiểm tra nếu có liên kết với Book
                 {
-                    category.Status = 0; // Cập nhật trạng thái thành 0
-                    _context.Categories.Update(category);
+                    vendor.Status = 0; // Cập nhật trạng thái thành 0
+                    _context.Vendors.Update(vendor);
                 }
                 else
                 {
-                    _context.Categories.Remove(category); // Xóa nếu không có liên kết
+                    _context.Vendors.Remove(vendor); // Xóa nếu không có liên kết
                 }
             }
 
@@ -309,9 +313,9 @@ namespace LibraryManagementSystem.Controllers
 
 
 
-        private bool CategoryExists(int id)
+        private bool VendorExists(int id)
         {
-            return _context.Categories.Any(e => e.Id == id);
+            return _context.Vendors.Any(e => e.Id == id);
         }
     }
 }
