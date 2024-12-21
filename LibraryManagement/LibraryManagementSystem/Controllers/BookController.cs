@@ -1,26 +1,26 @@
-using Microsoft.AspNetCore.Mvc;
-using LibraryManagementSystem.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 using LibraryManagementSystem.DTO;
 using LibraryManagementSystem.DTO.BookDTO;
-using System;
-using System.Text.Json.Serialization.Metadata;
-using System.IO;
+using LibraryManagementSystem.Helper;
+using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using LibraryManagementSystem.Models;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using System.IO;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using LibraryManagementSystem.Helper;
+using System;
+using System.IO;
+using System.IO;
+using System.Linq;
+using System.Linq;
+using System.Text.Json.Serialization.Metadata;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -52,7 +52,7 @@ namespace LibraryManagementSystem.Controllers
                 .Include(a => a.PublisherNavigation)
                 .Include(a => a.SeriesNavigation)
                 .Include(a => a.BookImgs)
-                .Include(a=> a.VendorNavigation)
+                .Include(a => a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
             var user = await _userManager.GetUserAsync(User);
             var roles = await _signInManager.UserManager.GetRolesAsync(user);
@@ -62,21 +62,9 @@ namespace LibraryManagementSystem.Controllers
             }
             return View(book);
         }
-
-
-
-
-        public async Task<IActionResult> Search(string name, string language, int? vendor, int? Publisher, int? publishYear, string version, int? series, int? status)
+        public bool IncludeAll(List<Author>? source, List<string> dest)
         {
-
-            if (string.IsNullOrEmpty(name) &&
-                string.IsNullOrEmpty(language) &&
-                vendor == null &&
-                Publisher == null &&
-                publishYear == null &&
-                string.IsNullOrEmpty(version) &&
-                series == null &&
-                status == null)
+            if (source == null || dest == null)
             {
                 return false;
             }
