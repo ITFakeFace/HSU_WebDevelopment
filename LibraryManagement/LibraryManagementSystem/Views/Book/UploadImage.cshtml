@@ -1,1 +1,91 @@
-﻿
+@{
+    ViewData["Title"] = "Upload Book Image";
+}
+
+<h2 style="text-align: center;">@ViewData["Title"]</h2>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center; /* Canh giữa nội dung theo chiều dọc */
+      background-color: #f2f2f2; /* Màu nền xám nhạt */
+        background-size: cover; /* Đảm bảo ảnh nền phủ đầy khung */
+        width: 50%;
+        height: 50vh;
+        margin: auto; /* Đặt khung ở giữa màn hình */
+        border: 1px solid #4CAF50;
+        border-radius: 20px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Thêm bóng cho khung */
+    }
+
+    form div {
+        margin-bottom: 15px;
+        width: 100%;
+    }
+
+    label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 5px;
+        color: #333; /* Màu chữ dễ nhìn hơn */
+    }
+
+    input[type="file"],
+    input[type="number"] {
+        width: 90%; /* Thu nhỏ một chút để không chạm sát khung */
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+    }
+
+    button {
+        width: 95%;
+        padding: 10px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease; /* Hiệu ứng mượt mà */
+    }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+    .alert {
+        margin-top: 15px;
+        padding: 10px;
+        border-radius: 4px;
+        text-align: center;
+    }
+
+    .alert-info {
+        background-color: #d9edf7;
+        color: #31708f;
+        border: 1px solid #bce8f1;
+    }
+</style>
+
+<div class="container">
+    <form asp-action="UploadImage" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="imageFile">Upload Book Image:</label>
+            <input type="file" id="imageFile" name="imageFile" />
+        </div>
+        <div>
+            <label for="bookId">Book ID:</label>
+            <input type="number" id="bookId" name="bookId" required />
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-info">
+            @TempData["Message"]
+        </div>
+    }
+</div>

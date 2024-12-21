@@ -1,100 +1,368 @@
-﻿
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9;
-    color: #333;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-h2 {
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+
+}
+
+.container {
+    width: 100%;
+    padding: 5px;
+    -moz-user-select: none !important;
+    -webkit-touch-callout: none !important;
+    -webkit-user-select: none !important;
+    -khtml-user-select: none !important;
+    -moz-user-select: none !important;
+    -ms-user-select: none !important;
+    user-select: none !important;
+}
+
+.formsearch {
+    padding: 30px;
+    border: 1px solid #ddd;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    width: 600px;
+    margin: 0 auto 30px;
+    transition: transform 0.2s ease;
+}
+
+    .formsearch .form-row {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .formsearch .name-group,
+    .formsearch .author-group {
+        flex: 1;
+        min-width: 180px;
+    }
+
+    .formsearch .publish-year-lang-group {
+        display: flex;
+        gap: 20px;
+        flex: 1;
+        min-width: 180px;
+    }
+
+.year-inputs {
+    display: flex;
+    gap: 10px;
+    flex: 1;
+}
+
+    .year-inputs input {
+        width: 48%;
+    }
+
+.formsearch .version-seri-group {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+    min-width: 180px;
+}
+
+.version-seri-group input {
+    width: 48%;
+}
+
+.formsearch label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #4CAF50;
+    font-size: 0.8rem;
+}
+
+.formsearch input[type="text"],
+.formsearch select {
+    padding: 14px 18px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #f9f9f9;
+    font-size: 0.85rem;
+    width: 100%;
+    margin-bottom: 15px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .formsearch input[type="text"]:focus,
+    .formsearch select:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 8px rgba(76, 175, 80, 0.2);
+    }
+
+.formsearch button {
+    display: block;
+    width: 100%;
+    padding: 14px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .formsearch button:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+
+    .formsearch button:active {
+        transform: translateY(0);
+    }
+
+.input-area {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+}
+
+.authors {
+    width: 100%;
+}
+
+#author-input {
+    height: 50px;
+    flex: 1;
+    font-size: 14px;
+    width: 100%;
+}
+.form-check {
+    margin-bottom: 10px;
+}
+
+
+#add-author {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 70px;
+    height: 100%;
+    display: none;
     text-align: center;
+    line-height: 55px;
+    font-size: 20px;
+    color: green;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+#author-input:valid + #add-author {
+    width: 40px;
+    height: 80%;
+    display: block;
+}
+
+#add-author:hover {
+    color: #0056b3;
+}
+
+#authors-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border: 1px dashed #ddd;
+    border-radius: 6px;
+    padding: 10px;
+    min-height: 45px;
+    background-color: #fafafa;
+    margin-top: 10px;
+    align-items: center;
+}
+
+.tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #4CAF50;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    cursor: default;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .tag span {
+        margin-left: 8px;
+        cursor: pointer;
+        font-weight: bold;
+        color: white;
+        transition: color 0.3s ease;
+    }
+
+        .tag span:hover {
+            color: #ff5a5a;
+        }
+
+    .tag:hover {
+        background-color: #388e3c;
+        transform: translateY(-2px);
+    }
+
+#add-author:hover {
+    background-color: #388e3c;
+}
+
+#toggleSearchFields {
+    display: block;
+    margin-bottom: 10px;
+    color: #4CAF50;
+    font-size: 15px;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-align: right;
+    transition: color 0.3s ease;
+}
+
+    #toggleSearchFields:hover {
+        color: #45a049;
+    }
+
+.bookcard-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;    
+}
+
+.bookcard {
+    border: 2px solid black;
+    border-radius: 10px;
+    width: 300px;
+    height: 500px;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bookcard-img {
+    width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f9f9f9;
+  
+}
+
+    .bookcard-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        padding:5px;
+    }
+
+#additionalFields {
+    display: none;
+}
+
+.bookcard:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.bookcard-information {
+    padding: 10px;
+    text-align: left;
+}
+
+    .bookcard-information h4.name {
+        text-align: center;
+        margin-bottom: 10px;
+        font-size: 1.2em;
+        color: #333;
+    }
+
+    .bookcard-information p {
+        margin: 5px 0;
+        font-size: 0.9em;
+        color: #555;
+    }
+
+input::placeholder {
+    color: #aaa;
+    transition: color 0.3s ease;
+}
+
+input:focus::placeholder {
     color: #4CAF50;
 }
 
-.Namelang {
+.admin_button {
     width: 100%;
+    margin-top: 20px;
     display: flex;
-    gap:10px;
+    justify-content: space-between;
 }
 
-.Bookname {
-    width: 90%;
-    height:100%
+.btn_update {
+    width: 48%;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.Lang {
-    width: 10%;
-    height: 100%;
+    .btn_update:hover {
+        background-color: #45a049;
+        transform: translateY(-2px);
+    }
+
+.btn_delete {
+    width: 48%;
+    background-color: #ff5a5a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+    .btn_delete:hover {
+        background-color: #ff0000;
+        transform: translateY(-2px);
+    }
+#categories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px; /* Khoảng cách giữa các phần tử */
     
 }
-.formsearch {
-    padding: 20px;
-    border: 1px solid #ddd;
-    background-color: #fff;
-    border-radius: 8px;
+
+.category-item {
+    flex: 0 0 23%; /* Mỗi phần tử chiếm 23% chiều rộng của container */
+    box-sizing: border-box; /* Đảm bảo phần tử không vượt quá kích thước của nó */
+    padding: 2px;
+    margin-bottom: 5px;
+   
 }
 
-
-    .formsearch label {
-        display: block;
-        font-weight: bold;
-        
-    }
-
-    .formsearch input[type="text"],
-    .formsearch select {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-    }
-    .formsearch option{
-        padding:10px
-    }
-
-    .formsearch button {
-        display: block;
-        width: 100%;
-        padding: 10px;
-        background-color: #4CAF50;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-        ..formsearch button:hover {
-            background-color: #45a049;
-        }
-
-table.table {
-    margin: 20px auto;
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-}
-
-    table.table th,
-    table.table td {
-        padding: 10px;
-        border: 1px solid #ddd;
-        text-align: left;
-    }
-
-    table.table th {
-        background-color: #f4f4f4;
-    }
-
-    table.table tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    table.table tr:hover {
-        background-color: #f1f1f1;
-    }
-
-p {
-    text-align: center;
-    font-size: 1.1em;
-    color: red;
-    margin-top: 20px;
-}

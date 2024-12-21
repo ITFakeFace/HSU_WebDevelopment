@@ -62,7 +62,11 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseStaticFiles();
 
-app.UseRouting();
+app.UseRouting(); 
+app.MapControllerRoute(
+    name: "book",
+    pattern: "{controller=Book}/{action=Index}/{id?}");
+
 
 app.MapControllerRoute(
     name: "book",
@@ -83,7 +87,7 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     var userManager = services.GetRequiredService<UserManager<User>>();
     var roleManager = services.GetRequiredService<RoleManager<Role>>();
-    await AccountSeedData.Initialize(services, userManager, roleManager);
+    //await AccountSeedData.Initialize(services, userManager, roleManager);
 }
 
 app.Run();

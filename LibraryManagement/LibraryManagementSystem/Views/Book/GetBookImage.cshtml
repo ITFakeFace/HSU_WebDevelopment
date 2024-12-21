@@ -1,0 +1,7 @@
+﻿@{
+    ViewData["Title"] = "View Book Image";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<img src="@Url.Action("GetBookImage", "Book", new { id = 1 })" alt="Book Image" />

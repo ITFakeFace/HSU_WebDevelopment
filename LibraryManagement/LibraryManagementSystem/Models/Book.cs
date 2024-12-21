@@ -25,10 +25,10 @@ public partial class Book
 
     public string? Version { get; set; }
 
-    public int? Image { get; set; }
+    public byte[]? Image { get; set; }
 
     public int? Series { get; set; }
-
+    
     public int? Status { get; set; }
 
     public virtual ICollection<BookImg> BookImgs { get; set; } = new List<BookImg>();
