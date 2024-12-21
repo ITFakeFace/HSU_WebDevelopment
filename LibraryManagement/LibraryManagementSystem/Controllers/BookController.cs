@@ -91,29 +91,26 @@ namespace LibraryManagementSystem.Controllers
         }
 
 
-        public async Task<IActionResult> Search(string name, string language, int? vendor,int? Publisher , int? publishYear, string version, int? series, int? status)
+        public bool IncludeAll(List<Author>? source, List<string> dest)
         {
-           
-            if (string.IsNullOrEmpty(name) &&
-                string.IsNullOrEmpty(language) &&
-                vendor == null &&
-                Publisher==null &&
-                publishYear == null &&
-                string.IsNullOrEmpty(version) &&
-                series == null &&
-                status == null)
+            if (source == null || dest == null)
             {
-                ViewBag.Message = "nhập nhanh ";
-                return View(new List<Book>());
+                return false;
             }
 
+            return dest.All(author => source.Any(a => a.Name.Contains(author)));
+        }
+
+        public async Task<IActionResult> Search(string name, string language, int? vendor, int? publisher, int? publishYearFrom, int? publishYearTo, string version, int? series, int? status, string authors, List<int> categoryIds)
+        {
             var query = _context.Books
                 .Include(b => b.PublisherNavigation)
                 .Include(b => b.VendorNavigation)
                 .Include(b => b.BookImgs)
+                .Include(b => b.Categories)
+                .Include(b => b.Authors)
                 .AsQueryable();
 
-            // Lọc theo từng tiêu chí
             if (!string.IsNullOrEmpty(name))
             {
                 query = query.Where(b => b.Name.Contains(name));
@@ -128,13 +125,18 @@ namespace LibraryManagementSystem.Controllers
             {
                 query = query.Where(b => b.Vendor == vendor);
             }
-            if (publishYear != null)
+
+            if (publishYearFrom.HasValue && publishYearTo.HasValue)
             {
-                query = query.Where(b => b.PublishYear == publishYear);
+                query = query.Where(b => b.PublishYear >= publishYearFrom.Value && b.PublishYear <= publishYearTo.Value);
             }
-            if (publishYear != null)
+            else if (publishYearFrom.HasValue)
             {
-                query = query.Where(b => b.PublishYear == publishYear);
+                query = query.Where(b => b.PublishYear >= publishYearFrom.Value);
+            }
+            else if (publishYearTo.HasValue)
+            {
+                query = query.Where(b => b.PublishYear <= publishYearTo.Value);
             }
 
             if (!string.IsNullOrEmpty(version))
@@ -152,14 +154,35 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Status == status);
             }
 
-            var result = await query.ToListAsync();
-
-            if (!result.Any())
+            if (categoryIds != null && categoryIds.Any())
             {
-                ViewBag.Message = "fuck";
+                query = query.Where(b => categoryIds.All(c => b.Categories.Select(cat => cat.Id).Contains(c)));
             }
 
-            return View(result);
+
+            var books = await query.ToListAsync();
+            List<Book> result = new List<Book>();
+
+            if (!string.IsNullOrEmpty(authors))
+            {
+                var authorList = authors.Split(",").Select(a => a.Trim()).ToList();
+                foreach (var book in books)
+                {
+                    if (IncludeAll(book.Authors.ToList(), authorList))
+                    {
+                        result.Add(book);
+                    }
+                }
+                books = result;
+            }
+            if (!books.Any())
+            {
+                ViewBag.Message = "Không tìm thấy sách nào!";
+            }
+
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+
+            return View(books);
         }
 
 
@@ -337,7 +360,7 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.Categories = await _context.Categories.ToListAsync();
 
             return View(books);
-        
-    }
+
+        }
     }
 }
