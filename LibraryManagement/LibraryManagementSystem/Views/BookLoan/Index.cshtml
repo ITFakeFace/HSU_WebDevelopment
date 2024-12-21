@@ -2,10 +2,97 @@
 
 @{
     ViewData["Title"] = "Index";
+    int pageNumber = ViewBag.PageNumber ?? 1;
+    int pageSize = ViewBag.PageSize ?? 10;
+    int totalPages = ViewBag.TotalPages ?? 1;
 }
-
 <div class="book-loan-list" style="padding:30px">
     <h1>Welcome to Book Loan</h1>
+    <a asp-action="Create" asp-controller="BookLoan" class="btn btn-success">Mượn sách</a>
+
+    <form method="get" action="@Url.Action("Index")" class="mb-4">
+        <div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên người dùng</th>
+                        <th>Tình trạng</th>
+                        <th>Isbn</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <hr />
+                    <tr>
+                        <td><input type="text" name="Fullname" class="form-control" placeholder="Fullname" value="@ViewData["Fullname"]" /></td>
+                        <td><select name="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select></td>
+                        <td><input type="text" name="Isbn" class="form-control" placeholder="Isbn" value="@ViewData["Isbn"]" /></td>
+                        <td><button type="submit" class="btn btn-primary" style="padding: 5px 15px;">&nbsp;&nbsp;Lọc&nbsp;&nbsp;</button></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </form>
+        <!-- Hiển thị số trang -->
+        @{
+            int startPage = Math.Max(1, ViewBag.PageNumber - 3);
+            int endPage = Math.Min(ViewBag.TotalPages, ViewBag.PageNumber + 3);
+        }
+        @if (ViewBag.PageNumber > 1)
+        {
+            <div>
+                <a asp-action="Index" id="prev-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
+                   asp-route-pageSize="@ViewBag.PageSize"
+                   asp-route-Fullname="@ViewData["Fullname"]" asp-route-Status="@ViewData["Status"]" asp-route-Isbn="@ViewData["Isbn"]" asp-route-Id="@ViewData["id"]">
+                    Trang trước
+                </a>
+            </div>
+        }
+        @if (ViewBag.PageNumber < ViewBag.TotalPages)
+        {
+            <div>
+                <a asp-action="Index" id="next-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
+                   asp-route-pageSize="@ViewBag.PageSize"
+                   asp-route-Fullname="@ViewData["Fullname"]" asp-route-Status="@ViewData["Status"]" asp-route-Isbn="@ViewData["Isbn"]" asp-route-Id="@ViewData["id"]">
+                    Trang sau
+                </a>
+            </div>
+        }
+        @if (ViewBag.TotalPages > 2)
+        {
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <div class="text-center">
+                    @if (i == ViewBag.PageNumber)
+                    {
+                        <div>
+                            &nbsp;
+                            <!-- Hiển thị ô input cho trang hiện tại -->
+                            <input type="number" id="pageNumberInput" min="1" max="@ViewBag.TotalPages" value="@ViewBag.PageNumber" size="1" class="form-control d-inline" style="width: auto;" />
+                            <a id="pageLink" class="btn btn-warning ms-2" style="margin-bottom:3px" href="#">
+                                GO
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            &nbsp;
+                            <!-- Hiển thị các trang khác dưới dạng link -->
+                            <a class="btn btn-outline-primary"
+                               asp-action="Index"
+                               asp-route-pageNumber="@i"
+                               asp-route-pageSize="@ViewBag.PageSize"
+                               asp-route-Fullname="@ViewData["Fullname"]" asp-route-Status="@ViewData["Status"]" asp-route-Isbn="@ViewData["Isbn"]" asp-route-Id="@ViewData["id"]">
+                                @i
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+        }
+    </div>
+
     <table class="table table-striped" style="padding:20px">
         <thead>
             <tr>
@@ -13,13 +100,17 @@
                 <th>Email</th>
                 <th>SDT</th>
                 <th>Tên Sách mượn</th>
-                <th>ISBN</th>
+                <th>Isbn</th>
                 <th>Ngày mượn</th>
                 <th>Ngày dự kiến trả</th>
                 <th>Tình trạng</th>
             </tr>
         </thead>
         <tbody>
+        @if (Model != null && Model.Any())
+        {
+        
+            int stt = (pageNumber - 1) * pageSize + 1;
             @foreach (var item in Model){
                 <tr>
                     <td>@item.UserNavigation.Fullname</td>
@@ -57,11 +148,84 @@
                     }
                 </tr>
             }
+            }
         </tbody>
     </table>
+    <div class="d-flex align-items-center text-center justify-content-center">
+        @if (ViewBag.TotalPages > 1)
+        {
+            @for (int i = startPage; i <= endPage; i++)
+            {
+                <div class="text-center">
+                    &nbsp;
+                    @if (i == ViewBag.PageNumber)
+                    {
+                        <button id="scrollToTop" class="btn btn-secondary ms-2">↑</button>
+                    }
+                    else
+                    {
+                        <!-- Hiển thị các trang khác dưới dạng link -->
+                        <a class="btn btn-outline-primary"
+                           asp-action="Index"
+                           asp-route-pageNumber="@i"
+                           asp-route-pageSize="@ViewBag.PageSize"
+                           asp-route-Id="@ViewData["id"]"
+                           asp-route-Fullname="@ViewData["Fullname"]" 
+                           asp-route-Status="@ViewData["Status"]" 
+                           asp-route-Isbn="@ViewData["Isbn"]">
+                            @i
+                        </a>
+                    }
+                </div>
+            }
+        }
+    </div>
+    <h4 class="d-flex align-items-center text-center justify-content-center" style="margin-top: 10px;">Trang @ViewBag.PageNumber / @ViewBag.TotalPages</h4>
+    <hr />
+</div>
     <script>
-
+        document.addEventListener('keydown', function (event) {
+        if (event.key === 'ArrowLeft') { // Phím mũi tên trái
+            var prevButton = document.getElementById('prev-button');
+            if (prevButton) {
+                window.location.href = prevButton.href; // Chuyển đến trang trước
+            }
+        } else if (event.key === 'ArrowRight') { // Phím mũi tên phải
+            var nextButton = document.getElementById('next-button');
+            if (nextButton) {
+                window.location.href = nextButton.href; // Chuyển đến trang sau
+            }
+        }
+    });
     </script>
+
+    <script>
+        document.getElementById("pageLink").addEventListener("click", function (event) {
+            event.preventDefault(); // Ngăn hành động mặc định của nút
+
+            // Lấy giá trị số trang từ input
+            const pageNumberInput = document.getElementById("pageNumberInput");
+            let pageNumber = parseInt(pageNumberInput.value);
+
+            // Kiểm tra giá trị hợp lệ
+            if (isNaN(pageNumber) || pageNumber < 1) {
+                pageNumber = 1; // Mặc định về trang 1 nếu giá trị không hợp lệ
+            }
+            if (pageNumber > @ViewBag.TotalPages) {
+                pageNumber = @ViewBag.TotalPages; // Chỉnh về trang cuối nếu vượt quá tổng số trang
+            }
+
+            // Lấy URL hiện tại
+            const currentUrl = new URL(window.location.href);
+
+            // Cập nhật giá trị tham số `pageNumber` trong URL
+            currentUrl.searchParams.set("pageNumber", pageNumber);
+
+            // Điều hướng tới URL mới
+            window.location.href = currentUrl.toString();
+        });
+    </script>
+
 </div>
 
 

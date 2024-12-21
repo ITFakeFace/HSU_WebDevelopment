@@ -7,6 +7,7 @@
 <h1> Welcome to Library</h1>
 <div class="book-list">
     <div>
+        <a asp-action="UploadImage" asp-controller="Book">UploadImage</a>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -70,13 +71,14 @@
                                 }
                             }
 
-                            if (isExist)
+                            if (!isExist)
                             {
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
-                                    <div>
-                                        Delete
+                                    <div id="delete-container-@item.Id">
+                                        <button class="btn btn-danger"
+                                                onclick="showConfirmButtons(@item.Id)">
+                                            Delete
+                                        </button>
                                     </div>
-                                </a>
                             }
                         }
                     </td>
@@ -85,5 +87,43 @@
             </tbody>
         </table>
     </div>
+
+    <script>
+            function showConfirmButtons(itemId) {
+            const deleteContainer = document.getElementById(`delete-container-${itemId}`);
+
+            // Replace the Delete button with Confirm and Cancel buttons
+            deleteContainer.innerHTML = `
+                <button
+                    class="btn btn-success"
+                    onclick="confirmDelete(${itemId})">
+                    Confirm
+                </button>
+                <button
+                    class="btn btn-secondary"
+                    onclick="cancelDelete(${itemId})">
+                    Cancel
+                </button>
+            `;
+        }
+
+        function confirmDelete(itemId) {
+            // Redirect to delete action with the item ID
+            window.location.href = `/Book/Delete?id=${itemId}`;
+        }
+
+        function cancelDelete(itemId) {
+            const deleteContainer = document.getElementById(`delete-container-${itemId}`);
+
+            // Restore the original Delete button
+            deleteContainer.innerHTML = `
+                <button
+                    class="btn btn-danger"
+                    onclick="showConfirmButtons(${itemId})">
+                    Delete
+                </button>
+            `;
+        }
+    </script>
 </div>
 

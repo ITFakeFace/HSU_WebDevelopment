@@ -63,6 +63,9 @@
                         @if (isAdmin)
                         {
                             <a asp-action="Create" asp-controller="Book" class="navbar-link-custom">Thêm sách</a>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="BookLoan" class="navbar-link-custom">Quản lý BookLoan</a>
+                            </li>
                         }
                     </ul>
                 </div>

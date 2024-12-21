@@ -93,6 +93,17 @@ namespace LibraryManagementSystem.Controllers
             return RedirectToAction("Index", "Book");
         }
 
+        public async Task<IActionResult> DeleteConfirm(int? Id)
+        {
+            var book = _context.Books.FirstOrDefault(m => m.Id == Id);
+            if (book != null)
+            {
+                _context.Books.Remove(book);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
 
         public async Task<IActionResult> Search(string name, string language, int? vendor, int? Publisher, int? publishYear, string version, int? series, int? status)
         {
