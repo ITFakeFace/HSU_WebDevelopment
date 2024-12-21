@@ -104,6 +104,7 @@
                 <th>Ngày mượn</th>
                 <th>Ngày dự kiến trả</th>
                 <th>Tình trạng</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -133,8 +134,8 @@
                         @item.BookNavigation.Name
                     </td>
                     <td> @item.BookNavigation.Isbn</td>
-                    <td> @item.FromDate</td>
-                    <td> @item.ToDate</td>
+                    <td> @item.FromDate.ToString("dd/MM/yyyy")</td>
+                    <td> @item.ToDate.ToString("dd/MM/yyyy")</td>
                     @if (item.IsReturned == 1) {
                         <td><a asp-action="DeactiveReturn" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-success">Đã trả</a></td>
                     } else {
@@ -146,6 +147,7 @@
                             <td><a asp-action="DeactiveReturn" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-danger">Chưa trả</a></td>
                         }
                     }
+                    <td><a asp-action="Delete" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-danger">Xóa</a></td>
                 </tr>
             }
             }

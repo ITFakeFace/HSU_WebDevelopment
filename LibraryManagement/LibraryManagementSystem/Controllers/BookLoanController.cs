@@ -17,7 +17,7 @@ namespace LibraryManagementSystem.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(string  id,string? fullname, string? status, string? isbn, int pagenumber = 1)
+        public async Task<IActionResult> Index(string sortColumn, string sortDirection,string  id,string? fullname, string? status, string? isbn, int pagenumber = 1)
         {
             var pagesize = 10;
             var bookloan = _context.BookLoans.AsQueryable();
@@ -42,7 +42,7 @@ namespace LibraryManagementSystem.Controllers
                 }
             }
                     var pagedBookloan = await bookloan
-            .OrderBy(a => a.UserNavigation.UserName).Reverse()
+                .OrderBy(o=> o.Id).Reverse()
                 .Include(o => o.UserNavigation)
                 .Include(o => o.BookNavigation)
                 .Skip((pagenumber - 1) * pagesize)
@@ -53,7 +53,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.PageSize = pagesize;
             ViewBag.TotalPages = (int)Math.Ceiling((double)bookloan.Count() / pagesize);
             ViewBag.TotalBookloan = (double)bookloan.Count();
-
             ViewData["Id"] = id;
             ViewData["Fullname"] = fullname;
             ViewData["Status"] = status;
@@ -98,6 +97,17 @@ namespace LibraryManagementSystem.Controllers
             }
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "BookLoan");
+        }
+
+        public async Task<IActionResult> Delete(int? Id)
+        {
+            var book = _context.BookLoans.FirstOrDefault(m => m.Id == Id);
+            if (book != null)
+            {
+                _context.BookLoans.Remove(book);
+                _context.SaveChanges();
+            }
+            return RedirectToAction("Index");
         }
     }
 }

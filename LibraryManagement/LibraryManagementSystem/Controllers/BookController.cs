@@ -55,6 +55,7 @@ namespace LibraryManagementSystem.Controllers
                 .Include(a => a.PublisherNavigation)
                 .Include(a => a.SeriesNavigation)
                 .Include(a => a.BookImgs)
+                .Include(a=> a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
             var user = await _userManager.GetUserAsync(User);
             var roles = await _signInManager.UserManager.GetRolesAsync(user);
@@ -66,43 +67,6 @@ namespace LibraryManagementSystem.Controllers
         }
 
 
-        public async Task<IActionResult> Deactive(int? Id)
-        {
-            if (Id == null || _context.Books == null)
-            {
-                return NotFound();
-            }
-
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.Id == Id);
-            if (book != null)
-            {
-                if (book.Status == 0)
-                {
-                    book.Status = 1;
-                    _context.SaveChanges();
-                }
-                else
-                {
-                    book.Status = 0;
-                    _context.SaveChanges();
-                }
-            }
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "Book");
-        }
-
-        public async Task<IActionResult> DeleteConfirm(int? Id)
-        {
-            var book = _context.Books.FirstOrDefault(m => m.Id == Id);
-            if (book != null)
-            {
-                _context.Books.Remove(book);
-                _context.SaveChanges();
-            }
-            return RedirectToAction("Index");
-        }
 
 
         public async Task<IActionResult> Search(string name, string language, int? vendor, int? Publisher, int? publishYear, string version, int? series, int? status)
@@ -227,62 +191,7 @@ namespace LibraryManagementSystem.Controllers
         {
             return View();
         }
-
-        [HttpPost]
-        public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
-        {
-            if (bookId <= 0)
-            {
-                TempData["Message"] = "Invalid Book ID.";
-                return RedirectToAction("Index");
-            }
-
-            // Check if the book exists
-            var book = await _context.Books
-                .Include(b => b.BookImgs) // Include related images
-                .FirstOrDefaultAsync(b => b.Id == bookId);
-
-            if (book == null)
-            {
-                TempData["Message"] = "Book not found.";
-                return RedirectToAction("Index");
-            }
-
-            if (imageFile != null && imageFile.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await imageFile.CopyToAsync(ms);
-                var imageBytes = ms.ToArray();
-
-                // Check if an image already exists for this book
-                var existingBookImg = book.BookImgs.FirstOrDefault();
-                if (existingBookImg != null)
-                {
-                    // Update existing image
-                    existingBookImg.Image = imageBytes;
-                    _context.BookImgs.Update(existingBookImg);
-                }
-                else
-                {
-                    // Add new image
-                    var newBookImg = new BookImg
-                    {
-                        Book = bookId,
-                        Image = imageBytes
-                    };
-                    _context.BookImgs.Add(newBookImg);
-                }
-
-                TempData["Message"] = $"Updated image for book ID '{bookId}'.";
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                TempData["Message"] = "No image file selected.";
-            }
-
-            return RedirectToAction("Index", "Book");
-        }
+        
 
         [HttpGet]
         public IActionResult GetBookImage(int bookId)

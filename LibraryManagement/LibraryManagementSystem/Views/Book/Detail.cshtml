@@ -55,6 +55,17 @@
                 <p class="info-title"> Nhà phát hành </p>
                 <p> @Html.DisplayFor(model => model.PublisherNavigation.Name) </p>
             </div>
+            @if(User.IsInRole("ADMINISTRATOR")) {
+                <div id="book-detail-right-publisher-info-name">
+                    <p class="info-title"> Nhà cung cấp </p>
+                    <a asp-action="DetailVendor" asp-controller="Vendor" asp-route-id="@Model.Vendor">@Model.VendorNavigation.Name</a>
+                </div>
+            } else {
+                <div id="book-detail-right-publisher-info-name">
+                    <p class="info-title"> Nhà cung cấp </p>
+                    <p> @Html.DisplayFor(model => model.VendorNavigation.Name) </p>
+                </div>
+            }
         </div>
 
         <!--contain infomation language and pages-->

@@ -7,7 +7,7 @@
 <h1> Welcome to Library</h1>
 <div class="book-list">
     <div>
-        <a asp-action="UploadImage" asp-controller="Book">UploadImage</a>
+        <a asp-action="UploadImage" asp-controller="AdminBook">UploadImage</a>
         <table class="table table-striped">
             <thead>
                 <tr>
@@ -16,6 +16,7 @@
                     <th>Năm phát hành</th>
                     <th>Trạng thái</th>
                     <th>Actions</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -45,9 +46,9 @@
                     <td><span>Publish year</span> @item.PublishYear</td>
                     <td>
                         @if(item.Status == 1){
-                            <a asp-action="Deactive" asp-controller="Book" asp-route-id="@item.Id" class="btn btn-success">Active</a>
+                            <a asp-action="Deactive" asp-controller="AdminBook" asp-route-id="@item.Id" class="btn btn-success">Hiện</a>
                         } else {
-                            <a asp-action="Deactive" asp-controller="Book" asp-route-id="@item.Id" class="btn btn-danger">Deactive</a>
+                                <a asp-action="Deactive" asp-controller="AdminBook" asp-route-id="@item.Id" class="btn btn-danger">Ẩn</a>
                         }
                     </td>
                     <td>
@@ -61,26 +62,29 @@
                                 Update
                             </div>
                         </a>
-                        @{
-                            var isExist = false;
-                            foreach (var bookLoan in item.BookLoans)
-                            {
-                                if (bookLoan.BookNavigation.Id == item.Id)
+                        
+                    </td>
+                    <td>
+                            @{
+                                var isExist = false;
+                                foreach (var bookLoan in item.BookLoans)
                                 {
-                                    isExist = true;
+                                    if (bookLoan.BookNavigation.Id == item.Id)
+                                    {
+                                        isExist = true;
+                                    }
                                 }
-                            }
 
-                            if (!isExist)
-                            {
+                                if (!isExist)
+                                {
                                     <div id="delete-container-@item.Id">
                                         <button class="btn btn-danger"
                                                 onclick="showConfirmButtons(@item.Id)">
                                             Delete
                                         </button>
                                     </div>
+                                }
                             }
-                        }
                     </td>
                 </tr>
             }
@@ -94,22 +98,22 @@
 
             // Replace the Delete button with Confirm and Cancel buttons
             deleteContainer.innerHTML = `
-                <button
+                <a
                     class="btn btn-success"
                     onclick="confirmDelete(${itemId})">
                     Confirm
-                </button>
-                <button
+                </a>
+                <a
                     class="btn btn-secondary"
                     onclick="cancelDelete(${itemId})">
                     Cancel
-                </button>
+                </a>
             `;
         }
 
         function confirmDelete(itemId) {
             // Redirect to delete action with the item ID
-            window.location.href = `/Book/Delete?id=${itemId}`;
+            window.location.href = `/AdminBook/Delete?id=${itemId}`;
         }
 
         function cancelDelete(itemId) {
@@ -117,11 +121,11 @@
 
             // Restore the original Delete button
             deleteContainer.innerHTML = `
-                <button
+                <a
                     class="btn btn-danger"
                     onclick="showConfirmButtons(${itemId})">
                     Delete
-                </button>
+                </a>
             `;
         }
     </script>
