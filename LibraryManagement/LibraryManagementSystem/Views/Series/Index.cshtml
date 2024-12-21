@@ -1,42 +1,23 @@
-﻿
-@model IEnumerable<LibraryManagementSystem.Models.Author>
+﻿@model IEnumerable<LibraryManagementSystem.Models.Series>
 
 @{
-    ViewData["Title"] = "Tác giả";
-    var countryNames = new Dictionary<string, string>
-    {
-        { "00", "Không rõ" },
-        { "VN", "Việt Nam" },
-        { "EN", "Anh" },
-        { "US", "Hoa Kỳ" },
-        { "FR", "Pháp" },
-        { "JP", "Nhật Bản" },
-        { "KR", "Hàn Quốc" },
-        { "CN", "Trung Quốc" },
-        { "DE", "Đức" },
-        { "AU", "Úc" },
-        { "IT", "Ý" },
-        { "ES", "Tây Ban Nha" },
-        { "CA", "Canada" },
-        { "IN", "Ấn Độ" },
-        { "BR", "Brazil" }
-    };
+    ViewData["Title"] = "Series";
     int pageNumber = ViewBag.PageNumber ?? 1;
     int pageSize = ViewBag.PageSize ?? 10;
     int totalPages = ViewBag.TotalPages ?? 1;
 }
 
-<link rel="stylesheet" href="~/features/author/list/author.css?v=@DateTime.Now.Ticks" /> <!--fix css-->
+<link rel="stylesheet" href="~/features/SeriesAge/list/series.css?v=@DateTime.Now.Ticks" /> <!--fix css-->
 <form>
     @Html.AntiForgeryToken()
 </form>
 
 
 <div class="container">
-<h1 style="margin-top: 10px;">Tác giả</h1>
+<h1 style="margin-top: 10px;">Series</h1>
 <div class="d-flex align-items-center">
     <div>
-        <a class="btn btn-primary" asp-action="Create">Thêm tác giả mới</a>&nbsp;
+            <a class="btn btn-primary" asp-action="CreateSeries">Thêm bộ sách mới</a>&nbsp;
     </div>
     <div class="d-flex align-items-center">
     @if (ViewBag.PageNumber > 1)
@@ -45,7 +26,6 @@
         <a asp-action="Index" id="prev-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
            asp-route-Status="@ViewData["Status"]">
             Trang trước
         </a>
@@ -58,7 +38,6 @@
         <a asp-action="Index" id="next-button" class="btn btn-success" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
            asp-route-Status="@ViewData["Status"]">
             Trang sau
         </a>
@@ -96,7 +75,6 @@
                            asp-route-pageSize="@ViewBag.PageSize"
                            asp-route-Id="@ViewData["Id"]"
                            asp-route-Name="@ViewData["Name"]"
-                           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
                            asp-route-Status="@ViewData["Status"]">
                             @i
                         </a>
@@ -119,16 +97,8 @@
             <input type="text" name="Id" class="form-control" placeholder="ID" value="@ViewData["Id"]" />
         </div>
         <div class="col-md-2 text-center">
-            Tên tác giả
-            <input type="text" name="Name" class="form-control" placeholder="Tên tác giả" value="@ViewData["Name"]" />
-        </div>
-        <div class="col-md-2 text-center">
-            Giới tính
-            <select name="Gender" class="form-control" asp-items="ViewBag.GenderOptions"></select>
-        </div>
-        <div class="col-md-2 text-center">
-            Quốc tịch
-            <select name="Nation" class="form-control" asp-items="ViewBag.NationOptions"></select>
+            Tên bộ sách
+            <input type="text" name="Name" class="form-control" placeholder="Tên bộ sách" value="@ViewData["Name"]" />
         </div>
         <div class="col-md-2 text-center">
             Trạng thái
@@ -139,7 +109,7 @@
             <input type="number" class="form-control" id="pageSize" name="pageSize" value="@ViewBag.PageSize" min="1" style="width: auto;" />
         </div>
         <div class="col-md-2" style="margin-top: 20px;">
-            Tìm thấy @ViewBag.TotalAuthors tác giả
+            Tìm thấy @ViewBag.TotalSeries thể loại
         </div>
         <div class="col-md-8 text-center" style="margin-top: 10px;">
             <button type="submit" class="btn btn-primary" style="padding: 5px 15px;">&nbsp;&nbsp;Lọc&nbsp;&nbsp;</button>
@@ -154,8 +124,6 @@
             <div style="text-align: center;">STT</div>
             <div style="text-align: center;">ID</div>
             <div>@Html.DisplayNameFor(model => model.Name)</div>
-            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Gender)</div>
-            <div style="text-align: center;">@Html.DisplayNameFor(model => model.Nation)</div>
             <div style="text-align: center;">@Html.DisplayNameFor(model => model.Status)</div>
             <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sách liên kết</div>
             <div style="text-align: center;">Hành động</div>
@@ -165,7 +133,7 @@
     <!-- Body -->
     @if (Model != null && Model.Any())
     {
-        
+
             int stt = (pageNumber - 1) * pageSize + 1;
         
         @foreach (var item in Model)
@@ -174,30 +142,6 @@
                 <div class="text-center">@stt</div>
                 <div class="text-center">@Html.DisplayFor(modelItem => item.Id)</div>
                 <div>@Html.DisplayFor(modelItem => item.Name)</div>
-                <div class="text-center">
-                    @if (item.Gender == 1)
-                    {
-                        <span>Nam</span>
-                    }
-                    else if (item.Gender == 0)
-                    {
-                        <span>Nữ</span>
-                    }
-                    else
-                    {
-                        <span>Không tiết lộ</span>
-                    }
-                </div>
-                <div class="text-center">
-                    @if (countryNames.ContainsKey(item.Nation))
-                    {
-                        <span>@countryNames[item.Nation]</span>
-                    }
-                    else
-                    {
-                        <span>Unknown</span>
-                    }
-                </div>
                 <div class="text-center">
                         <div style="display: flex; align-items: center;">
                             <div id="status-indicator-@item.Id"
@@ -230,9 +174,8 @@
                             <button class="btn btn-secondary btn-sm mt-2" style="width: 114px;" onclick="toggleStatus(@item.Id)">
                                 @(item.Status == 1 ? "Ngừng hoạt động" : "Kích hoạt")
                             </button>
-                        <a class="btn btn-primary btn-sm" style="margin-top:5px; width: 114px;" asp-action="Detail" asp-route-id="@item.Id">Thông tin</a>
-                        <a class="btn btn-primary btn-sm" style="margin-top:5px; width: 114px;" asp-action="Edit" asp-route-id="@item.Id">Chỉnh sửa</a>
-                        <a class="btn btn-danger btn-sm" style="margin-top:5px; width: 114px;" asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
+                        <a class="btn btn-primary btn-sm" style="margin-top:5px" asp-action="EditSeries" asp-route-id="@item.Id">Chỉnh sửa</a>
+                        <a class="btn btn-danger btn-sm" style="margin-top:5px" asp-action="DeleteSeries" asp-route-id="@item.Id">Xóa</a>
                     </div>
                 </div>
             </div>
@@ -246,8 +189,6 @@
         </div>
     }
 </div>
-
-
 <div id="pagination-buttons" style="text-align: right; margin-top: 10px;">
     @if (ViewBag.PageNumber > 1)
     {
@@ -255,7 +196,6 @@
            asp-action="Index" asp-route-pageNumber="@(ViewBag.PageNumber - 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
            asp-route-Status="@ViewData["Status"]">
             Trang trước
         </a>
@@ -266,7 +206,6 @@
            asp-action="Index" asp-route-pageNumber="@(ViewBag.PageNumber + 1)"
            asp-route-pageSize="@ViewBag.PageSize"
            asp-route-Id="@ViewData["Id"]" asp-route-Name="@ViewData["Name"]"
-           asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
            asp-route-Status="@ViewData["Status"]">
             Trang sau
         </a>
@@ -293,7 +232,6 @@
                        asp-route-pageSize="@ViewBag.PageSize"
                        asp-route-Id="@ViewData["Id"]"
                        asp-route-Name="@ViewData["Name"]"
-                       asp-route-Gender="@ViewData["Gender"]" asp-route-Nation="@ViewData["Nation"]"
                        asp-route-Status="@ViewData["Status"]">
                         @i
                     </a>
@@ -321,7 +259,6 @@
         }
     });
 </script>
-
 <script>
     document.addEventListener('scroll', () => {
         const container = document.querySelector('.styled-table-container');
@@ -343,6 +280,82 @@
         }
     });
 
+</script>
+
+
+
+
+<<script>
+     document.getElementById("pageLink").addEventListener("click", function (event) {
+         event.preventDefault(); // Ngăn hành động mặc định của nút
+
+         // Lấy giá trị số trang từ input
+         const pageNumberInput = document.getElementById("pageNumberInput");
+         let pageNumber = parseInt(pageNumberInput.value);
+
+         // Kiểm tra giá trị hợp lệ
+         if (isNaN(pageNumber) || pageNumber < 1) {
+             pageNumber = 1; // Mặc định về trang 1 nếu giá trị không hợp lệ
+         }
+         if (pageNumber > @ViewBag.TotalPages) {
+             pageNumber = @ViewBag.TotalPages; // Chỉnh về trang cuối nếu vượt quá tổng số trang
+         }
+
+         // Lấy URL hiện tại
+         const currentUrl = new URL(window.location.href);
+
+         // Cập nhật giá trị tham số `pageNumber` trong URL
+         currentUrl.searchParams.set("pageNumber", pageNumber);
+
+         // Điều hướng tới URL mới
+         window.location.href = currentUrl.toString();
+     });
+</script>
+
+<script>
+    document.getElementById("scrollToTop").addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
+<script>
+    document.getElementById("scrollToTop2").addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
+
+
+<script>
+    function toggleStatus(seriesId) {
+        fetch(`/Series/ToggleStatus/${seriesId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Lỗi khi cập nhật trạng thái');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const statusIndicator = document.getElementById(`status-indicator-${seriesId}`);
+            const statusText = document.getElementById(`status-text-${seriesId}`);
+            const button = document.querySelector(`button[onclick="toggleStatus(${seriesId})"]`);
+
+            if (data.status === 1) {
+                statusIndicator.style.backgroundColor = 'green';
+                statusText.textContent = 'Đang hoạt động';
+                button.textContent = 'Ngừng hoạt động';
+            } else {
+                statusIndicator.style.backgroundColor = 'red';
+                statusText.textContent = 'Ngừng hoạt động';
+                button.textContent = 'Kích hoạt';
+            }
+        })
+        .catch(error => alert(error.message));
+    }
 </script>
 
 <script>
@@ -374,74 +387,78 @@
 
 </script>
 
+<!-- code chưa hoạt động do chưa có ảnh
 <script>
-    document.getElementById("pageLink").addEventListener("click", function (event) {
-        event.preventDefault(); // Ngăn hành động mặc định của nút
+    // Lưu trữ các hình ảnh đã tải, với tối đa 20 hình ảnh gần nhất
+    let loadedImages = new Set();  // Set đảm bảo hình ảnh duy nhất
+    let imageHistory = [];  // Mảng để duy trì thứ tự hình ảnh mới nhất (với tối đa 20 hình)
+    let isLoading = false;  // Biến kiểm tra nếu đang tải thêm hình ảnh
 
-        // Lấy giá trị số trang từ input
-        const pageNumberInput = document.getElementById("pageNumberInput");
-        let pageNumber = parseInt(pageNumberInput.value);
+    // Tạo các thẻ <img> và render hình ảnh
+    function renderImages(imageList) {
+        imageList.forEach(image => {
+            if (image && !loadedImages.has(image)) { // Kiểm tra nếu hình ảnh chưa được tải
+                const img = document.createElement('img');
+                img.src = image;
+                img.style.width = 'auto';
+                img.style.height = '460px';
+                img.style.display = 'inline-block';
+                container.appendChild(img);
 
-        // Kiểm tra giá trị hợp lệ
-        if (isNaN(pageNumber) || pageNumber < 1) {
-            pageNumber = 1; // Mặc định về trang 1 nếu giá trị không hợp lệ
-        }
-        if (pageNumber > @ViewBag.TotalPages) {
-            pageNumber = @ViewBag.TotalPages; // Chỉnh về trang cuối nếu vượt quá tổng số trang
-        }
+                // Thêm hình ảnh vào danh sách đã tải và vào lịch sử
+                loadedImages.add(image);
+                imageHistory.push(image);
 
-        // Lấy URL hiện tại
-        const currentUrl = new URL(window.location.href);
-
-        // Cập nhật giá trị tham số `pageNumber` trong URL
-        currentUrl.searchParams.set("pageNumber", pageNumber);
-
-        // Điều hướng tới URL mới
-        window.location.href = currentUrl.toString();
-    });
-</script>
-
-<script>
-    document.getElementById("scrollToTop").addEventListener("click", function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-</script>
-<script>
-    document.getElementById("scrollToTop2").addEventListener("click", function () {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-</script>
-
-<script>
-    function toggleStatus(authorId) {
-        fetch(`/Author/ToggleStatus/${authorId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('input[name="__RequestVerificationToken"]').value
+                // Nếu danh sách hình ảnh đã vượt quá 20, loại bỏ hình ảnh cũ nhất
+                if (imageHistory.length > 20) {
+                    const oldestImage = imageHistory.shift();  // Loại bỏ hình ảnh cũ nhất
+                    loadedImages.delete(oldestImage);  // Xóa khỏi Set
+                }
             }
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Lỗi khi cập nhật trạng thái');
-            }
-            return response.json();
-        })
-        .then(data => {
-            const statusIndicator = document.getElementById(`status-indicator-${authorId}`);
-            const statusText = document.getElementById(`status-text-${authorId}`);
-            const button = document.querySelector(`button[onclick="toggleStatus(${authorId})"]`);
-
-            if (data.status === 1) {
-                statusIndicator.style.backgroundColor = 'green';
-                statusText.textContent = 'Đang hoạt động';
-                button.textContent = 'Ngừng hoạt động';
-            } else {
-                statusIndicator.style.backgroundColor = 'red';
-                statusText.textContent = 'Ngừng hoạt động';
-                button.textContent = 'Kích hoạt';
-            }
-        })
-        .catch(error => alert(error.message));
+        });
     }
+
+    // Lấy hình ảnh ban đầu từ ViewBag
+    let images = @Html.Raw(Json.Serialize(ViewBag.Images));
+    const container = document.getElementById('imageContainer');
+
+    // Render các hình ảnh ban đầu
+    renderImages(images);
+
+    // Sự kiện cuộn chuột để cuộn ngang
+    container.addEventListener('wheel', function (e) {
+        e.preventDefault(); // Ngăn chặn cuộn dọc mặc định
+        container.scrollLeft += e.deltaY; // Cuộn ngang
+    });
+
+    // Tự động cuộn khi chuột không di vào container
+    let autoScrollInterval;
+    container.addEventListener('mouseenter', () => {
+        clearInterval(autoScrollInterval); // Dừng tự động cuộn khi chuột vào
+    });
+    container.addEventListener('mouseleave', () => {
+        autoScrollInterval = setInterval(() => {
+            container.scrollLeft += 3; // Tăng giá trị cuộn ngang
+        }, 30); // Tốc độ cuộn (ms)
+    });
+
+    // Kiểm tra và tải thêm hình ảnh khi gần đến giới hạn
+    container.addEventListener('scroll', async function () {
+        const nearEnd = container.scrollLeft + container.offsetWidth >= container.scrollWidth - 100; // Gần cuối
+
+        // Nếu gần cuối và không có yêu cầu tải nào đang được xử lý
+        if (nearEnd && !isLoading) {
+            isLoading = true; // Đánh dấu là đang tải thêm hình ảnh
+
+            // Gửi yêu cầu lấy thêm hình ảnh từ server
+            const response = await fetch('/LoadMoreImages'); // URL endpoint để lấy thêm hình ảnh
+            if (response.ok) {
+                const newImages = await response.json(); // Giả định server trả về JSON danh sách hình ảnh
+                renderImages(newImages); // Render thêm hình ảnh
+                images = images.concat(newImages); // Cập nhật danh sách ảnh
+            }
+            isLoading = false; // Đánh dấu là đã tải xong
+        }
+    });
 </script>
+ -->

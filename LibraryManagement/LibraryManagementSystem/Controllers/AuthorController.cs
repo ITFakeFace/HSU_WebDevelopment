@@ -146,6 +146,26 @@ namespace LibraryManagementSystem.Controllers
             return Json(new { success = false, message = "Không tìm thấy mục." });
         }
 
+        [Route("Author/DetailAuthor")]
+        public async Task<IActionResult> Detail(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var author = await _context.Authors
+                .Include(a => a.Books) // Nạp các Book liên quan
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (author == null)
+            {
+                return NotFound();
+            }
+
+
+            return View("DetailAuthor", author);
+        }
+
 
         // GET: Authors/Create
         public IActionResult Create()

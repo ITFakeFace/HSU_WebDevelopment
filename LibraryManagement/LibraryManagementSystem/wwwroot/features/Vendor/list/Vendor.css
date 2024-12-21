@@ -1,0 +1,164 @@
+﻿.styled-table-container {
+    display: block;
+    width: 100%;
+}
+
+    /* Chỉnh thanh cuộn cho toàn bộ trang hoặc chỉ cho class cụ thể */
+    .styled-table-container::-webkit-scrollbar {
+        width: 8px; /* Độ rộng thanh cuộn dọc */
+        height: 8px; /* Độ cao thanh cuộn ngang (nếu cần) */
+    }
+
+    .styled-table-container::-webkit-scrollbar-thumb {
+        background-color: #888; /* Màu của thanh cuộn */
+        border-radius: 4px; /* Góc bo tròn */
+    }
+
+        .styled-table-container::-webkit-scrollbar-thumb:hover {
+            background-color: #555; /* Màu khi di chuột qua thanh cuộn */
+        }
+
+    .styled-table-container::-webkit-scrollbar-track {
+        background-color: #f1f1f1; /* Màu nền phía sau thanh cuộn */
+    }
+
+
+.styled-table-header {
+    display: grid;
+    grid-template-columns: 4% 4% 17% 15% 10% 14% 20% auto; /* Điều chỉnh theo nhu cầu */
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
+
+    .styled-table-header div {
+        white-space: nowrap; /* Ngăn chữ xuống dòng */
+        overflow: hidden; /* Ẩn phần tràn */
+    }
+
+
+.styled-table-row {
+    display: grid;
+    grid-template-columns: 4% 4% 17% 15% 10% 14% 20% auto; /* Điều chỉnh theo nhu cầu */
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
+    background-color: #dadada;
+}
+
+
+.styled-table-row div {
+    padding: 8px;
+    overflow: hidden; /* Đảm bảo nội dung không tràn */
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Nội dung sẽ thu gọn nếu quá dài */
+}
+
+    .styled-table-row div.text-center {
+        text-align: center;
+    }
+    .styled-table-row:nth-child(odd) {
+        background-color: #ffffff; /* Màu cho hàng lẻ */
+    }
+
+    .styled-table-row:nth-child(even) {
+        background-color: #dadada; /* Màu cho hàng chẵn */
+    }
+
+    .styled-table-row:hover {
+        background-color: #5ce3f4; /* Màu khi hover */
+        transition: background-color 0.3s; /* Hiệu ứng chuyển màu */
+    }
+
+.styled-table-none {
+    display: grid;
+    grid-template-columns: auto; /* Điều chỉnh theo nhu cầu */
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding: 8px 0;
+    font-weight: bold;
+    background-color: #f2f2f2;
+}
+
+    .styled-table-none div {
+        white-space: nowrap; /* Ngăn chữ xuống dòng */
+        overflow: hidden; /* Ẩn phần tràn */
+    }
+
+.styled-list {
+    list-style: none; /* Xóa kiểu mặc định của danh sách */
+    padding-left: 0; /* Xóa khoảng cách thụt vào */
+}
+
+    .styled-list li {
+        position: relative;
+        padding-left: 20px; /* Dành khoảng trống để thêm dấu "-" */
+        white-space: normal; /* Ngăn chữ xuống dòng */
+        overflow: hidden; /* Ẩn nội dung thừa */
+        text-overflow: ellipsis; /* Hiển thị "..." nếu quá dài */
+    }
+
+        .styled-list li::before {
+            content: "-"; /* Thêm dấu "-" trước mỗi mục */
+            position: absolute;
+            left: 0; /* Đặt tại vị trí đầu */
+            color: #333; /* Màu của dấu "-" */
+        }
+
+
+
+/* Optional CSS for consistent button styling */
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: #fff;
+    border: 1px solid #007bff;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+.btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: 1px solid #dc3545;
+}
+
+    .btn-danger:hover {
+        background-color: #bd2130;
+    }
+
+.btn-sm {
+    font-size: 12px;
+    padding: 4px 8px;
+}
+
+.custom-link {
+    text-decoration: none; /* Bỏ gạch dưới */
+    color: black; /* Đổi màu chữ (để ý màu phù hợp với nền) */
+}
+
+    .custom-link:hover {
+        text-decoration: underline; /* Tùy chọn: gạch dưới khi di chuột */
+        color: blue; /* Đổi màu chữ khi hover (tùy chỉnh theo ý bạn) */
+    }
+
+
+
+html, body {
+    background-color: #f4f4f9; /* Nền xám nhạt */
+}
+

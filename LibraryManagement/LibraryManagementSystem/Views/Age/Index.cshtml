@@ -1,0 +1,113 @@
+﻿@model IEnumerable<LibraryManagementSystem.Models.Age>
+
+@{
+    ViewData["Title"] = "Age";
+}
+
+<link rel="stylesheet" href="~/features/SeriesAge/list/Age.css?v=@DateTime.Now.Ticks" /> <!--fix css-->
+<form>
+    @Html.AntiForgeryToken()
+</form>
+
+
+<div class="container">
+<h1 style="margin-top: 10px;">Danh sách độ tuổi cho sách</h1>
+<div class="d-flex align-items-center">
+    <div>
+        <a class="btn btn-primary" asp-action="CreateAge">Thêm độ tuổi mới</a>&nbsp;
+    </div>
+</div>
+<br />
+<div class="styled-table-container" style="max-height: 500px; overflow-y: auto;">
+    <!-- Header -->
+        <div class="styled-table-header" style="position: sticky; top: 0; background-color: #6aa84f; z-index: 2; color:whitesmoke">
+            <div style="text-align: center;">STT</div>
+            <div style="text-align: center;">ID</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.FromAge)</div>
+            <div style="text-align: center;">@Html.DisplayNameFor(model => model.ToAge)</div>
+            <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sách liên kết</div>
+            <div style="text-align: center;">Hành động</div>
+        </div>
+
+
+    <!-- Body -->
+    @if (Model != null && Model.Any())
+    {
+        
+            int stt = 1;
+        
+        @foreach (var item in Model)
+        {
+            <div class="styled-table-row">
+                <div class="text-center">@stt</div>
+                <div class="text-center">@Html.DisplayFor(modelItem => item.Id)</div>
+                <div class="text-center">@Html.DisplayFor(modelItem => item.FromAge)</div>
+                <div class="text-center">@Html.DisplayFor(modelItem => item.ToAge)</div>
+                    <div>
+                        @if (item.Books != null && item.Books.Any())
+                        {
+                            <ul class="styled-list">
+                                @foreach (var book in item.Books)
+                                {
+                                    <li>
+                                        <a href="@Url.Action("Detail", "Book", new { id = book.Id })" class="custom-link">@book.Name</a>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <span></span>
+                        }
+                    </div>
+                <div class="text-center">
+                    <div style="white-space: normal;">
+                        <a class="btn btn-danger btn-sm" style="margin-top:5px" asp-action="DeleteAge" asp-route-id="@item.Id">Xóa</a>
+                    </div>
+                </div>
+            </div>
+            stt++;
+        }
+    }
+    else
+    {
+        <div class="styled-table-none">
+             <div class="text-center">Không có dữ liệu nào được tìm thấy.</div>
+        </div>
+    }
+</div>
+</div>
+
+<script>
+    document.addEventListener('scroll', () => {
+        const container = document.querySelector('.styled-table-container');
+        const thead = container.querySelector('thead');
+        const tableRect = container.getBoundingClientRect();
+        const theadRect = thead.getBoundingClientRect();
+
+        if (tableRect.top <= 0 && tableRect.bottom > theadRect.height) {
+            thead.style.position = 'fixed';
+            thead.style.top = '0px';
+            thead.style.left = `${tableRect.left}px`;
+            thead.style.width = `${tableRect.width}px`;
+            thead.style.zIndex = '1000'; // Đảm bảo header nằm trên các thành phần khác
+        } else {
+            thead.style.position = 'relative';
+            thead.style.top = 'unset';
+            thead.style.left = 'unset';
+            thead.style.width = 'unset';
+        }
+    });
+
+</script>
+
+
+
+
+<script>
+    document.getElementById("scrollToTop").addEventListener("click", function () {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+</script>
+
+
