@@ -7,22 +7,9 @@
 <div class="book-detail">
     <div class="book-detail-left">
         <div class="book-detail-left-img">
-            <!--IMG-->
-            <!--base 64 work in progress-->
-            <!--Help me i don't have any img data to test this-->
             <div>
-                <img id="largeImage" src="https://www.nyrb.com/cdn/shop/products/Blood-on-the-Forge.jpg?v=1528394408" alt="Large View" class="large-image" />
+                <img id="largeImage" src="@Url.Action("GetBookImage", "Book", new { bookId = Model.Id })" alt="Book Image" class="large-image" />
             </div>
-        </div>
-        <div class="book-detail-left-list">
-                <img src="https://www.nyrb.com/cdn/shop/products/Blood-on-the-Forge.jpg?v=1528394408" alt="Book Image" onclick="showLargeImage(this)" />
-                <img src="https://yesterdaysgallery.cdn.bibliopolis.com/pictures/37638.jpg?auto=webp&v=1600380301" alt="Book Image" onclick="showLargeImage(this)" />
-                <img src="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/hostedimages/1626147145i/31626248._SY540_.jpg" alt="Book Image" onclick="showLargeImage(this)" />
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3JMwNPxRIkA3eEqbQfs3WOaQrzibGFqVXeQ&s" alt="Book Image" onclick="showLargeImage(this)" />
-                <img src="https://d3525k1ryd2155.cloudfront.net/h/861/812/1595812861.0.x.jpg" alt="Book Image" onclick="showLargeImage(this)" />
-        </div>
-        <div>
-            <button class="borrow-book-button">Mượn sách</button>
         </div>
     </div>
     <div class="book-detail-right">
@@ -68,6 +55,17 @@
                 <p class="info-title"> Nhà phát hành </p>
                 <p> @Html.DisplayFor(model => model.PublisherNavigation.Name) </p>
             </div>
+            @if(User.IsInRole("ADMINISTRATOR")) {
+                <div id="book-detail-right-publisher-info-name">
+                    <p class="info-title"> Nhà cung cấp </p>
+                    <a asp-action="DetailVendor" asp-controller="Vendor" asp-route-id="@Model.Vendor">@Model.VendorNavigation.Name</a>
+                </div>
+            } else {
+                <div id="book-detail-right-publisher-info-name">
+                    <p class="info-title"> Nhà cung cấp </p>
+                    <p> @Html.DisplayFor(model => model.VendorNavigation.Name) </p>
+                </div>
+            }
         </div>
 
         <!--contain infomation language and pages-->
@@ -129,8 +127,9 @@
             </p>
         </div>
 
-        @if (User.IsInRole("ADMINISTRATOR")) {
-            <a asp-action="Update" asp-route-id="@Model.Id" class="book-management-option">
+        @if (User.IsInRole("ADMINISTRATOR, LIBRARIAN"))
+        {
+            <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-outline-primary">
                 <div>
                     Update
                 </div>
