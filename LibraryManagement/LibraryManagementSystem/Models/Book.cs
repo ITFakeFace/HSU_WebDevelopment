@@ -25,7 +25,7 @@ public partial class Book
 
     public string? Version { get; set; }
 
-    public byte[]? Image { get; set; }
+    public int? Image { get; set; }
 
     public int? Series { get; set; }
     

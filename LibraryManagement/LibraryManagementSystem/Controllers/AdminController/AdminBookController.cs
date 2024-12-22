@@ -54,7 +54,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index","Book");
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int? Id)
@@ -65,7 +65,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 _context.Books.Remove(book);
                 _context.SaveChanges();
             }
-            return RedirectToAction("Index", "Book");
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
@@ -73,7 +73,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             if (bookId <= 0)
             {
                 TempData["Message"] = "Invalid Book ID.";
-                return RedirectToAction("Index", "Book");
+                return RedirectToAction("Index");
             }
 
             // Check if the book exists
@@ -84,7 +84,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             if (book == null)
             {
                 TempData["Message"] = "Book not found.";
-                return RedirectToAction("Index", "Book");
+                return RedirectToAction("Index");
             }
 
             if (imageFile != null && imageFile.Length > 0)
@@ -120,7 +120,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 TempData["Message"] = "No image file selected.";
             }
 
-            return RedirectToAction("Index", "Book");
+            return RedirectToAction("Index");
         }
     }
 

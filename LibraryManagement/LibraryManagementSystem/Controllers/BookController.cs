@@ -50,8 +50,8 @@ namespace LibraryManagementSystem.Controllers
                     .ThenInclude(bib => bib.LibraryNavigation)
                 .Include(a => a.Categories.OrderBy(category => category.Name))
                 .Include(a => a.PublisherNavigation)
-                .Include(a => a.SeriesNavigation)
                 .Include(a => a.BookImgs)
+                .Include(a => a.SeriesNavigation)
                 .Include(a => a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
             var user = await _userManager.GetUserAsync(User);
@@ -215,11 +215,28 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpPost]
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
+
+        [HttpPost]
         public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
         {
             if (bookId <= 0)
             {
                 TempData["Message"] = "Invalid Book ID.";
+                return RedirectToAction("Index");
+            }
+
+            // Check if the book exists
+            var book = await _context.Books
+                .Include(b => b.BookImgs) // Include related images
+                .FirstOrDefaultAsync(b => b.Id == bookId);
+
+            if (book == null)
+            {
+                TempData["Message"] = "Book not found.";
                 return RedirectToAction("Index");
             }
 
@@ -229,19 +246,26 @@ namespace LibraryManagementSystem.Controllers
                 await imageFile.CopyToAsync(ms);
                 var imageBytes = ms.ToArray();
 
-                var existingBook = _context.Books.FirstOrDefault(b => b.Id == bookId);
-
-                if (existingBook != null)
+                // Check if an image already exists for this book
+                var existingBookImg = book.BookImgs.FirstOrDefault();
+                if (existingBookImg != null)
                 {
-                    existingBook.Image = imageBytes;
-                    _context.Books.Update(existingBook);
-                    TempData["Message"] = $"Updated image for book ID '{bookId}'.";
+                    // Update existing image
+                    existingBookImg.Image = imageBytes;
+                    _context.BookImgs.Update(existingBookImg);
                 }
                 else
                 {
-                    TempData["Message"] = $"Book with ID '{bookId}' not found.";
+                    // Add new image
+                    var newBookImg = new BookImg
+                    {
+                        Book = bookId,
+                        Image = imageBytes
+                    };
+                    _context.BookImgs.Add(newBookImg);
                 }
 
+                TempData["Message"] = $"Updated image for book ID '{bookId}'.";
                 await _context.SaveChangesAsync();
             }
             else
@@ -249,21 +273,22 @@ namespace LibraryManagementSystem.Controllers
                 TempData["Message"] = "No image file selected.";
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Book");
         }
 
         [HttpGet]
-        public IActionResult GetBookImage(int id)
+        public IActionResult GetBookImage(int bookId)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
-            if (book?.Image != null)
+            var bookImg = _context.BookImgs.FirstOrDefault(b => b.Book == bookId);
+
+            if (bookImg == null || bookImg.Image == null)
             {
-                var base64Image = Convert.ToBase64String(book.Image);
-                var imgSrc = $"data:image/jpeg;base64,{base64Image}";
-                return Content(imgSrc);
+                // Return a placeholder image if no image exists
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "~\\assets\\image\\book\\No_Image_Available.jpg");
+                return PhysicalFile(placeholderPath, "image/png");
             }
 
-            return NotFound("Image not found");
+            return File(bookImg.Image, "image/jpeg"); // Adjust MIME type as needed
         }
 
         public async Task<IActionResult> Index(
