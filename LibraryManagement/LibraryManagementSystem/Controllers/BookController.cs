@@ -14,6 +14,11 @@ using Microsoft.CodeAnalysis.CSharp;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using NuGet.Packaging;
+using LibraryManagementSystem.Services;
+using Newtonsoft.Json;
+using System.Text;
+using System.Net.NetworkInformation;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -22,12 +27,15 @@ namespace LibraryManagementSystem.Controllers
         private readonly SignInManager<User> _signInManager;
         private readonly UserManager<User> _userManager;
         private readonly LibraryDbContext _context;
+        private readonly BookImagesService _bookImgService;
 
-        public BookController(LibraryDbContext context, SignInManager<User> signInManager, UserManager<User> userManager)
+        public BookController(LibraryDbContext context, SignInManager<User> signInManager, UserManager<User> userManager,BookImagesService bookImagesService)
         {
             _context = context;
             _signInManager = signInManager;
             _userManager = userManager;
+            _bookImgService = bookImagesService;
+
         }
 
         // GET list book
@@ -167,23 +175,21 @@ namespace LibraryManagementSystem.Controllers
 
 
         [method: HttpPost]
-        public IActionResult Create(CreateBookDTO createBookDTO)
+        public async Task<IActionResult> Create(CreateBookDTO createBookDTO)
         {
-            if ((Regex.IsMatch(createBookDTO.ISBN!, @"^\d{3}-\d-\d{2}-\d{5}-\d$")))
-            {
-                ViewBag["Error"] = "ISBN Wrong format";
-                return View();
-            }
-
             try
             {
-                Author author = _context.Authors.FirstOrDefault(e => e.Id == createBookDTO.AuthorId)!;
-                Publisher publisher = _context.Publishers.FirstOrDefault(e => e.Id == createBookDTO.AuthorId)!;
+                // Lấy các thông tin khác từ DTO
+                List<Author> authors = _context.Authors.Where(e => createBookDTO.AuthorId.Contains(e.Id)).ToList();
+                Publisher publisher = _context.Publishers.FirstOrDefault(e => e.Id == createBookDTO.PublisherID)!;
                 Vendor vendor = _context.Vendors.FirstOrDefault(e => e.Id == createBookDTO.VendorId)!;
+
+                // Tạo đối tượng Book
                 Book book = new Book()
                 {
                     Name = createBookDTO.Title,
-                    Authors = new List<Author> { author },
+                    Authors = authors,
+                    Isbn = createBookDTO.ISBN,
                     PublisherNavigation = publisher,
                     Description = createBookDTO.Description,
                     PublishYear = createBookDTO.PublishYear,
@@ -193,85 +199,172 @@ namespace LibraryManagementSystem.Controllers
                     Series = createBookDTO.SeriesId,
                     Vendor = createBookDTO.VendorId,
                 };
-                _context.Books.AddAsync(book);
-                _context.SaveChanges();
-                return Redirect("/");
 
+                // Thêm Book vào cơ sở dữ liệu
+                _context.Books.Add(book);
+                await _context.SaveChangesAsync(); // Lưu book để lấy Id
+
+                // Nếu có ảnh, lưu vào bảng BookImg
+                // Xử lý ảnh thông qua BookImgService
+                if (createBookDTO.BookImgs != null || createBookDTO.BookImgs?.Count() != 0)
+                {
+                    List<byte[]?> bookImg = await _bookImgService.ProcessBookImagesAsync(createBookDTO.BookImgs);
+                    foreach (var img in bookImg)
+                    {
+                        BookImg imgTemp = new BookImg()
+                        {
+                            Book = book.Id,
+                            Image = img
+                        };
+                        _context.BookImgs.Add(imgTemp);
+                    }
+                    await _context.SaveChangesAsync(); // Lưu thông tin ảnh vào cơ sở dữ liệu    
+
+                }
+
+                return RedirectToAction("Index"); // Hoặc trang bạn muốn chuyển hướng
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+                TempData["Error"] = "Đã xảy ra lỗi khi tạo sách.";
+                return View();
+            }
+        }
+
+        public IActionResult Create() 
+        {
+
+            return View();
+
+        }
+
+
+            public IActionResult Update(int id)
+            {
+                Console.WriteLine("Id của sách là: " + id);
+
+                // Tìm thông tin cơ bản của sách
+                var book = _context.Books
+                    .Where(e => e.Id == id)
+                    .FirstOrDefault();
+
+                // Tải các thông tin liên quan bằng các truy vấn riêng biệt
+                var vendorNavigation = _context.Vendors
+                    .Where(v => v.Id == book.Vendor)
+                    .FirstOrDefault();
+
+                var publisherNavigation = _context.Publishers
+                    .Where(p => p.Id == book.Publisher)
+                    .FirstOrDefault();
+
+                var seriesNavigation = _context.Series
+                    .Where(s => s.Id == book.Series)
+                    .FirstOrDefault();
+
+                var authors = _context.Authors
+                    .Where(a => a.Books.Any(b => b.Id == id))
+                    .ToList();
+
+                var bookImgs = _context.BookImgs
+                    .Where(img => img.Book == id)
+                    .ToList();
+
+                // Đưa dữ liệu vào ViewData
+                ViewData["book"] = book;
+                ViewData["vendorNavigation"] = vendorNavigation;
+                ViewData["publisherNavigation"] = publisherNavigation;
+                ViewData["seriesNavigation"] = seriesNavigation;
+                ViewData["authors"] = authors;
+                ViewData["bookImgs"] = bookImgs;
+
+                return View();
+            }
+
+
+        [method: HttpPost]
+        public async Task<IActionResult> Update(UpdateBookDTO updateBookDTO)
+        {
+            try
+            {
+                var book = await _context.Books
+                    .Include(b => b.Authors)
+                    .Include(b => b.BookImgs) 
+                    .FirstOrDefaultAsync(b => b.Id == updateBookDTO.Id)!;
+                _context.BookImgs.RemoveRange(book.BookImgs); 
+
+               
+                book.BookImgs.Clear(); 
+
+                await _context.SaveChangesAsync(); 
+
+                // Lấy các thông tin liên quan khác
+                var authors = _context.Authors.Where(e => updateBookDTO.AuthorId.Contains(e.Id)).ToList();
+                var publisher = _context.Publishers.FirstOrDefault(e => e.Id == updateBookDTO.PublisherID);
+                var vendor = _context.Vendors.FirstOrDefault(e => e.Id == updateBookDTO.VendorId);
+
+                // Cập nhật thông tin sách
+                book.Name = updateBookDTO.Title;
+                book.Description = updateBookDTO.Description;
+                book.PublishYear = updateBookDTO.PublishYear;
+                book.PageNumber = updateBookDTO.PageNumber;
+                book.Language = updateBookDTO.Language;
+                book.Version = updateBookDTO.Version;
+                book.Series = updateBookDTO.SeriesId;
+                book.Vendor = updateBookDTO.VendorId;
+                book.PublisherNavigation = publisher ?? book.PublisherNavigation;
+
+                // Cập nhật tác giả (nếu cần)
+                book.Authors.Clear(); // Xóa các tác giả cũ
+                book.Authors.AddRange(authors); // Thêm tác giả mới
+
+                // Lưu thay đổi vào cơ sở dữ liệu
+                _context.Books.Update(book); // Đánh dấu sách là cần cập nhật
+                await _context.SaveChangesAsync();
+
+                if (updateBookDTO.NewBookImgs != null && updateBookDTO.NewBookImgs.Count() > 0)
+                {
+                    List<byte[]?> bookImg = await _bookImgService.ProcessBookImagesAsync(updateBookDTO.NewBookImgs);
+                    foreach (var img in bookImg)
+                    {
+                        BookImg imgTemp = new BookImg()
+                        {
+                            Book = book.Id,
+                            Image = img
+                        };
+                        _context.BookImgs.Add(imgTemp);
+                    }
+                }
+
+                if (updateBookDTO.OldBookImgs != null)
+                {
+                    foreach (var img in updateBookDTO.OldBookImgs)
+                    {
+                        var temp = img.Substring("data:image/png;base64,".Length);
+                        byte[] byteArray = Convert.FromBase64String(temp);
+
+                        BookImg imgTemp = new BookImg()
+                        {
+                            Book = book.Id,
+                            Image = byteArray
+                        };
+                        _context.BookImgs.Add(imgTemp);
+                    }
+
+                }
+                await _context.SaveChangesAsync(); // Lưu thông tin ảnh vào cơ sở dữ liệu    
+
+
+                return RedirectToAction("Detail", new { id = book!.Id }); // Hoặc trang bạn muốn chuyển hướng
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-            return View();
+
 
         }
-        public IActionResult Create()
-        {
-
-            return View();
-
-        }
-
-        public IActionResult UploadImage()
-        {
-            return View();
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
-        {
-            if (bookId <= 0)
-            {
-                TempData["Message"] = "Invalid Book ID.";
-                return RedirectToAction("Index");
-            }
-
-            // Check if the book exists
-            var book = await _context.Books
-                .Include(b => b.BookImgs) // Include related images
-                .FirstOrDefaultAsync(b => b.Id == bookId);
-
-            if (book == null)
-            {
-                TempData["Message"] = "Book not found.";
-                return RedirectToAction("Index");
-            }
-
-            if (imageFile != null && imageFile.Length > 0)
-            {
-                using var ms = new MemoryStream();
-                await imageFile.CopyToAsync(ms);
-                var imageBytes = ms.ToArray();
-
-                // Check if an image already exists for this book
-                var existingBookImg = book.BookImgs.FirstOrDefault();
-                if (existingBookImg != null)
-                {
-                    // Update existing image
-                    existingBookImg.Image = imageBytes;
-                    _context.BookImgs.Update(existingBookImg);
-                }
-                else
-                {
-                    // Add new image
-                    var newBookImg = new BookImg
-                    {
-                        Book = bookId,
-                        Image = imageBytes
-                    };
-                    _context.BookImgs.Add(newBookImg);
-                }
-
-                TempData["Message"] = $"Updated image for book ID '{bookId}'.";
-                await _context.SaveChangesAsync();
-            }
-            else
-            {
-                TempData["Message"] = "No image file selected.";
-            }
-
-            return RedirectToAction("Index", "Book");
-        }
+       
 
         [HttpGet]
         public IActionResult GetBookImage(int bookId)

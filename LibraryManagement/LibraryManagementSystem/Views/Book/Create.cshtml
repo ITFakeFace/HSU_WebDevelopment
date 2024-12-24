@@ -1,8 +1,9 @@
-<link rel="stylesheet" href="~/features/book/createbook.css" />
+<link rel="stylesheet" href="~/features/book/createbook.css" asp-append-version="true" />
+
 <div class="create-book-body">
     <section class="container">
         <header>Registration Form</header>
-        <form action="/Book/Create" method="post" class="form">
+        <form action="/Book/Create" method="post" enctype="multipart/form-data" class="form">
             <div class="input-box">
                 <label>Book Name</label>
                 <input type="text" name="Title" placeholder="Enter book name" required />
@@ -64,17 +65,34 @@
                 <label>Language</label>
                 <input type="text" name="Language" placeholder="Enter Book Language" required />
             </div>
-
+            <div class="input-box">
+                <label for="file">Image</label>
+                <input type="file"
+                       id="file"
+                       accept="image/*"
+                       multiple="multiple"
+                       name="BookImgs"/>
+                <div class="img-area" data-img="">
+                    <div class="title-area">
+                        <i class="bx bxs-cloud-upload icon"></i>
+                        <h3>Upload Image</h3>
+                        <p>Image size must be less than <span>2MB</span></p>
+                    </div>
+                </div>
+            </div>
       
 
             <button type="submit">Submit</button>
 
         </form>
     </section>
+
+    <script src="~/features/book/CreateBook.js" asp-append-version="true"></script>
+    <script src="~/features/book/PreviewImage.js" asp-append-version="true"></script>
     <script>
         // Hàm kiểm tra định dạng ISBN
         function validateISBN(isbn) {
-            const isbnRegex = /^(?=(?:[^0-9]*[0-9]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\d-]+$/;
+            const isbnRegex = /^\d{13}$/;
             return isbnRegex.test(isbn);
         }
 
@@ -86,13 +104,15 @@
 
                 if (!validateISBN(isbnInput)) {
                     event.preventDefault(); // Ngăn chặn việc submit form
-                    errorDiv.text("Invalid ISBN format. Example: 978-0-30-640615-7");
+                    errorDiv.text("Invalid ISBN format. Example: 9780306406157");
                     errorDiv.css('color', 'red');
                 } else {
                     errorDiv.text(''); // Xóa lỗi nếu đúng định dạng
                 }
             });
         });
+
+        
     </script>
    
 </div>

@@ -202,3 +202,156 @@
             row-gap: 15px;
         }
     }
+/* input image css   */
+.container {
+    max-width: 1600px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 30px;
+}
+
+.img-area {
+    margin-top:10px;
+    width: 100%;
+    height: 240px;
+    background: var(--grey);
+    margin-bottom: 30px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row; /* Đổi hướng sắp xếp các ảnh thành hàng ngang */
+    gap: 10px; /* Khoảng cách giữa các ảnh */
+    overflow-y:scroll;
+    overflow-x:unset;
+}
+
+    .img-area .icon {
+        font-size: 100px;
+    }
+
+.select-image {
+    display: block;
+    width: 100%;
+    padding: 16px 0;
+    border-radius: 15px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 500;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+
+.img-area .icon {
+  font-size: 100px;
+}
+
+.select-image {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  border-radius: 15px;
+  background: var(--blue);
+  color: #fff;
+  font-weight: 500;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.container {
+    max-width: 1600px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 30px;
+}
+
+    .img-area .icon {
+        font-size: 100px;
+    }
+
+.img-element {
+    width: 100%;
+    transition: filter 0.3s ease;
+}
+
+.img-name {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: none; /* Hidden by default */
+    font-size: 14px;
+    z-index: 10;
+    white-space: nowrap;
+}
+/* Cần phải làm cho .img-item có position relative để chứa ::before */
+.img-item {
+    position: relative;
+    flex: 1 1;
+    }
+
+.img-item .img{
+    width:100%;
+    height:100%;
+}
+
+/* Ẩn tooltip (data-img) mặc định */
+.img-item::before {
+    content: attr(data-img); /* Lấy giá trị từ data-img */
+    z-index:20;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Canh giữa */
+    background-color: rgba(0, 0, 0, 0.7); /* Nền tối */
+    color: #fff;
+    padding: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 5px;
+    text-align: center;
+    opacity: 0; /* Ẩn tooltip mặc định */
+    transition: opacity 0.3s ease, filter 0.3s ease; /* Chuyển động mượt mà */
+    pointer-events: none; /* Không ảnh hưởng đến tương tác với ảnh */
+}
+
+/* Khi hover vào .img-item, làm ảnh mờ đi và hiển thị tooltip */
+.img-item:hover::before {
+    opacity: 1; 
+}
+
+.img-item:hover img {
+    filter: brightness(0.5); /* Làm ảnh mờ đi khi hover */
+}
+.remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s;
+}
+
+    .remove-btn:hover {
+        background-color: rgba(255, 0, 0, 1);
+    }

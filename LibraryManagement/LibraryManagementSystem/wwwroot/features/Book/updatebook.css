@@ -1,0 +1,357 @@
+﻿/* Import Google font - Poppins */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700&display=swap");
+
+.create-book-body {
+    height: 100%;
+    /*    flex-direction:row;*/
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background: rgb(130, 106, 251);
+}
+
+.container {
+    position: relative;
+    max-width: 700px;
+    width: 100%;
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+    .container header {
+        font-size: 1.5rem;
+        color: #333;
+        font-weight: 500;
+        text-align: center;
+    }
+
+    .container .form {
+        margin-top: 30px;
+    }
+
+.form .input-box {
+    width: 100%;
+    margin-top: 20px;
+}
+
+.input-box label {
+    color: #333;
+}
+
+.form :where(.input-box input, .select-box) {
+    position: relative;
+    height: 50px;
+    width: 100%;
+    outline: none;
+    font-size: 1rem;
+    color: #707070;
+    margin-top: 8px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 0 15px;
+}
+
+.input-box input:focus {
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+}
+
+.form .column {
+    display: flex;
+    column-gap: 15px;
+}
+
+.form .column-left-wide {
+    display: flex;
+    columns: gap 15px;
+}
+
+    .form .column-left-wide :first-child {
+        flex: 2;
+        margin-right: 15px;
+    }
+
+    .form .column-left-wide :last-child {
+        flex: 1;
+    }
+
+.form .gender-box {
+    margin-top: 20px;
+}
+
+.gender-box h3 {
+    color: #333;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-bottom: 8px;
+}
+
+.form :where(.gender-option, .gender) {
+    display: flex;
+    align-items: center;
+    column-gap: 50px;
+    flex-wrap: wrap;
+}
+
+.form .gender {
+    column-gap: 5px;
+}
+
+.gender input {
+    accent-color: rgb(130, 106, 251);
+}
+
+.form :where(.gender input, .gender label) {
+    cursor: pointer;
+}
+
+.gender label {
+    color: #707070;
+}
+
+.address :where(input, .select-box) {
+    margin-top: 15px;
+}
+
+.select-box select {
+    height: 100%;
+    width: 100%;
+    outline: none;
+    border: none;
+    color: #707070;
+    font-size: 1rem;
+}
+
+.form button {
+    height: 55px;
+    width: 100%;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgb(130, 106, 251);
+}
+
+    .form button:hover {
+        background: rgb(88, 56, 250);
+    }
+/* Chỉnh style cho hộp chọn */
+.custom-selection {
+    background-color: #f8f9fa;
+    border: 2px solid rgb(88, 56, 250);
+    border-radius: 8px;
+    font-size: 16px;
+    padding: 5px 10px;
+}
+
+/* Chỉnh style cho danh sách thả xuống */
+.custom-dropdown {
+    background-color: #ffffff;
+    border: 1px solid #007bff;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* Chỉnh style cho các tùy chọn */
+.select2-results__option {
+    padding: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Hover trên tùy chọn */
+.select2-results__option--highlighted {
+    background-color: #000000;
+    color: #fff;
+}
+
+/* Chỉnh style cho nội dung được render */
+.select2-container .select2-selection__rendered {
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.custom-selection {
+    padding: 0px 0px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    width: 20%;
+    height: 20%;
+    padding: 0px;
+    margin: 0px;
+    position: relative;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    padding-left: 0px;
+}
+
+/*Responsive*/
+@media screen and (max-width: 500px) {
+    .form .column {
+        flex-wrap: wrap;
+    }
+
+    .form :where(.gender-option, .gender) {
+        row-gap: 15px;
+    }
+}
+/* input image css   */
+.container {
+    max-width: 1600px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 30px;
+}
+
+.img-area {
+    margin-top: 10px;
+    width: 100%;
+    height: 240px;
+    background: var(--grey);
+    margin-bottom: 30px;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row; /* Đổi hướng sắp xếp các ảnh thành hàng ngang */
+    gap: 10px; /* Khoảng cách giữa các ảnh */
+    overflow-y: scroll;
+    overflow-x: unset;
+}
+
+    .img-area .icon {
+        font-size: 100px;
+    }
+
+.select-image {
+    display: block;
+    width: 100%;
+    padding: 16px 0;
+    border-radius: 15px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 500;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+
+.img-area .icon {
+    font-size: 100px;
+}
+
+.select-image {
+    display: block;
+    width: 100%;
+    padding: 16px 0;
+    border-radius: 15px;
+    background: var(--blue);
+    color: #fff;
+    font-weight: 500;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.container {
+    max-width: 1600px;
+    width: 100%;
+    background: #fff;
+    padding: 30px;
+    border-radius: 30px;
+}
+
+.img-area .icon {
+    font-size: 100px;
+}
+
+.img-element {
+    width: 100%;
+    transition: filter 0.3s ease;
+}
+
+.img-name {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: none; /* Hidden by default */
+    font-size: 14px;
+    z-index: 10;
+    white-space: nowrap;
+}
+/* Cần phải làm cho .img-item có position relative để chứa ::before */
+.img-item {
+    position: relative;
+    flex: 1 1;
+}
+
+    .img-item .img {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* Ẩn tooltip (data-img) mặc định */
+    .img-item::before {
+        z-index: 20;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%); /* Canh giữa */
+        background-color: rgba(0, 0, 0, 0.7); /* Nền tối */
+        color: #fff;
+        padding: 10px;
+        font-size: 16px;
+        font-weight: 500;
+        border-radius: 5px;
+        text-align: center;
+        opacity: 0; /* Ẩn tooltip mặc định */
+        transition: opacity 0.3s ease, filter 0.3s ease; /* Chuyển động mượt mà */
+        pointer-events: none; /* Không ảnh hưởng đến tương tác với ảnh */
+    }
+
+    /* Khi hover vào .img-item, làm ảnh mờ đi và hiển thị tooltip */
+    .img-item:hover::before {
+        opacity: 1;
+    }
+
+    .img-item:hover img {
+        filter: brightness(0.5); /* Làm ảnh mờ đi khi hover */
+    }
+
+.remove-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 10;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.3s;
+}
+
+    .remove-btn:hover {
+        background-color: rgba(255, 0, 0, 1);
+    }

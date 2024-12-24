@@ -1,11 +1,11 @@
 ﻿namespace LibraryManagementSystem.DTO.BookDTO
 {
-    public class CreateBookDTO
+    public class UpdateBookDTO
     {
         public int Id { get; set; }
         public required string Title { get; set; }
         public string? Description { get; set; }
-        public required IEnumerable<int>AuthorId { get; set; }
+        public required IEnumerable<int> AuthorId { get; set; }
         public int? VendorId { get; set; }
         public int? PublishYear { get; set; }
         public int? PageNumber { get; set; }
@@ -14,6 +14,8 @@
         public int? SeriesId { get; set; }
         public required int PublisherID { get; set; }
         public required string ISBN { get; set; }
-        public required List<IFormFile> BookImgs { get; set; }
+        public required List<IFormFile> NewBookImgs { get; set; }
+        public string[]? OldBookImgs { get; set; }
     }
+
 }
