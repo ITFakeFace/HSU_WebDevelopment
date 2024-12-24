@@ -1,58 +1,191 @@
-﻿@model LibraryManagementSystem.Models.Book
-
-@{
-    ViewData["Title"] = "Update";
+﻿@{
+    Book bookInfo = (Book)ViewData["book"]!;
+    var vendorNavigation = ViewData["vendorNavigation"] as Vendor;
+    var publisherNavigation = ViewData["publisherNavigation"] as Publisher;
+    var seriesNavigation = ViewData["seriesNavigation"] as Series;
+    var authors = ViewData["authors"] as List<Author> ?? new List<Author>();
+    var bookImgs = ViewData["bookImgs"] as List<BookImg> ?? new List<BookImg>();
+    Dictionary<int, string> imageDict = new Dictionary<int, string>();
+    foreach (var img in bookImgs)
+    {
+        string imgTemp = $"data:image/png;base64,{Convert.ToBase64String(img.Image)}";
+        imageDict.Add(img.Id, imgTemp);
+    }
+    Console.WriteLine();
 }
+<link rel="stylesheet" href="~/features/book/updatebook.css" />
+<div class="create-book-body">
+    <section class="container">
+        <header>Registration Form</header>
+        <form action="/Book/Update" method="post" class="form" enctype="multipart/form-data">
+            <input type="hidden" name="Id" value="@(bookInfo.Id)" />
 
-<link rel="stylesheet" href="~/features/Book/Update/book.css" />
-
-<h1> Update Book </h1>
-
-<div class="book-update">
-    <form asp-action="Update">
-        <div class="book-update-left">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label>Tên tác phẩm: </label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label>Mô tả tác phẩm: </label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class=" text-danger"></span>
-            </div>
-            <div class="choose-group">
-                <label>Năm phát hành: </label>
-                @{
-                    var selectListPublishYear =
-                    new SelectList(Enumerable.Range(0, (DateTime.Now.Year - 0) + 1).Reverse()
-                    , Model?.PublishYear
-                    );
-
-                }
-                @Html.DropDownList(
-                    "PublishYear",
-                    selectListPublishYear,
-                    "Chọn Năm",
-                    new {
-                            @class = "form-control selectpicker",
-                            onchange = "document.getElementById('MyForm').submit();"
-                    })
-                <span asp-validation-for="PublishYear" class=" text-danger"></span>
-            </div>
-            <div class="choose-group">
-                <label> Nhà phát hành: </label>
-                <select id="Publisher" name="PublisherId" class="form-control" asp-items="ViewBag.PublisherList"></select>
-                <span asp-validation-for="PublishYear" class=" text-danger"></span>
+            <!-- Book Name -->
+            <div class="input-box">
+                <label>Book Name</label>
+                <input type="text" name="Title" required value="@(bookInfo.Name)" />
             </div>
 
-            <div class="form-group">
-                <label>Số trang: </label>
-                <input asp-for="PageNumber" class="form-control" />
-                <span asp-validation-for="PageNumber" class=" text-danger"></span>
+            <!-- Description -->
+            <div class="input-box">
+                <label>Description</label>
+                <input type="text" name="Description" placeholder="Enter Description" value="@(bookInfo.Description)" required />
             </div>
-        </div>
-    </form>
+
+            <!-- ISBN -->
+            <div class="input-box">
+                <label>ISBN</label>
+                <input type="text" name="ISBN" value="@(bookInfo.Isbn)" required />
+                <div id="isbn-error" class="error-message"></div>
+            </div>
+
+            <!-- Author -->
+            <div class="input-box">
+                <label>Author</label>
+                <select id="author" name="AuthorId" multiple="multiple" required>
+                    @if (authors.Count > 0)
+                    {
+                        @foreach (var author in authors)
+                        {
+                            <option value="@author.Id" selected>@author.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+            <!-- Vendor -->
+            <div class="input-box">
+                <label>Vendor</label>
+                <select id="vendor" name="VendorId">
+                    @if (vendorNavigation != null)
+                    {
+                        <option value="@vendorNavigation.Id" selected>@vendorNavigation.Name</option>
+                    }
+                    else
+                    {
+                        <option value="">Select Vendor</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Publisher -->
+            <div class="input-box">
+                <label>Publisher</label>
+                <select id="publisher" name="PublisherId">
+                    @if (publisherNavigation != null)
+                    {
+                        <option value="@publisherNavigation.Id" selected>@publisherNavigation.Name</option>
+                    }
+                    else
+                    {
+                        <option value="">Select Publisher</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Publish Year -->
+            <div class="input-box">
+                <label>Publish Year</label>
+                <input type="number" name="PublishYear" value="@(bookInfo.PublishYear)" required />
+            </div>
+
+            <!-- Version -->
+            <div class="input-box">
+                <label>Version</label>
+                <input type="text" name="Version" value="@(bookInfo.Version)" required />
+            </div>
+
+            <!-- Page Number -->
+            <div class="input-box">
+                <label>Page Number</label>
+                <input type="number" name="PageNumber" value="@(bookInfo.PageNumber)" required />
+            </div>
+
+            <!-- Series -->
+            <div class="input-box">
+                <label>Series</label>
+                <select id="series" name="SeriesId">
+                    @if (seriesNavigation != null)
+                    {
+                        <option value="@seriesNavigation.Id" selected>@seriesNavigation.Name</option>
+                    }
+                    else
+                    {
+                        <option value="">Select Series</option>
+                    }
+                </select>
+            </div>
+
+            <!-- Language -->
+            <div class="input-box">
+                <label>Language</label>
+                <input type="text" name="Language" value="@(bookInfo.Language)" required />
+            </div>
+
+            <!-- Image -->
+            <div class="input-box">
+                <label for="file">Image</label>
+                    <input type="file" id="file" accept="image/*" multiple="multiple" name="NewBookImgs" />
+                <div class="img-area" data-img="">
+                    @if (bookImgs.Count > 0)
+                    {
+                        @foreach (var pair in imageDict)
+                        {
+                            <div class="img-item" data-img="@pair.Key">
+                                <img src="@(pair.Value)" alt="Book Image" />
+                                <input type="hidden" name="OldBookImgs" value= @pair.Value />
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="title-area">
+                            <i class="bx bxs-cloud-upload icon"></i>
+                            <h3>Upload Image</h3>
+                            <p>Image size must be less than <span>2MB</span></p>
+                        </div>
+                    }
+                    
+                </div>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </section>
 </div>
+
+<script src="~/features/book/CreateBook.js" asp-append-version="true"></script>
+<script src="~/features/book/UpdateImage.js" asp-append-version="true"></script>
+<script>
+    $(document).ready(function () {
+        function validateISBN(isbn) {
+            const isbnRegex = /^(?=(?:[^0-9]*[0-9]){10}(?:(?:[^0-9]*[0-9]){3})?$)[\d-]+$/;
+            return isbnRegex.test(isbn);
+        }
+
+        $('form').on('submit', function (event) {
+            let hasError = false;
+            const isbnInput = $('input[name="ISBN"]').val();
+            const errorDiv = $('#isbn-error');
+
+            // Validate ISBN
+            if (!validateISBN(isbnInput)) {
+                event.preventDefault();
+                errorDiv.text("Invalid ISBN format. Example: 978-0-30-640615-7");
+                errorDiv.css('color', 'red');
+                hasError = true;
+            } else {
+                errorDiv.text('');
+            }
+
+            // Validate Publish Year
+            const publishYear = $('input[name="PublishYear"]').val();
+            if (isNaN(publishYear) || publishYear <= 0) {
+                alert('Publish Year must be a positive number.');
+                hasError = true;
+            }
+
+            if (hasError) event.preventDefault();
+        });
+    });
+</script>

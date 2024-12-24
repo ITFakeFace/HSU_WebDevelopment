@@ -8,13 +8,9 @@
 
   <ItemGroup>
     <Compile Remove="wwwroot\features\Book\NewFolder1\**" />
-    <Compile Remove="wwwroot\features\Book\NewFolder\**" />
     <Content Remove="wwwroot\features\Book\NewFolder1\**" />
-    <Content Remove="wwwroot\features\Book\NewFolder\**" />
     <EmbeddedResource Remove="wwwroot\features\Book\NewFolder1\**" />
-    <EmbeddedResource Remove="wwwroot\features\Book\NewFolder\**" />
     <None Remove="wwwroot\features\Book\NewFolder1\**" />
-    <None Remove="wwwroot\features\Book\NewFolder\**" />
   </ItemGroup>
 
   <ItemGroup>
