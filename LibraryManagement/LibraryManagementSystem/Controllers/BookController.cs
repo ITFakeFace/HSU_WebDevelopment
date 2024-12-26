@@ -214,7 +214,6 @@ namespace LibraryManagementSystem.Controllers
 
         }
 
-        [HttpPost]
         public IActionResult UploadImage()
         {
             return View();
@@ -284,7 +283,7 @@ namespace LibraryManagementSystem.Controllers
             if (bookImg == null || bookImg.Image == null)
             {
                 // Return a placeholder image if no image exists
-                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "~\\assets\\image\\book\\No_Image_Available.jpg");
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "");
                 return PhysicalFile(placeholderPath, "image/png");
             }
 

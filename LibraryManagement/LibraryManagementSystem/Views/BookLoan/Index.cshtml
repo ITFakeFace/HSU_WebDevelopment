@@ -15,18 +15,24 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Tên người dùng</th>
-                        <th>Tình trạng</th>
+                        <th>Họ Tên người dùng</th>
+                        <th>Email</th>
+                        <th>SĐT</th>
+                        <th>Tên sách</th>
                         <th>Isbn</th>
+                        <th>Tình trạng</th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <hr />
                     <tr>
-                        <td><input type="text" name="Fullname" class="form-control" placeholder="Fullname" value="@ViewData["Fullname"]" /></td>
-                        <td><select name="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select></td>
+                        <td><input type="text" name="Fullname" class="form-control" placeholder="Họ tên người mượn" value="@ViewData["Fullname"]" /></td>
+                        <td><input type="text" name="Fullname" class="form-control" placeholder="Email người mượn" value="@ViewData["Email"]" /></td>
+                        <td><input type="text" name="Fullname" class="form-control" placeholder="SĐT người mượn" value="@ViewData["Phone"]" /></td>
+                        <td><input type="text" name="Fullname" class="form-control" placeholder="Tên của cuốn sách" value="@ViewData["BookName"]" /></td>
                         <td><input type="text" name="Isbn" class="form-control" placeholder="Isbn" value="@ViewData["Isbn"]" /></td>
+                        <td><select name="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select></td>
                         <td><button type="submit" class="btn btn-primary" style="padding: 5px 15px;">&nbsp;&nbsp;Lọc&nbsp;&nbsp;</button></td>
                     </tr>
                 </tbody>
@@ -105,6 +111,7 @@
                 <th>Ngày dự kiến trả</th>
                 <th>Tình trạng</th>
                 <th></th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -148,6 +155,7 @@
                         }
                     }
                     <td><a asp-action="Delete" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-danger">Xóa</a></td>
+                    <td><a asp-action="Update" asp-controller="BookLoan" asp-route-id="@item.Id" class="btn btn-outline-primary">Update</a></td>
                 </tr>
             }
             }
