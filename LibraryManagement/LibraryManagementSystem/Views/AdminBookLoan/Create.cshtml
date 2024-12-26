@@ -1,0 +1,68 @@
+﻿@using LibraryManagementSystem.DTO.BookLoanDTO
+@model CreateBookLoanDto
+
+@{
+    List<User> users = ViewData["Users"] != null ? (List<User>)ViewData["Users"] : new List<User>();
+    List<Library> libraries = ViewData["Libraries"] != null ? (List<Library>)ViewData["Libraries"] : new List<Library>();
+    List<Book> books = ViewData["Books"] != null ? (List<Book>)ViewData["Books"] : new List<Book>();
+}
+<form asp-action="Create" asp-controller="AdminBookLoan" method="post" id="form-create">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Thông tin mượn sách</h1>
+            </div>
+            <div class="col-md-12">
+                <label for="city-select" class="form-label">Người mượn</label>
+                <select asp-for="User" id="user-select" class="form-control" required>
+                    @if (users != null)
+                    {
+                        @foreach (User user in users)
+                        {
+                            <option value="@user.Id">@user.Pid || @user.Fullname</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="User" class="invalid-feedback"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Địa chỉ</h1>
+            </div>
+            <div class="col-md-12">
+                <label for="library-select" class="form-label">Chi nhánh</label>
+                <select asp-for="Library" id="library-select" class="form-control" required>
+                    @if (libraries != null)
+                    {
+                        @foreach (Library lib in libraries)
+                        {
+                            <option value="@lib.Id">@lib.Id || @lib.Name</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="Library" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-12">
+                <label for="book-select" class="form-label">Chi nhánh</label>
+                <select asp-for="Book" id="book-select" class="form-control" required>
+                    @if (libraries != null)
+                    {
+                        @foreach (Book book in books)
+                        {
+                            <option value="@book.Id">@book.Id || @book.Name</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="Library" class="invalid-feedback"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-outlined-success">Xác nhận</button>
+                <button class="btn btn-primary">Reset</button>
+            </div>
+        </div>
+    </div>
+
+</form>
