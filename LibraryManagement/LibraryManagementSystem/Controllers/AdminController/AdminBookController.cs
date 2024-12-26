@@ -3,10 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using LibraryManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace LibraryManagementSystem.Controllers.AdminController
 {
-    [Authorize(Roles = "ADMINISTRATOR")]
+    //[Authorize(Roles = "ADMINISTRATOR")]
     public class AdminBookController : Controller
     {
         private readonly SignInManager<User> _signInManager;
@@ -20,14 +23,111 @@ namespace LibraryManagementSystem.Controllers.AdminController
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string bookname,
+      string? isbn,
+      string? language,
+      int? vendor,
+      int? publisher,
+      int? publishYearFrom,
+      int? publishYearTo,
+      string version,
+      int? series,
+      string? status,
+      string authors,
+      List<int> categoryIds)
         {
-            return _context.Books != null ?
-                View(await _context.Books
-                .Include(o => o.Authors)
-                .Include(o => o.BookLoans)
-                .ToListAsync()) :
-                Problem("Book not found.");
+            var query = _context.Books
+                .Include(b => b.PublisherNavigation)
+                .Include(b => b.VendorNavigation)
+                .Include(b => b.BookImgs)
+                .Include(b => b.Categories)
+                .Include(b => b.Authors)
+                .AsQueryable();
+            if (!string.IsNullOrEmpty(bookname))
+                query = query.Where(a => a.Name.Contains(bookname));
+            if (!string.IsNullOrEmpty(isbn))
+                query = query.Where(a => a.Isbn.Contains(isbn));
+            if (publishYearFrom.HasValue && publishYearTo.HasValue)
+            {
+                query = query.Where(b => b.PublishYear >= publishYearFrom.Value && b.PublishYear <= publishYearTo.Value);
+            }
+            else if (publishYearFrom.HasValue)
+            {
+                query = query.Where(b => b.PublishYear >= publishYearFrom.Value);
+            }
+            else if (publishYearTo.HasValue)
+            {
+                query = query.Where(b => b.PublishYear <= publishYearTo.Value);
+            }
+            if (!string.IsNullOrEmpty(status))
+            {
+                int parsedStatus;
+                if (int.TryParse(status, out parsedStatus))
+                {
+                    query = query.Where(a => a.Status == parsedStatus);
+                }
+            }
+            if (!string.IsNullOrEmpty(version))
+            {
+                query = query.Where(b => b.Version.Contains(version));
+            }
+
+            if (series.HasValue)
+            {
+                query = query.Where(b => b.Series == series.Value);
+            }
+            if (publisher.HasValue)
+            {
+                query = query.Where(b => b.Publisher == publisher.Value);
+            }
+            if (!string.IsNullOrEmpty(language))
+                query = query.Where(a => a.Language.Contains(language));
+            var books = await query.ToListAsync();
+            var result = new List<Book>();
+            if (!string.IsNullOrEmpty(authors))
+            {
+                var authorList = authors.Split(',').Select(a => a.Trim()).ToList();
+                foreach (var book in books)
+                {
+                    if (IncludeAll(book.Authors.ToList(), authorList))
+                    {
+                        result.Add(book);
+                    }
+                }
+                books = result;
+            }
+            if (!books.Any())
+            {
+                ViewBag.Message = "Không tìm thấy sách nào!";
+            }
+            ViewBag.StatusOptions = new SelectList(
+                new List<SelectListItem>
+                {
+                    new SelectListItem { Value = "", Text = "Chọn trạng thái" },
+                    new SelectListItem { Value = "1", Text = "Hiện" },
+                    new SelectListItem { Value = "0", Text = "Ẩn" },
+                },
+                "Value",
+                "Text",
+                status
+                );
+            if (categoryIds != null && categoryIds.Any())
+            {
+                query = query.Where(b => categoryIds.All(c => b.Categories.Select(cat => cat.Id).Contains(c)));
+            }
+            ViewBag.Categories = await _context.Categories.ToListAsync();
+
+            return View(books);
+        }
+
+        public bool IncludeAll(List<Author>? source, List<string> dest)
+        {
+            if (source == null || dest == null)
+            {
+                return false;
+            }
+
+            return dest.All(author => source.Any(a => a.Name.Contains(author)));
         }
 
         public async Task<IActionResult> Deactive(int? Id)
