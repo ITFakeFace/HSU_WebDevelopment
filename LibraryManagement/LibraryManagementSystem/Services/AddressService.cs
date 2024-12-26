@@ -39,5 +39,51 @@ namespace LibraryManagementSystem.Services
 
             return address;
         }
+
+        public async Task<Address> CreateAddress(string cityName, string districtName, string wardName, string streetName, string addressName)
+        {
+            var city = await _ctx.Cities
+                .Include(ct => ct.Districts) // Nạp Districts nếu có
+                .ThenInclude(d => d.Wards) // Nạp Wards của mỗi District
+                .FirstOrDefaultAsync(ct => ct.Name == cityName);
+
+            if (city == null)
+            {
+                city = new City { Name = cityName };
+                _ctx.Cities.Add(city);
+            }
+
+            var district = city.Districts?.FirstOrDefault(dis => dis.Name == districtName);
+            if (district == null)
+            {
+                district = new District { Name = districtName, CityNavigation = city };
+                _ctx.Districts.Add(district);
+            }
+
+            var ward = district.Wards?.FirstOrDefault(wrd => wrd.Name == wardName);
+            if (ward == null)
+            {
+                ward = new Ward { Name = wardName, DistrictNavigation = district };
+                _ctx.Wards.Add(ward);
+            }
+
+            var street = await _ctx.Streets.FirstOrDefaultAsync(str => str.Name == streetName && str.Ward == ward.Id);
+            if (street == null)
+            {
+                street = new Street { Name = streetName, WardNavigation = ward };
+                _ctx.Streets.Add(street);
+            }
+
+            var address = await _ctx.Addresses.FirstOrDefaultAsync(addr => addr.Name == addressName && addr.Street == street.Id);
+            if (address == null)
+            {
+                address = new Address { Name = addressName, StreetNavigation = street };
+                _ctx.Addresses.Add(address);
+            }
+
+            await _ctx.SaveChangesAsync();
+            return address;
+        }
+
     }
 }

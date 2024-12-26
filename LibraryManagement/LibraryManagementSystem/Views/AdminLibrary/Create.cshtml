@@ -1,0 +1,110 @@
+﻿@using LibraryManagementSystem.DTO.LibraryDTO
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model CreateLibraryDto
+@{
+    List<User> managers = ViewData["Managers"] != null ? (List<User>)ViewData["Managers"] : new List<User>();
+    List<City> cities = ViewData["Cities"] != null ? (List<City>)ViewData["Cities"] : new List<City>();
+}
+@section Styles {
+
+}
+
+<form asp-action="Create" asp-controller="AdminLibrary" method="post" id="form-create">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Thông tin chi nhánh</h1>
+            </div>
+            <div class="col-md-12">
+                <label for="lib-name" class="form-label">Tên chi nhánh</label>
+                <input asp-for="Name" type="text" class="form-control" id="lib-name" placeholder="Tên chi nhánh" required>
+                <span asp-validation-for="Name" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-12">
+                <label for="lib-phone" class="form-label">SĐT</label>
+                <input asp-for="Phone" type="text" class="form-control" id="lib-phone" placeholder="Số điện thoại liên hệ" required>
+                <span asp-validation-for="Phone" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-6">
+                <label for="lib-open-from" class="form-label">Mở lúc</label>
+                <input asp-for="OpenFrom" type="time" class="form-control" id="lib-open-from" default="07:00:00" placeholder="Thời gian mở cửa" required>
+                <span asp-validation-for="OpenFrom" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-6">
+                <label for="lib-open-to" class="form-label">Mở lúc</label>
+                <input asp-for="OpenTo" type="time" class="form-control" id="lib-open-to" default="22:00:00" placeholder="Thời gian đóng cửa" required>
+                <span asp-validation-for="OpenTo" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-12">
+                <label for="city-select" class="form-label">Người quản lý</label>
+                <select asp-for="Manager" id="manager-select" class="form-control" required>
+                    
+                    @if (managers != null)
+                    {
+                        @foreach (User user in managers)
+                        {
+                            var roleName = user.UserRoles.FirstOrDefault()?.Role?.Name ?? "Unknown";
+                            <option value="@user.Id" data-role="@roleName">@roleName || @user.Fullname</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="Manager" class="invalid-feedback"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <h1>Địa chỉ</h1>
+            </div>
+            <div class="col-md-4">
+                <label for="city-select" class="form-label">Thành phố</label>
+                <select id="city-select" class="form-control" required>
+                    @if (managers != null)
+                    {
+                        @foreach (City city in cities)
+                        {
+                            <option value="@city.Id">@city.Id || @city.Name</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="City" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-4">
+                <label for="district-select" class="form-label">Quận/Huyện</label>
+                <select id="district-select" class="form-control" required disabled></select>
+                <span asp-validation-for="District" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-4">
+                <label for="ward-select" class="form-label">Phường/Xã</label>
+                <select id="ward-select" class="form-control" required disabled></select>
+                <span asp-validation-for="Ward" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-6">
+                <label for="street-select" class="form-label">Đường</label>
+                <select id="street-select" class="form-control" required disabled></select>
+                <span asp-validation-for="Street" class="invalid-feedback"></span>
+            </div>
+            <div class="col-md-6">
+                <label for="specific-address" class="form-label">Địa chỉ cụ thể</label>
+                <input type="text" asp-for="Address" class="form-control" id="specific-address" placeholder="Số nhà, tên tòa nhà, etc." required>
+                <span asp-validation-for="Address" class="invalid-feedback"></span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <button class="btn btn-outlined-success">Thêm chi nhánh</button>
+                <button class="btn btn-primary">Reset</button>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" asp-for="City" id="CityText" />
+    <input type="hidden" asp-for="District" id="DistrictText" />
+    <input type="hidden" asp-for="Ward" id="WardText" />
+    <input type="hidden" asp-for="Street" id="StreetText" />
+
+</form>
+
+@section Scripts{
+    <script src="~/features/Admin/Library/createScript.js"></script>
+}

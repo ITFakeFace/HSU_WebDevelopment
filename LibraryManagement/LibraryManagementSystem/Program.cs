@@ -1,6 +1,7 @@
 ﻿using LibraryManagementSystem.Data;
 using LibraryManagementSystem.Mail;
 using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +16,7 @@ builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<LibraryDbCon
 .AddDefaultUI()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<AddressService>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {
