@@ -40,10 +40,20 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Detail(int? Id)
         {
+
             if (Id == null || _context.Books == null)
             {
                 return RedirectToAction("Index", "Book");
             }
+
+
+            if (!User.Identity.IsAuthenticated)
+            {
+
+                return RedirectToAction("Login", "Account");
+            }
+
+
             var book = await _context.Books
                 .Include(a => a.Authors)
                 .Include(a => a.BookInBranches)
@@ -54,14 +64,19 @@ namespace LibraryManagementSystem.Controllers
                 .Include(a => a.BookImgs)
                 .Include(a => a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
+
             var user = await _userManager.GetUserAsync(User);
             var roles = await _signInManager.UserManager.GetRolesAsync(user);
+
             if (book == null || (book.Status == 0 && !roles.Contains("ADMINISTRATOR")))
             {
                 return RedirectToAction("Index", "Book");
             }
+
+
             return View(book);
         }
+
         public bool IncludeAll(List<Author>? source, List<string> dest)
         {
             if (source == null || dest == null)
@@ -73,25 +88,25 @@ namespace LibraryManagementSystem.Controllers
         }
 
         public async Task<IActionResult> Search(
-      string name,
-      string language,
-      int? vendor,
-      int? publisher,
-      int? publishYearFrom,
-      int? publishYearTo,
-      string version,
-      int? series,
-      int? status,
-      string authors,
-      List<int> categoryIds)
+     string name,
+    string language,
+    int? vendor,
+    int? publisher,
+    int? publishYearFrom,
+    int? publishYearTo,
+    string version,
+    int? series,
+    int? status,
+    string authors,
+    List<int> categoryIds)
         {
             var query = _context.Books
                 .Include(b => b.PublisherNavigation)
                 .Include(b => b.VendorNavigation)
                 .Include(b => b.BookImgs)
-                .Include(b => b.Categories)
+                .Include(b => b.Categories.Where(c => c.Status == 1))
                 .Include(b => b.Authors)
-                 .Where(b => b.Authors.All(a => a.Status == 1))
+                .Where(b => b.Authors.All(a => a.Status == 1))
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
@@ -132,7 +147,7 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Series == series.Value);
             }
 
-            // Default to only show books with Status = 1
+
             if (status.HasValue)
             {
                 query = query.Where(b => b.Status == status.Value);
@@ -168,7 +183,8 @@ namespace LibraryManagementSystem.Controllers
                 ViewBag.Message = "Không tìm thấy sách nào!";
             }
 
-            ViewBag.Categories = await _context.Categories.ToListAsync();
+
+            ViewBag.Categories = await _context.Categories.Where(c => c.Status == 1).ToListAsync();
 
             return View(books);
         }
@@ -213,15 +229,30 @@ namespace LibraryManagementSystem.Controllers
             return View();
 
         }
+        [HttpGet("book/upload-image")]
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
 
-        [HttpPost]
+
+        [HttpPost("book/upload-image")]
         public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
         {
             if (bookId <= 0)
             {
-                TempData["Message"] = "Invalid Book ID.";
+                TempData["Message"] = "ID sách không hợp lệ.";
                 return RedirectToAction("Index");
             }
+
+            // Kiểm tra sách có tồn tại trong cơ sở dữ liệu hay không
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null)
+            {
+                TempData["Message"] = "Sách không tồn tại.";
+                return RedirectToAction("Index");
+            }
+
 
             if (imageFile != null && imageFile.Length > 0)
             {
@@ -229,63 +260,65 @@ namespace LibraryManagementSystem.Controllers
                 await imageFile.CopyToAsync(ms);
                 var imageBytes = ms.ToArray();
 
-                var existingBook = _context.Books.FirstOrDefault(b => b.Id == bookId);
-
-                if (existingBook != null)
+                var newBookImg = new BookImg
                 {
-                    existingBook.Image = imageBytes;
-                    _context.Books.Update(existingBook);
-                    TempData["Message"] = $"Updated image for book ID '{bookId}'.";
-                }
-                else
-                {
-                    TempData["Message"] = $"Book with ID '{bookId}' not found.";
-                }
+                    Book = bookId,
+                    Image = imageBytes
+                };
 
+                _context.BookImgs.Add(newBookImg);
                 await _context.SaveChangesAsync();
+
+                TempData["Message"] = $"Đã thêm ảnh mới cho sách ID '{bookId}'.";
             }
             else
             {
-                TempData["Message"] = "No image file selected.";
+                TempData["Message"] = "Không có tệp ảnh được chọn.";
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Index", "Book");
         }
 
-        [HttpGet]
-        public IActionResult GetBookImage(int id)
+
+
+
+        [HttpGet("get-book-image/{bookId}")]
+        public IActionResult GetBookImage(int bookId)
         {
-            var book = _context.Books.FirstOrDefault(b => b.Id == id);
-            if (book?.Image != null)
+            var bookImg = _context.BookImgs.FirstOrDefault(b => b.Book == bookId);
+
+            if (bookImg == null || bookImg.Image == null)
             {
-                var base64Image = Convert.ToBase64String(book.Image);
-                var imgSrc = $"data:image/jpeg;base64,{base64Image}";
-                return Content(imgSrc);
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "placeholder.png");
+                return PhysicalFile(placeholderPath, "image/png");
             }
 
-            return NotFound("Image not found");
+            return File(bookImg.Image, "image/jpeg");
         }
+
+
+
 
         public async Task<IActionResult> Index(
-      string name,
-      string language,
-      int? vendor,
-      int? publisher,
-      int? publishYearFrom,
-      int? publishYearTo,
-      string version,
-      int? series,
-      int? status,
-      string authors,
-      List<int> categoryIds)
+    string name,
+    string language,
+    int? vendor,
+    int? publisher,
+    int? publishYearFrom,
+    int? publishYearTo,
+    string version,
+    int? series,
+    int? status,
+    string authors,
+    List<int> categoryIds)
         {
             var query = _context.Books
                 .Include(b => b.PublisherNavigation)
                 .Include(b => b.VendorNavigation)
                 .Include(b => b.BookImgs)
-                .Include(b => b.Categories)
+                .Include(b => b.Categories.Where(c => c.Status == 1))
                 .Include(b => b.Authors)
-                 .Where(b => b.Authors.All(a => a.Status == 1))
+                .Where(b => b.Authors.All(a => a.Status == 1))
                 .AsQueryable();
 
             if (!string.IsNullOrEmpty(name))
@@ -326,7 +359,7 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Series == series.Value);
             }
 
-            // Default to only show books with Status = 1
+
             if (status.HasValue)
             {
                 query = query.Where(b => b.Status == status.Value);
@@ -361,11 +394,11 @@ namespace LibraryManagementSystem.Controllers
             {
                 ViewBag.Message = "Không tìm thấy sách nào!";
             }
-
-            ViewBag.Categories = await _context.Categories.ToListAsync();
+            ViewBag.Categories = await _context.Categories.Where(c => c.Status == 1).ToListAsync();
 
             return View(books);
         }
+
 
     }
 }

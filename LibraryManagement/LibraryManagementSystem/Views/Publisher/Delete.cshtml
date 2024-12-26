@@ -1,0 +1,9 @@
+﻿@model LibraryManagementSystem.Models.Publisher
+
+<h1>Delete Publisher</h1>
+<p>Are you sure you want to delete @Model.Name?</p>
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit">Delete</button>
+    <a href="@Url.Action("Index")">Cancel</a>
+</form>

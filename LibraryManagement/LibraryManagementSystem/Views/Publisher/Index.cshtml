@@ -1,0 +1,87 @@
+﻿@{
+    ViewData["Title"] = "Publishers";
+    var selectedStatus = ViewData["Status"]?.ToString();
+}
+<link href="~/assets/indext.css?v=@DateTime.Now.Ticks" rel="stylesheet" />
+
+<div class="container">
+    <h1>Publishers</h1>
+
+    <!-- Create button to navigate to the Create page -->
+    <a href="@Url.Action("Create")" class="btn btn-create">Tạo Nhà Xuất Bản Mới</a>
+
+    <!-- Search Bar and Status Filter -->
+    <form method="get" action="@Url.Action("Index")" class="form-inline mt-4 mb-4">
+        <div class="form-group mr-2">
+            <label for="Name">Tên Nhà Xuất Bản:</label>
+            <input type="text" id="Name" name="Name" value="@ViewData["Name"]" class="form-control" placeholder="Nhập tên nhà xuất bản" />
+        </div>
+        <div class="form-group mr-2">
+            <label for="Status">Trạng Thái:</label>
+            <div class="status-filter">
+                <input type="hidden" id="Status" name="Status" value="@ViewData["Status"]" />
+                <ul class="list-inline">
+                    <li class="list-inline-item">
+                        <a href="#" class="filter-item @(string.IsNullOrEmpty(ViewData["Status"]?.ToString()) ? "selected" : "")" onclick="setStatus(''); return false;">Tất cả</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#" class="filter-item @(ViewData["Status"]?.ToString() == "1" ? "selected" : "")" onclick="setStatus('1'); return false;">Đang hoạt động</a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#" class="filter-item @(ViewData["Status"]?.ToString() == "0" ? "selected" : "")" onclick="setStatus('0'); return false;">Ngừng hoạt động</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Lọc</button>
+    </form>
+
+    <script>
+        function setStatus(status) {
+            document.getElementById('Status').value = status;
+        }
+    </script>
+
+    <!-- Publisher Table -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var publisher in Model)
+            {
+                <tr>
+                    <td>@publisher.Name</td>
+                    <td>@(publisher.Status == 1 ? "Đang hoạt động" : publisher.Status == 0 ? "Ngừng hoạt động" : "Không rõ")</td>
+                    <td class="actions">
+                        <!-- Button to change the status -->
+                        <form method="post" asp-action="ChangeStatus" asp-route-id="@publisher.Id" style="display:inline;">
+                            <button type="submit" class="btn btn-primary">
+                                @(publisher.Status == 1 ? "Deactivate" : "Activate")
+                            </button>
+                        </form>
+                        <!-- Other actions like Edit, Delete, etc. -->
+                        <a href="@Url.Action("Edit", new { id = publisher.Id })" class="btn btn-edit">Edit</a>
+                        <a href="@Url.Action("Delete", new { id = publisher.Id })" class="btn btn-delete">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- Pagination (optional) -->
+    <div class="pagination">
+        <ul class="pagination">
+            @for (var i = 1; i <= ViewBag.TotalPages; i++)
+            {
+                <li class="@(i == ViewBag.PageNumber ? "active" : "")">
+                    <a href="@Url.Action("Index", new { pageNumber = i, Status = selectedStatus })">@i</a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
