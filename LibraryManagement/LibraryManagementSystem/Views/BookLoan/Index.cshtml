@@ -28,9 +28,9 @@
                     <hr />
                     <tr>
                         <td><input type="text" name="Fullname" class="form-control" placeholder="Họ tên người mượn" value="@ViewData["Fullname"]" /></td>
-                        <td><input type="text" name="Fullname" class="form-control" placeholder="Email người mượn" value="@ViewData["Email"]" /></td>
-                        <td><input type="text" name="Fullname" class="form-control" placeholder="SĐT người mượn" value="@ViewData["Phone"]" /></td>
-                        <td><input type="text" name="Fullname" class="form-control" placeholder="Tên của cuốn sách" value="@ViewData["BookName"]" /></td>
+                        <td><input type="text" name="Email" class="form-control" placeholder="Email người mượn" value="@ViewData["Email"]" /></td>
+                        <td><input type="text" name="Phone" class="form-control" placeholder="SĐT người mượn" value="@ViewData["Phone"]" /></td>
+                        <td><input type="text" name="BookName" class="form-control" placeholder="Tên của cuốn sách" value="@ViewData["BookName"]" /></td>
                         <td><input type="text" name="Isbn" class="form-control" placeholder="Isbn" value="@ViewData["Isbn"]" /></td>
                         <td><select name="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select></td>
                         <td><button type="submit" class="btn btn-primary" style="padding: 5px 15px;">&nbsp;&nbsp;Lọc&nbsp;&nbsp;</button></td>
