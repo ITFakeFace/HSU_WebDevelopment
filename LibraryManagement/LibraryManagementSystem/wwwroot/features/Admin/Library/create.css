@@ -1,0 +1,7 @@
+﻿.role-data[data-role="ADMINISTRATOR"] {
+    color: red;
+}
+
+.role-data {
+    color: green;
+}

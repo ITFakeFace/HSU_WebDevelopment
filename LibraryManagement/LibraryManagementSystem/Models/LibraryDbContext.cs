@@ -206,6 +206,12 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
                 .HasForeignKey(d => d.User)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_BookLoan_User");
+
+            entity.HasOne(d => d.LibraryNavigation)
+            .WithMany()
+            .HasForeignKey(d => d.Library)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("FK_BookLoan_Library");
         });
 
         modelBuilder.Entity<Category>(entity =>

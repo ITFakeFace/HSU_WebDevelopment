@@ -18,6 +18,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Remove="wwwroot\features\Admin\Library\createScript.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\features\Admin\Library\createScript.js" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MailKit" Version="4.8.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.10" />
@@ -34,6 +42,10 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\assets\image\default\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\features\Admin\Library\createScript.js" />
   </ItemGroup>
 
 </Project>
