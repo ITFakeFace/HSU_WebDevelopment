@@ -28,9 +28,6 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <h1>Địa chỉ</h1>
-            </div>
-            <div class="col-md-12">
                 <label for="library-select" class="form-label">Chi nhánh</label>
                 <select asp-for="Library" id="library-select" class="form-control" required>
                     @if (libraries != null)
@@ -57,7 +54,13 @@
                 <span asp-validation-for="Library" class="invalid-feedback"></span>
             </div>
         </div>
-        <div class="row">
+        @if (ViewData["Error"] != null && ViewData["Error"] != string.Empty){
+            <div class="row mt-3">
+                <div class="col-md-12 alert alert-danger">@ViewData["Error"]</div>
+            </div>
+
+        }
+        <div class="row mt-3">
             <div class="col-md-12">
                 <button class="btn btn-outlined-success">Xác nhận</button>
                 <button class="btn btn-primary">Reset</button>

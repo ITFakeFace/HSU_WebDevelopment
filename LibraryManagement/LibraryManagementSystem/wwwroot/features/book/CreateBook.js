@@ -1,4 +1,4 @@
-﻿const baseUrl = "https://localhost:50282/api";
+﻿const baseUrl = "http://localhost:5292/api";
 
 async function callAPI(path, method) {
     const url = baseUrl + path;

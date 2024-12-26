@@ -3,6 +3,7 @@ using LibraryManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace LibraryManagementSystem.Controllers.AdminController
 {
@@ -34,17 +35,32 @@ namespace LibraryManagementSystem.Controllers.AdminController
             return View();
         }
 
+        [HttpPost]
         public async Task<IActionResult> Create(CreateBookLoanDto loanDto)
         {
             var user = await _ctx.Users.Where(u => u.Id == loanDto.User).FirstOrDefaultAsync();
             // Check User đã mượn sách và tồn tại
             if (user == null)
             {
+                ViewData["Users"] = await _ctx.Users
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "CUSTOMER"))
+                    .ToListAsync();
+                ViewData["Books"] = await _ctx.Books.ToListAsync();
+                ViewData["Libraries"] = await _ctx.Libraries.ToListAsync();
                 ViewData["Error"] = "Không tìm thấy User";
                 return View(loanDto);
             }
-            else if (user.BookLoans.Last() != null && user.BookLoans.Last().IsReturned == 0)
+            else if (user.BookLoans != null && user.BookLoans.Count > 0 && user.BookLoans.Last().IsReturned == 0)
             {
+                ViewData["Users"] = await _ctx.Users
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "CUSTOMER"))
+                    .ToListAsync();
+                ViewData["Books"] = await _ctx.Books.ToListAsync();
+                ViewData["Libraries"] = await _ctx.Libraries.ToListAsync();
                 ViewData["Error"] = "User đã mượn sách";
                 return View(loanDto);
             }
@@ -52,6 +68,13 @@ namespace LibraryManagementSystem.Controllers.AdminController
             var library = await _ctx.Libraries.Where(lib => lib.Id == loanDto.Library).FirstOrDefaultAsync();
             if (library == null)
             {
+                ViewData["Users"] = await _ctx.Users
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "CUSTOMER"))
+                    .ToListAsync();
+                ViewData["Books"] = await _ctx.Books.ToListAsync();
+                ViewData["Libraries"] = await _ctx.Libraries.ToListAsync();
                 ViewData["Error"] = "Chi nhánh không tồn tại";
                 return View(loanDto);
             }
@@ -69,6 +92,13 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 }
                 if (!hasBook)
                 {
+                    ViewData["Users"] = await _ctx.Users
+                        .Include(u => u.UserRoles)
+                        .ThenInclude(ur => ur.Role)
+                        .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "CUSTOMER"))
+                        .ToListAsync();
+                    ViewData["Books"] = await _ctx.Books.ToListAsync();
+                    ViewData["Libraries"] = await _ctx.Libraries.ToListAsync();
                     ViewData["Error"] = "Sách không có ở chi nhánh hoặc đã hết";
                     return View(loanDto);
                 }
@@ -87,7 +117,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             _ctx.BookLoans.Add(loan);
             await _ctx.SaveChangesAsync();
 
-            return View(loanDto);
+            return RedirectToAction("Index");
         }
     }
 }
