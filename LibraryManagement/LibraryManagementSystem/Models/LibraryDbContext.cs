@@ -192,7 +192,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
         {
             entity.ToTable("BookLoan");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
             entity.Property(e => e.FromDate).HasColumnType("datetime");
             entity.Property(e => e.ToDate).HasColumnType("datetime");
             entity.Property(e => e.User).HasMaxLength(450);

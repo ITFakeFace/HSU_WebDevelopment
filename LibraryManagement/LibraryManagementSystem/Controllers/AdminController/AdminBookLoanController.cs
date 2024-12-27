@@ -3,6 +3,7 @@ using LibraryManagementSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq;
 
 namespace LibraryManagementSystem.Controllers.AdminController
@@ -38,7 +39,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
         [HttpPost]
         public async Task<IActionResult> Create(CreateBookLoanDto loanDto)
         {
-            var user = await _ctx.Users.Where(u => u.Id == loanDto.User).FirstOrDefaultAsync();
+            var user = await _ctx.Users.Include(u => u.BookLoans).Where(u => u.Id == loanDto.User).FirstOrDefaultAsync();
             // Check User đã mượn sách và tồn tại
             if (user == null)
             {
@@ -52,8 +53,10 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 ViewData["Error"] = "Không tìm thấy User";
                 return View(loanDto);
             }
-            else if (user.BookLoans != null && user.BookLoans.Count > 0 && user.BookLoans.Last().IsReturned == 0)
+            //Console.WriteLine($"\n\n{JsonConvert.SerializeObject(user.BookLoans)}\n\n");
+            if (user.BookLoans != null && user.BookLoans.Count > 0 && user.BookLoans.Last().IsReturned == 0)
             {
+                Console.WriteLine("\n\nLoaned\n\n");
                 ViewData["Users"] = await _ctx.Users
                     .Include(u => u.UserRoles)
                     .ThenInclude(ur => ur.Role)
@@ -78,30 +81,30 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 ViewData["Error"] = "Chi nhánh không tồn tại";
                 return View(loanDto);
             }
-            else
+
+            var booksInBranch = await _ctx.BookInBranches.Where(bib => bib.Library == library.Id).ToListAsync();
+            BookInBranch? bib = null;
+            bool hasBook = false;
+            // Check Sách phải có ở chi nhánh và phải còn số lượng > 0
+            foreach (var bookInBranch in booksInBranch)
             {
-                var booksInBranch = await _ctx.BookInBranches.Where(bib => bib.Library == library.Id).ToListAsync();
-                bool hasBook = false;
-                // Check Sách phải có ở chi nhánh và phải còn số lượng > 0
-                foreach (var bookInBranch in booksInBranch)
+                if (bookInBranch.Book == loanDto.Book && bookInBranch.Amount > 0)
                 {
-                    if (bookInBranch.Book == loanDto.Book && bookInBranch.Amount > 0)
-                    {
-                        hasBook = true;
-                    }
+                    hasBook = true;
+                    bib = bookInBranch;
                 }
-                if (!hasBook)
-                {
-                    ViewData["Users"] = await _ctx.Users
-                        .Include(u => u.UserRoles)
-                        .ThenInclude(ur => ur.Role)
-                        .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "CUSTOMER"))
-                        .ToListAsync();
-                    ViewData["Books"] = await _ctx.Books.ToListAsync();
-                    ViewData["Libraries"] = await _ctx.Libraries.ToListAsync();
-                    ViewData["Error"] = "Sách không có ở chi nhánh hoặc đã hết";
-                    return View(loanDto);
-                }
+            }
+            if (!hasBook)
+            {
+                ViewData["Users"] = await _ctx.Users
+                    .Include(u => u.UserRoles)
+                    .ThenInclude(ur => ur.Role)
+                    .Where(u => u.UserRoles.Any(ur => ur.Role.Name == "CUSTOMER"))
+                    .ToListAsync();
+                ViewData["Books"] = await _ctx.Books.ToListAsync();
+                ViewData["Libraries"] = await _ctx.Libraries.ToListAsync();
+                ViewData["Error"] = "Sách không có ở chi nhánh hoặc đã hết";
+                return View(loanDto);
             }
 
             var loan = new BookLoan
@@ -115,8 +118,27 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 Status = 1,
             };
             _ctx.BookLoans.Add(loan);
+            if (bib != null)
+            {
+                bib.Amount -= 1;
+                _ctx.BookInBranches.Update(bib);
+            }
             await _ctx.SaveChangesAsync();
 
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> ReturnBook(int id)
+        {
+            var bookLoan = await _ctx.BookLoans.SingleOrDefaultAsync(loan => loan.Id == id);
+            if (bookLoan == null || bookLoan.IsReturned == 1)
+            {
+                return RedirectToAction("Index");
+            }
+            bookLoan.Status = 1;
+            bookLoan.IsReturned = 1;
+            _ctx.BookLoans.Update(bookLoan);
+            await _ctx.SaveChangesAsync();
             return RedirectToAction("Index");
         }
     }

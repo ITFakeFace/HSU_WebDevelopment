@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace LibraryManagementSystem.Models;
 
@@ -22,7 +23,7 @@ public partial class User : IdentityUser<string>
     public string? Gender { get; set; }
 
     public virtual Address? AddressNavigation { get; set; }
-
+    [JsonIgnore]
     public virtual ICollection<BookLoan> BookLoans { get; set; } = new List<BookLoan>();
 
     public virtual ICollection<UserClaim> UserClaims { get; set; } = new List<UserClaim>();
