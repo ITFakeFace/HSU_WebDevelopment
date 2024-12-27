@@ -173,7 +173,10 @@ namespace LibraryManagementSystem.Controllers
 
             return View(result);
         }
-
+        public IActionResult Create()
+        {
+            return View();
+        }
 
         [method: HttpPost]
         public async Task<IActionResult> Create(CreateBookDTO createBookDTO)
