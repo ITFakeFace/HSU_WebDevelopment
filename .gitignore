@@ -49,3 +49,5 @@ launchSettings.json
 # User secrets (thông tin nhạy cảm)
 secrets.json
 *.sql
+
+LibraryManagement/LibraryManagementSystem/wwwroot/features/book/CreateBook.js
