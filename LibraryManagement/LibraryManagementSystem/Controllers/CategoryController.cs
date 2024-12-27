@@ -184,7 +184,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },
@@ -243,7 +242,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },
@@ -274,7 +272,7 @@ namespace LibraryManagementSystem.Controllers
             // Kiểm tra nếu tác giả có sách liên kết
             if (category.Books.Any())
             {
-                ViewBag.ErrorMessage = $"Không thể xóa bộ sách '{category.Name}' vì có sách liên kết:";
+                ViewBag.ErrorMessage = $"Không thể xóa thể loại '{category.Name}' vì có sách liên kết:";
             }
 
             return View("DeleteCategory", category);

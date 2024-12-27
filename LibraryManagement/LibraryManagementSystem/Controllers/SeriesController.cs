@@ -102,7 +102,7 @@ namespace LibraryManagementSystem.Controllers
             return Json(new { success = false, message = "Không tìm thấy mục." });
         }
 
-        [Route("Vendor/DetailVendor")]
+        [Route("Series/DetailSeries")]
         public async Task<IActionResult> Detail(int? id)
         {
             if (id == null)
@@ -183,7 +183,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },
@@ -242,7 +241,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },

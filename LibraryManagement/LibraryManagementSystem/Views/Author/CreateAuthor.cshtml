@@ -21,10 +21,10 @@
             <div class="form-group">
                 <label asp-for="Gender" class="control-label"></label>
                 <select asp-for="Gender" class="form-control">
-                    <option value="">Chọn Giới tính</option>
+                    <option value="2">Chọn Giới tính</option>
                     <option value="1">Nam</option>
                     <option value="0">Nữ</option>
-                    <option value="">Không tiết lộ</option>
+                    <option value="2">Không tiết lộ</option>
                 </select>
                 <span asp-validation-for="Gender" class="text-danger"></span>
             </div>
@@ -52,7 +52,7 @@
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <select asp-for="Status" class="form-control">
-                    <option value="">Chọn Tình trạng</option>
+                    <option value="1">Chọn Tình trạng</option>
 					<option value="1">Đang hoạt động</option>
                     <option value="0">Ngừng hoạt động</option>
                 </select>

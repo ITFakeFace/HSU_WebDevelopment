@@ -174,8 +174,8 @@
                             <button class="btn btn-secondary btn-sm mt-2" style="width: 114px;" onclick="toggleStatus(@item.Id)">
                                 @(item.Status == 1 ? "Ngừng hoạt động" : "Kích hoạt")
                             </button>
-                        <a class="btn btn-primary btn-sm" style="margin-top:5px" asp-action="EditSeries" asp-route-id="@item.Id">Chỉnh sửa</a>
-                        <a class="btn btn-danger btn-sm" style="margin-top:5px" asp-action="DeleteSeries" asp-route-id="@item.Id">Xóa</a>
+                        <a class="btn btn-primary btn-sm" style="margin-top:5px" asp-action="Edit" asp-route-id="@item.Id">Chỉnh sửa</a>
+                        <a class="btn btn-danger btn-sm" style="margin-top:5px" asp-action="Delete" asp-route-id="@item.Id">Xóa</a>
                     </div>
                 </div>
             </div>
