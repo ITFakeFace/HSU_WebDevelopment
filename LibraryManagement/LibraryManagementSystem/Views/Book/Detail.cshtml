@@ -192,10 +192,8 @@
 
 
         <!-- Update Button for Admin -->
-        @if (User.IsInRole("ADMINISTRATOR"))
-        {
-            <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary">Cập nhật</a>
-        }
+        
+        <a asp-action="Update" asp-controller="adminbook" asp-route-id="@Model.Id" class="btn btn-primary">Cập nhật</a>
     </div>
 </div>
 

@@ -1,0 +1,128 @@
+<link rel="stylesheet" href="~/features/book/createbook.css" asp-append-version="true" />
+
+<div class="create-book-body">
+    <section class="container">
+        <header>Registration Form</header>
+        <form action="/Book/Create" method="post" enctype="multipart/form-data" class="form">
+            <div class="input-box">
+                <label>Book Name</label>
+                <input type="text" name="Title" placeholder="Enter book name" required />
+            </div>
+
+            <div class="input-box">
+                <label>Description</label>
+                <input type="text" name="Description" placeholder="Enter book description" />
+            </div>
+
+            <div class="input-box">
+                <label>ISBN</label>
+                <input type="text" name="ISBN" placeholder="Enter ISBN number" />
+                <div id="isbn-error" class="error-message"></div> 
+
+            </div>
+
+            <div class="input-box">
+                <div>Author</div>
+                <select id="author" name="AuthorId", multiple="multiple">
+    
+                </select>
+            </div>
+
+            <div class="input-box">
+                <div>Vendor</div>
+                <select id="vendor" name="VendorId">
+                </select>
+            </div>
+
+            <div class="input-box">
+                <div>Publisher</div>
+                <select id="publisher" name="PublisherId">
+                </select>
+            </div>
+
+            <div class="input-box">
+                <label>Publish year</label>
+                <input type="text" name="PublishYear" placeholder="Enter Publish year" required />
+            </div>
+
+            <div class="input-box">
+                <label>Version</label>
+                <input type="text" name="Version" placeholder="Enter Version" required />
+            </div>
+
+            <div class="input-box">
+                <label>Page Number</label>
+                <input type="text" name="PageNumber" placeholder="Enter Page Number" required />
+            </div>
+
+            <div class="input-box">
+                <div>Series</div>
+                <select id="series" name="SeriesId">
+                </select>
+            </div>
+            <div class="input-box">
+                <label for="categories"></label>
+                <div>Category</div>
+                <select id="categories" name="CategoriesId">
+                </select>
+            </div>
+
+            <div class="input-box">
+                <label>Language</label>
+                <input type="text" name="Language" placeholder="Enter Book Language" required />
+            </div>
+            <div class="input-box">
+                <label for="file">Image</label>
+                <input type="file"
+                       id="file"
+                       accept="image/*"
+                       multiple="multiple"
+                       name="BookImgs"/>
+                <div class="img-area" data-img="">
+                    <div class="title-area">
+                        <i class="bx bxs-cloud-upload icon"></i>
+                        <h3>Upload Image</h3>
+                        <p>Image size must be less than <span>2MB</span></p>
+                    </div>
+                </div>
+            </div>
+      
+
+            <button type="submit">Submit</button>
+
+        </form>
+    </section>
+   
+</div>
+@section Scripts{
+    <script src="~/features/book/CreateBook.js" asp-append-version="true"></script>
+    <script src="~/features/book/PreviewImage.js" asp-append-version="true"></script>
+    <script>
+        // Hàm kiểm tra định dạng ISBN
+        function validateISBN(isbn) {
+            const isbnRegex = /^\d{13}$/;
+            return isbnRegex.test(isbn);
+        }
+
+        $(document).ready(function () {
+            // Xử lý sự kiện submit form
+            $('form').on('submit', function (event) {
+                const isbnInput = $('input[name="ISBN"]').val();
+                const errorDiv = $('#isbn-error');
+
+                if (!validateISBN(isbnInput)) {
+                    event.preventDefault(); // Ngăn chặn việc submit form
+                    errorDiv.text("Invalid ISBN format. Example: 9780306406157");
+                    errorDiv.css('color', 'red');
+                } else {
+                    errorDiv.text(''); // Xóa lỗi nếu đúng định dạng
+                }
+            });
+        });
+
+        
+    </script>
+}
+
+
+
