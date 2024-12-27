@@ -105,6 +105,7 @@ namespace LibraryManagementSystem.Controllers
                     Status = 1,
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
+                await _userManager.AddToRoleAsync(user, "CUSTOMER");
                 if (result.Succeeded)
                 {
                     // Đăng nhập ngay sau khi đăng ký

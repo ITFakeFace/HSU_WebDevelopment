@@ -1,21 +1,23 @@
-﻿using LMS_ServerAPI.Repositories;
-using Microsoft.EntityFrameworkCore;
-using LMS_ServerAPI.Models;
+﻿using LMS_ServerAPI.Models;
+using LMS_ServerAPI.Repositories;
+using LMS_ServerAPI.Repositories.AddressRepositories;
 //using LMS_ServerAPI.Repositories.BookRepository;
 using LMS_ServerAPI.Repositories.AuthorRepositories;
+using LMS_ServerAPI.Repositories.PublisherRepository;
+using LMS_ServerAPI.Repositories.SeriesRepository;
+using LMS_ServerAPI.Repositories.VendorRepository;
+using LMS_ServerAPI.Services.AddressService;
 using LMS_ServerAPI.Services.AuthorService;
 using LMS_ServerAPI.Services.PublisherService;
-using LMS_ServerAPI.Repositories.PublisherRepository;
-using LMS_ServerAPI.Repositories.VendorRepository;
-using LMS_ServerAPI.Services.VendorService;
-using LMS_ServerAPI.Repositories.SeriesRepository;
 using LMS_ServerAPI.Services.SeriesService;
+using LMS_ServerAPI.Services.VendorService;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Thêm dịch vụ DbContext với connection string
 builder.Services.AddDbContext<LibraryDbContext>(options =>
-	options.UseSqlServer(builder.Configuration.GetConnectionString("LibrarySqlServer"))
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LibrarySqlServer"))
 );
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
@@ -23,22 +25,24 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 // Thêm CORS
 builder.Services.AddCors(options =>
 {
-	options.AddPolicy(name: MyAllowSpecificOrigins,
-		policy =>
-		{
-			policy.WithOrigins(
-				"http://127.0.0.1:5500",
-				"https://localhost",
-				"http://localhost",
-				"https://localhost:50283"
-				)
-			.AllowAnyHeader()
-			.AllowAnyMethod();
-		});
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+        policy =>
+        {
+            policy.WithOrigins(
+                "http://127.0.0.1:5500",
+                "https://localhost",
+                "http://localhost",
+                "https://localhost:50283",
+                "http://localhost:5057"
+                )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+        });
 });
 
 // Đăng ký các repository và service
 
+// Author 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
@@ -47,6 +51,13 @@ builder.Services.AddScoped<IVendorRepository, VendorRepository>();
 builder.Services.AddScoped<IVendorService, VendorService>();
 builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
 builder.Services.AddScoped<ISeriesService, SeriesService>();
+// Address
+builder.Services.AddScoped<ICityRepository, CityRepository>();
+builder.Services.AddScoped<IDistrictRepository, DistrictRepository>();
+builder.Services.AddScoped<IWardRepository, WardRepository>();
+builder.Services.AddScoped<IStreetRepository, StreetRepository>();
+builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+builder.Services.AddScoped<IAddressService, AddressService>();
 
 // Thêm dịch vụ controller
 builder.Services.AddControllers();
@@ -60,8 +71,8 @@ var app = builder.Build();
 // Cấu hình HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 app.UseAuthorization();
 app.UseCors("_myAllowSpecificOrigins");

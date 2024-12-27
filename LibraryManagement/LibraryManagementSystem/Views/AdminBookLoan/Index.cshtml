@@ -1,0 +1,67 @@
+﻿@model IEnumerable<BookLoan>
+
+<div class="container">
+    <div class="row col-md-12">
+        <h1>Danh sách mượn sách</h1>
+    </div>
+    <a asp-action="Create" asp-controller="AdminBookLoan" class="btn btn-success">Mượn sách</a>
+    <table class="table table-outline" id="data-table">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Chi nhánh</th>
+                <th>Sách</th>
+                <th>Thời hạn</th>
+                <th>Tình trạng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var loan in Model)
+            {
+                <tr>
+                    <td>@loan.UserNavigation.Pid</td>
+                    <td>@loan.LibraryNavigation.Name</td>
+                    <td>@loan.BookNavigation.Name</td>
+                    <td>@loan.FromDate - @loan.ToDate</td>
+                    <td>
+                        @if (loan.Status!=null )
+                        {
+                            if (loan.Status == 1)
+                            {
+                                <a asp-action="ReturnBook" asp-controller="AdminBookLoan" class="btn btn-success">Đã trả sách</a>
+                            } 
+                            else
+                            {
+                                if (DateTime.Now > loan.ToDate)
+                                {
+                                    <a asp-action="ReturnBook" asp-controller="AdminBookLoan" class="btn btn-danger">Quá hạn trả sách</a>
+                                } 
+                                else
+                                {
+                                    <a asp-action="ReturnBook" asp-controller="AdminBookLoan" class="btn btn-warning">Chưa trả sách</a>
+
+                                }
+                            }
+                        }
+                    </td>
+                    <td>
+                        <div class="flex action-box" id="action-box-@loan.Id" data-id="@loan.Id">
+                            <a asp-action="Details" asp-controller="AdminBookLoan" asp-route-id="@loan.Id" class="btn btn-outline-primary btn-details" data-id="@loan.Id">Details</a>
+                            <a asp-action="Update" asp-controller="AdminBookLoan" asp-route-id="@loan.Id" class="btn btn-outline-success btn-update" data-id="@loan.Id">Update</a>
+                            <a class="btn btn-danger btn-delete" data-id="@loan.Id">Delte</a>
+                        </div>
+                        <div class="flex delete-confirm-box" id="delete-confirm-box-@loan.Id" data-id="@loan.Id">
+                            <a asp-action="Delete" asp-controller="AdminBookLoan" asp-route-id="@loan.Id" class="btn btn-outline-success btn-confirm" data-id="@loan.Id">Confirm</a>
+                            <a class="btn btn-outline-danger btn-cancel" data-id="@loan.Id">Cancel</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@section Scripts{
+    <script src="~/features/Admin/BookLoan/create.js"></script>
+}

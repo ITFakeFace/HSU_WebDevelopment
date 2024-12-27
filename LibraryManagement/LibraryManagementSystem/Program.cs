@@ -16,6 +16,7 @@ builder.Services.AddIdentity<User, Role>().AddEntityFrameworkStores<LibraryDbCon
 .AddDefaultUI()
 .AddDefaultTokenProviders();
 
+builder.Services.AddScoped<AddressService>();
 
 builder.Services.Configure<IdentityOptions>(options =>
 {

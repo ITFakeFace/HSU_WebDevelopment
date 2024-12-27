@@ -22,4 +22,7 @@ public partial class BookLoan
     public virtual Book BookNavigation { get; set; } = null!;
 
     public virtual User UserNavigation { get; set; } = null!;
+    public int Library { get; set; }
+
+    public virtual Library LibraryNavigation { get; set; } = null!;
 }
