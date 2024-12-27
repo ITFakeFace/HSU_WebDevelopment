@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace LibraryManagementSystem.Models;
-
+public enum PublisherStatus
+{
+    Active = 1,
+    Inactive = 0,
+    Unknown = -1
+}
 public partial class Publisher
 {
     public int Id { get; set; }

@@ -21,157 +21,147 @@
         { "BR", "Brazil" }
     };
 }
-<link rel="stylesheet" href="~/features/Book/Detail/book.css" />
+
+<link rel="stylesheet" href="~/features/Book/Detail/book.css?v=@DateTime.Now.Ticks" />
+
 <div class="book-detail">
+    <!-- Left Section -->
     <div class="book-detail-left">
         <div class="book-detail-left-img">
-            <div>
-                <img id="largeImage" src="@Url.Action("GetBookImage", "Book", new { bookId = Model.Id })" alt="Book Image" class="large-image" />
+            <!-- Hiển thị hình ảnh lớn trong một div riêng biệt với chiều cao và chiều rộng cố định -->
+            <div class="large-image-container">
+                <img id="largeImage"
+                     src="data:image/jpeg;base64,@Convert.ToBase64String(Model.BookImgs.FirstOrDefault()?.Image)"
+                     alt="Book Image"
+                     class="large-image" />
             </div>
         </div>
-    </div>
-    <div class="book-detail-right">
 
-        <!--contain book's name and authors's name-->
-        <div class="book-detail-right-name">
-            <h1> @Html.DisplayFor(model=>model.Name) </h1>
+        <!-- Hiển thị tất cả các hình ảnh của sách -->
+        <div class="book-images-gallery">
+            @foreach (var img in Model.BookImgs)
+            {
+                <div class="book-image">
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(img.Image)"
+                         alt="Book Image"
+                         class="small-image"
+                         onclick="changeLargeImage('@Convert.ToBase64String(img.Image)')" />
+                </div>
+            }
         </div>
-        <div class="book-detail-right-authors">
-            <p> Tác giả: 
-                @{
-                    var isFirstAuth = true;
-                    foreach (var auth in Model.Authors)
+    </div>
+
+    <!-- Right Section -->
+    <div class="book-detail-right">
+        <!-- Book Title and Authors -->
+        <div class="book-title-authors">
+            <h1>@Html.DisplayFor(model => model.Name)</h1>
+            <p class="authors">
+                <span><b>Tác giả: </b></span>
+                @if (Model.Authors.Any())
+                {
+                    var isFirst = true;
+                    foreach (var author in Model.Authors)
                     {
-                        @if (!isFirstAuth)
+                        if (!isFirst)
                         {
-                            <a>, @auth.Name</a>
+                            @:<span>, </span>
                         }
-                        else
-                        {
-                            <a>@auth.Name</a>
-                            isFirstAuth = !isFirstAuth;
-                        }
+                        <a>@author.Name</a>
+                        isFirst = false;
                     }
+                }
+                else
+                {
+                    <span>Chưa có tác giả</span>
                 }
             </p>
         </div>
 
-        <div class="book-detail-right-desc">
-            <p class="info-title"> Mô tả: </p>
+        <!-- Description -->
+        <div class="book-description">
+            <p class="info-title"><b>Mô tả:</b></p>
+            <p>@Html.DisplayFor(model => model.Description)</p>
+        </div>
+
+        <!-- Basic Info -->
+        <div class="book-basic-info">
+            <div>
+                <p class="info-title">Ngày phát hành:</p>
+                <p>@Html.DisplayFor(model => model.PublishYear)</p>
+            </div>
+            <div>
+                <p class="info-title">Nhà phát hành:</p>
+                <p>@Html.DisplayFor(model => model.PublisherNavigation.Name)</p>
+            </div>
+            <div>
+                <p class="info-title">Ngôn ngữ:</p>
+                <p>@(countryNames.ContainsKey(Model.Language) ? countryNames[Model.Language] : "Không rõ")</p>
+            </div>
+            <div>
+                <p class="info-title">Số trang:</p>
+                <p>@Html.DisplayFor(model => model.PageNumber)</p>
+            </div>
+        </div>
+
+        <!-- Categories -->
+        <div class="book-categories">
             <p>
-                @Html.DisplayFor(model=> model.Description )
+                <b>Thể loại:</b>
+                @if (Model.Categories.Any())
+                {
+                    var isFirstCateg = true;
+                    foreach (var categ in Model.Categories)
+                    {
+                        if (!isFirstCateg)
+                        {
+                            @:<span>, </span>
+                        }
+                        <a>@categ.Name</a>
+                        isFirstCateg = false;
+                    }
+                }
+                else
+                {
+                    <span>Chưa có thể loại</span>
+                }
             </p>
         </div>
 
-        <!--contain simple publisher information -->
-        <div class="book-detail-right-publisher-info">
-            <div id="book-detail-right-publisher-info-date">
-                <p class="info-title"> Ngày phát hành </p>
-                <p> @Html.DisplayFor(model=>model.PublishYear) </p>
+        <!-- Additional Info -->
+        <div class="book-additional-info">
+            <div>
+                <p><b>Thuộc series:</b> @Html.DisplayFor(model => model.SeriesNavigation.Name)</p>
             </div>
-            <div id="book-detail-right-publisher-info-name">
-                <p class="info-title"> Nhà phát hành </p>
-                <p> @Html.DisplayFor(model => model.PublisherNavigation.Name) </p>
+            <div>
+                <p><b>Mã ISBN:</b> @Html.DisplayFor(model => model.Isbn)</p>
             </div>
-            @if(User.IsInRole("ADMINISTRATOR")) {
-                <div id="book-detail-right-publisher-info-name">
-                    <p class="info-title"> Nhà cung cấp </p>
-                    <a asp-action="Detail" asp-controller="Vendor" asp-route-id="@Model.Vendor">@Model.VendorNavigation.Name</a>
-                </div>
-            } else {
-                <div id="book-detail-right-publisher-info-name">
-                    <p class="info-title"> Nhà cung cấp </p>
-                    <p> @Html.DisplayFor(model => model.VendorNavigation.Name) </p>
+            <div>
+                <p><b>Phiên bản:</b> @Html.DisplayFor(model => model.Version)</p>
+            </div>
+            @if (User.IsInRole("ADMINISTRATOR"))
+            {
+                <div>
+                    <p>
+                        <b>Nhà cung cấp:</b>
+                        <a asp-action="DetailVendor" asp-controller="Vendor" asp-route-id="@Model.Vendor">@Model.VendorNavigation.Name</a>
+                    </p>
                 </div>
             }
         </div>
 
-        <!--contain infomation language and pagesmodel.Language-->
-        <div class="book-detail-right-simple-info">
-            <div id="book-detail-right-simple-info-lang">
-                <p class="info-title"> Ngôn ngữ </p>
-                <p>
-                    @if (countryNames.ContainsKey(Model.Language))
-                    {
-                        <span>@countryNames[Model.Language]</span>
-                    }
-                    else
-                    {
-                        <span>Unknown</span>
-                    }
-                </p>
-            </div>
-            <div id="book-detail-right-simple-info-page">
-                <p class="info-title"> Số trang </p>
-                <p> @Html.DisplayFor(model => model.PageNumber) </p>
-            </div>
-        </div>
-
-        <!--contain book's category -->
-        <div>
-            <div id="book-detail-right-category">
-                <p>
-                    <b> Thể loại: </b>
-                    @{
-                        var isFirstCateg = true;
-                        foreach (var categ in Model.Categories)
-                        {
-                            @if (!isFirstCateg)
-                            {
-                                <a>, @categ.Name</a>
-                            }
-                            else
-                            {
-                                <a>@categ.Name</a>
-                                isFirstCateg = !isFirstCateg;
-                            }
-                        }
-                    }
-                </p>
-            </div>
-        </div>
-
-        <div class="book-detail-series">
-            <div id="book-detail-right-series">
-                <p>
-                    <b> Thuộc về series: </b>
-                    @Html.DisplayFor(model=>model.SeriesNavigation.Name)
-                </p>
-            </div>
-        </div>
-
-        <div class="book-detail-isbn">
-                <p>
-                    <b> Mã ISBN: </b>
-                    @Html.DisplayFor(model => model.Isbn)
-                </p>
-        </div>
-
-        <div class="book-detail-version">
-            <p>
-                <b> Phiên bản: </b>
-                @Html.DisplayFor(model=>model.Version)
-            </p>
-        </div>
-
+        <!-- Update Button for Admin -->
         @if (User.IsInRole("ADMINISTRATOR"))
         {
-            <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-outline-primary">
-                <div>
-                    Update
-                </div>
-            </a>
+            <a asp-action="Update" asp-route-id="@Model.Id" class="btn btn-primary">Cập nhật</a>
         }
-
     </div>
-
 </div>
 
 <script>
-    function showLargeImage(img) {
-        const largeImage = document.getElementById("largeImage");
-        largeImage.src = img.src;
+    // Function to change the large image when a small image is clicked
+    function changeLargeImage(imageBase64) {
+        var largeImage = document.getElementById("largeImage");
+        largeImage.src = "data:image/jpeg;base64," + imageBase64;
     }
 </script>
-
-

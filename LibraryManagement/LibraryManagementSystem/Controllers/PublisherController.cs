@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryManagementSystem.Models;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -21,291 +15,133 @@ namespace LibraryManagementSystem.Controllers
             _context = context;
         }
 
-        // GET: Publisher
-        public async Task<IActionResult> Index(string Id, string Name, string Status, int pageNumber = 1, int pageSize = 10)
+        // Index: List Publishers
+        public async Task<IActionResult> Index(string? Name, int? Status, int pageNumber = 1, int pageSize = 10)
         {
-            var publisher = _context.Publishers.AsQueryable();
-            if (!string.IsNullOrEmpty(Id))
-            {
-                int parsedId;
-                if (int.TryParse(Id, out parsedId))
-                {
-                    publisher = publisher.Where(a => a.Id == parsedId);
-                }
-            }
+            var publishers = _context.Publishers.AsQueryable();
+
+            // Lọc theo tên nếu có
             if (!string.IsNullOrEmpty(Name))
-                publisher = publisher.Where(a => a.Name.Contains(Name));
+                publishers = publishers.Where(p => p.Name.Contains(Name));
 
-            if (!string.IsNullOrEmpty(Status))
-            {
-                // Chuyển đổi chuỗi Status thành số để so sánh
-                if (int.TryParse(Status, out int statusValue))
-                {
-                    publisher = publisher.Where(a => a.Status == statusValue);
-                }
-            }
+            // Lọc theo trạng thái nếu có
+            if (Status.HasValue)
+                publishers = publishers.Where(p => p.Status == Status);
 
-            var paginatedPublisher = await publisher
-                .OrderBy(a => a.Name)
+            var paginatedPublishers = await publishers
+                .OrderBy(p => p.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Include(a => a.Books)
                 .ToListAsync();
 
-            ViewBag.PageNumber = pageNumber;
-            ViewBag.PageSize = pageSize;
-            ViewBag.TotalPages = (int)Math.Ceiling((double)publisher.Count() / pageSize);
-            ViewBag.TotalPublisher = (double)publisher.Count();
-
-            ViewData["Id"] = Id;
+            // Truyền giá trị lọc vào ViewData
             ViewData["Name"] = Name;
-            ViewData["Status"] = Status;
+            ViewData["Status"] = Status?.ToString();
+            ViewData["PageNumber"] = pageNumber;
+            ViewData["PageSize"] = pageSize;
+            ViewData["TotalPages"] = (int)Math.Ceiling((double)publishers.Count() / pageSize);
 
-
-            ViewBag.StatusOptions = new SelectList(
-                new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "", Text = "Chọn trạng thái" },
-                    new SelectListItem { Value = "1", Text = "Đang hoạt động" },
-                    new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
-                },
-                "Value",
-                "Text",
-                Status
-                );
-
-
-            return View(paginatedPublisher);
-
+            return View(paginatedPublishers);
         }
 
 
-
-        [HttpPost]
-        [Route("Publisher/ToggleStatus/{id}")]
-        public async Task<IActionResult> ToggleStatus(int id)
-        {
-            var publisher = await _context.Publishers.FirstOrDefaultAsync(a => a.Id == id);
-
-            if (publisher != null)
-            {
-                // Nếu trạng thái là null, mặc định chuyển thành 1 (Kích hoạt)
-                publisher.Status = publisher.Status == null || publisher.Status == 0 ? 1 : 0;
-
-                _context.Publishers.Update(publisher);
-                await _context.SaveChangesAsync();
-
-                // Trả về trạng thái mới dưới dạng JSON
-                return Json(new { success = true, status = publisher.Status });
-            }
-
-            return Json(new { success = false, message = "Không tìm thấy mục." });
-        }
-
-        [Route("Publisher/DetailPublisher")]
-        public async Task<IActionResult> Detail(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var publisher = await _context.Publishers
-                .Include(a => a.Books) // Nạp các Book liên quan
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (publisher == null)
-            {
-                return NotFound();
-            }
-
-
-            return View("DetailPublisher", publisher);
-        }
-
-
-        // GET: Publisher/CreatePublisher
-        [Route("Publisher/CreatePublisher")]
+        // Create: GET
         public IActionResult Create()
         {
-            return View("CreatePublisher"); // Trả về view cụ thể
+            return View();
         }
 
-        // POST: Publisher/CreatePublisher
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Create: POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Publisher/CreatePublisher")]
-        public async Task<IActionResult> Create([Bind("Id,Name,Status")] Publisher Publisher)
+        public async Task<IActionResult> Create([Bind("Id, Name, Parent, Status")] Publisher publisher)
         {
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Add(Publisher);
-                    await _context.SaveChangesAsync();
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    // Ghi log lỗi nếu xảy ra vấn đề lưu dữ liệu
-                    ModelState.AddModelError("", "Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
-                    Console.WriteLine(ex.Message); // Hoặc ghi log lỗi
-                }
+                _context.Add(publisher);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-
-            // Hiển thị các lỗi trong ModelState trên giao diện
-            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
-            {
-                Console.WriteLine(error.ErrorMessage); // Log lỗi (nếu cần)
-            }
-
-            // Trả lại form với thông tin đã nhập và thông báo lỗi
-            return View("CreatePublisher", Publisher);
+            return View(publisher);
         }
 
-
-        // GET: Publisher/EditPublisher/5
-        [Route("Publisher/EditPublisher")]
+        // Edit: GET
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
-            var Publisher = await _context.Publishers.FindAsync(id);
-            if (Publisher == null)
-            {
-                return NotFound();
-            }
+            var publisher = await _context.Publishers.FindAsync(id);
+            if (publisher == null) return NotFound();
 
-
-            ViewBag.StatusOptions = new SelectList(
-                new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "1", Text = "Đang hoạt động" },
-                    new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
-                },
-                "Value",
-                "Text",
-                Publisher.Status
-                );
-            return View("EditPublisher", Publisher);
+            return View(publisher);
         }
 
-        // POST: Authors/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // Edit: POST
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("Publisher/EditPublisher")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Status")] Publisher Publisher)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Name, Parent, Status")] Publisher publisher)
         {
-            if (id != Publisher.Id)
-            {
-                return NotFound();
-            }
-
+            if (id != publisher.Id) return NotFound();
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(Publisher);
+                    _context.Update(publisher);
                     await _context.SaveChangesAsync();
-                    // Sau khi lưu thành công, chuyển hướng đến trang Index
                     return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PublisherExists(Publisher.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        // Ghi log lỗi khi có lỗi đồng thời (concurrency error)
-                        ModelState.AddModelError("", "Có lỗi xảy ra khi cập nhật. Vui lòng thử lại.");
-                        Console.WriteLine("Concurrency error: " + Publisher.Id); // Ghi log lỗi
-                    }
+                    if (!PublisherExists(publisher.Id)) return NotFound();
+                    else throw;
                 }
-                catch (Exception ex)
-                {
-                    // Xử lý bất kỳ lỗi nào khác khi lưu dữ liệu
-                    ModelState.AddModelError("", "Có lỗi xảy ra khi lưu dữ liệu. Vui lòng thử lại.");
-                    Console.WriteLine(ex.Message); // Hoặc ghi log chi tiết lỗi
-                }
-                //return View("EditAuthor",Author);
             }
-
-            ViewBag.StatusOptions = new SelectList(
-                new List<SelectListItem>
-                {
-                    new SelectListItem { Value = "1", Text = "Đang hoạt động" },
-                    new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
-                },
-                "Value",
-                "Text",
-                Publisher.Status
-                );
-            return View("EditPublisher", Publisher);
+            return View(publisher);
         }
 
-        // GET: Publisher/DeletePublisher/5
-        [Route("Publisher/DeletePublisher")]
+        // Delete: GET
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            if (id == null) return NotFound();
 
             var publisher = await _context.Publishers
-                .Include(a => a.Books) // Nạp các Book liên quan
+                .Include(p => p.Books)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (publisher == null)
-            {
-                return NotFound();
-            }
 
-            // Kiểm tra nếu tác giả có sách liên kết
-            if (publisher.Books.Any())
-            {
-                ViewBag.ErrorMessage = $"Không thể xóa NXB '{publisher.Name}' vì có sách liên kết:";
-            }
-
-            return View("DeletePublisher", publisher);
+            if (publisher == null) return NotFound();
+            return View(publisher);
         }
 
+        // Delete: POST
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Route("Publisher/DeletePublisher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var publisher = await _context.Publishers
-                .Include(a => a.Books) // Nạp các Book liên quan
-                .FirstOrDefaultAsync(a => a.Id == id);
-
+            var publisher = await _context.Publishers.FindAsync(id);
             if (publisher != null)
             {
-                if (publisher.Books.Any()) // Kiểm tra nếu có liên kết với Book
-                {
-                    publisher.Status = 0; // Cập nhật trạng thái thành 0
-                    _context.Publishers.Update(publisher);
-                }
-                else
-                {
-                    _context.Publishers.Remove(publisher); // Xóa nếu không có liên kết
-                }
+                _context.Publishers.Remove(publisher);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        // Change Status
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeStatus(int id)
+        {
+            var publisher = await _context.Publishers.FindAsync(id);
+            if (publisher == null) return NotFound();
 
+            publisher.Status = (publisher.Status == 1) ? 0 : 1;
 
+            _context.Update(publisher);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
 
         private bool PublisherExists(int id)
         {

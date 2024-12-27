@@ -51,10 +51,20 @@ namespace LibraryManagementSystem.Controllers
 
         public async Task<IActionResult> Detail(int? Id)
         {
+
             if (Id == null || _context.Books == null)
             {
                 return RedirectToAction("Index", "Book");
             }
+
+
+            if (!User.Identity.IsAuthenticated)
+            {
+
+                return RedirectToAction("Login", "Account");
+            }
+
+
             var book = await _context.Books
                 .Include(a => a.Authors)
                 .Include(a => a.BookInBranches)
@@ -65,17 +75,20 @@ namespace LibraryManagementSystem.Controllers
                 .Include(a => a.SeriesNavigation)
                 .Include(a => a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
+
             var user = await _userManager.GetUserAsync(User);
             var roles = await _signInManager.UserManager.GetRolesAsync(user);
+
             if (book == null || (book.Status == 0 && !roles.Contains("ADMINISTRATOR")))
             {
                 return RedirectToAction("Index", "Book");
             }
+
+
             return View(book);
         }
 
-
-        public async Task<IActionResult> Deactive(int? Id)
+        public bool IncludeAll(List<Author>? source, List<string> dest)
         {
             if (Id == null || _context.Books == null)
             {
@@ -102,8 +115,18 @@ namespace LibraryManagementSystem.Controllers
             return RedirectToAction("Index", "Book");
         }
 
-
-        public async Task<IActionResult> Search(string name, string language, int? vendor, int? Publisher, int? publishYear, string version, int? series, int? status)
+        public async Task<IActionResult> Search(
+     string name,
+    string language,
+    int? vendor,
+    int? publisher,
+    int? publishYearFrom,
+    int? publishYearTo,
+    string version,
+    int? series,
+    int? status,
+    string authors,
+    List<int> categoryIds)
         {
 
             if (string.IsNullOrEmpty(name) &&
@@ -123,6 +146,9 @@ namespace LibraryManagementSystem.Controllers
                 .Include(b => b.PublisherNavigation)
                 .Include(b => b.VendorNavigation)
                 .Include(b => b.BookImgs)
+                .Include(b => b.Categories.Where(c => c.Status == 1))
+                .Include(b => b.Authors)
+                .Where(b => b.Authors.All(a => a.Status == 1))
                 .AsQueryable();
 
             // Lọc theo từng tiêu chí
@@ -159,7 +185,8 @@ namespace LibraryManagementSystem.Controllers
                 query = query.Where(b => b.Series == series);
             }
 
-            if (status != null)
+
+            if (status.HasValue)
             {
                 query = query.Where(b => b.Status == status);
             }
@@ -171,7 +198,15 @@ namespace LibraryManagementSystem.Controllers
                 ViewBag.Message = "fuck";
             }
 
-            return View(result);
+            if (!books.Any())
+            {
+                ViewBag.Message = "Không tìm thấy sách nào!";
+            }
+
+
+            ViewBag.Categories = await _context.Categories.Where(c => c.Status == 1).ToListAsync();
+
+            return View(books);
         }
         public IActionResult Create()
         {
@@ -240,8 +275,14 @@ namespace LibraryManagementSystem.Controllers
         {
             return View();
         }
+        [HttpGet("book/upload-image")]
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
 
-        [HttpPost]
+
+        [HttpPost("book/upload-image")]
         public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
         {
             //Console.WriteLine("Id của sách là: " + id);
@@ -253,9 +294,18 @@ namespace LibraryManagementSystem.Controllers
 
             if (book == null)
             {
-                TempData["Message"] = "Book not found.";
+                TempData["Message"] = "ID sách không hợp lệ.";
                 return RedirectToAction("Index");
             }
+
+            // Kiểm tra sách có tồn tại trong cơ sở dữ liệu hay không
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null)
+            {
+                TempData["Message"] = "Sách không tồn tại.";
+                return RedirectToAction("Index");
+            }
+
 
             if (imageFile != null && imageFile.Length > 0)
             {
@@ -263,56 +313,68 @@ namespace LibraryManagementSystem.Controllers
                 await imageFile.CopyToAsync(ms);
                 var imageBytes = ms.ToArray();
 
-                // Check if an image already exists for this book
-                var existingBookImg = book.BookImgs.FirstOrDefault();
-                if (existingBookImg != null)
+                var newBookImg = new BookImg
                 {
-                    // Update existing image
-                    existingBookImg.Image = imageBytes;
-                    _context.BookImgs.Update(existingBookImg);
-                }
-                else
-                {
-                    // Add new image
-                    var newBookImg = new BookImg
-                    {
-                        Book = bookId,
-                        Image = imageBytes
-                    };
-                    _context.BookImgs.Add(newBookImg);
-                }
+                    Book = bookId,
+                    Image = imageBytes
+                };
 
-                TempData["Message"] = $"Updated image for book ID '{bookId}'.";
+                _context.BookImgs.Add(newBookImg);
                 await _context.SaveChangesAsync();
+
+                TempData["Message"] = $"Đã thêm ảnh mới cho sách ID '{bookId}'.";
             }
             else
             {
-                TempData["Message"] = "No image file selected.";
+                TempData["Message"] = "Không có tệp ảnh được chọn.";
             }
 
             return RedirectToAction("Index", "Book");
         }
 
-        [HttpGet]
+
+
+
+        [HttpGet("get-book-image/{bookId}")]
         public IActionResult GetBookImage(int bookId)
         {
             var bookImg = _context.BookImgs.FirstOrDefault(b => b.Book == bookId);
 
             if (bookImg == null || bookImg.Image == null)
             {
-                // Return a placeholder image if no image exists
-                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "");
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "placeholder.png");
                 return PhysicalFile(placeholderPath, "image/png");
             }
 
-            return File(bookImg.Image, "image/jpeg"); // Adjust MIME type as needed
+            return File(bookImg.Image, "image/jpeg");
         }
 
 
-        [method: HttpPost]
-        public async Task<IActionResult> Update(UpdateBookDTO updateBookDTO)
+
+
+        public async Task<IActionResult> Index(
+    string name,
+    string language,
+    int? vendor,
+    int? publisher,
+    int? publishYearFrom,
+    int? publishYearTo,
+    string version,
+    int? series,
+    int? status,
+    string authors,
+    List<int> categoryIds)
         {
-            try
+            var query = _context.Books
+                .Include(b => b.PublisherNavigation)
+                .Include(b => b.VendorNavigation)
+                .Include(b => b.BookImgs)
+                .Include(b => b.Categories.Where(c => c.Status == 1))
+                .Include(b => b.Authors)
+                .Where(b => b.Authors.All(a => a.Status == 1))
+                .AsQueryable();
+
+            if (!string.IsNullOrEmpty(name))
             {
                 var book = await _context.Books
                     .Include(b => b.Authors)
@@ -341,9 +403,15 @@ namespace LibraryManagementSystem.Controllers
                 book.Vendor = updateBookDTO.VendorId;
                 book.PublisherNavigation = publisher ?? book.PublisherNavigation;
 
-                // Cập nhật tác giả (nếu cần)
-                book.Authors.Clear(); // Xóa các tác giả cũ
-                book.Authors.AddRange(authors); // Thêm tác giả mới
+
+            if (status.HasValue)
+            {
+                query = query.Where(b => b.Status == status.Value);
+            }
+            else
+            {
+                query = query.Where(b => b.Status == 1);
+            }
 
                 // Lưu thay đổi vào cơ sở dữ liệu
                 _context.Books.Update(book); // Đánh dấu sách là cần cập nhật
@@ -389,8 +457,11 @@ namespace LibraryManagementSystem.Controllers
                 Console.WriteLine(ex.ToString());
                 return View();
             }
+            ViewBag.Categories = await _context.Categories.Where(c => c.Status == 1).ToListAsync();
+
+            return View(books);
         }
 
 
-           }
+    }
 }

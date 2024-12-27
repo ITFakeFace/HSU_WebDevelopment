@@ -1,0 +1,166 @@
+﻿/* General Layout */
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 20px;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    font-size: 1rem;
+    border-radius: 4px;
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-create {
+    background-color: #4CAF50;
+    color: white;
+    margin-bottom: 20px;
+}
+
+    .btn-create:hover {
+        background-color: #45a049;
+    }
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+.btn-edit {
+    background-color: #f0ad4e;
+    color: white;
+}
+
+    .btn-edit:hover {
+        background-color: #ec971f;
+    }
+
+.btn-delete {
+    background-color: #d9534f;
+    color: white;
+}
+
+    .btn-delete:hover {
+        background-color: #c9302c;
+    }
+
+/* Form */
+.form-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+}
+
+.form-control {
+    padding: 6px 12px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.status-filter {
+    display: flex;
+    align-items: center;
+}
+
+.list-inline-item a {
+    color: #007bff;
+    font-size: 1rem;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+    .list-inline-item a:hover {
+        background-color: #f1f1f1;
+    }
+
+.list-inline-item .selected {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    color: #333;
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+td.actions a, td.actions button {
+    margin-right: 8px;
+}
+
+/* Pagination */
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+    .pagination ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: inline-block;
+    }
+
+    .pagination li {
+        display: inline;
+        margin: 0 5px;
+    }
+
+        .pagination li a {
+            color: #007bff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .pagination li.active a {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .pagination li a:hover {
+            background-color: #f1f1f1;
+        }
