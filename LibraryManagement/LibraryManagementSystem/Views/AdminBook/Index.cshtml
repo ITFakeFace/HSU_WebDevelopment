@@ -7,11 +7,75 @@
 <h1> Welcome to Library</h1>
 <div class="book-list">
     <div>
-        <a asp-action="UploadImage" asp-controller="AdminBook">UploadImage</a>
+        <form method="get" action="/AdminBook/Index" class="formsearch">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên sách</th>
+                        <th>Tác Giả</th>
+                        <th>Năm Xuất Bản từ</th>
+                        <th>Năm Xuất Bản đến</th>
+                        <th>Ngôn ngữ</th>
+                        <th>Isbn</th>
+                        <th>Tình trạng</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <hr />
+                    <tr>
+                        <td><input type="text" id="bookname" name="bookname" placeholder="Nhập tên sách" class="form-control" /></td>
+                        <td>
+                            <input type="text" id="author-input" placeholder="Nhập Tên Tác Giả" class="form-control"/>
+                        </td>
+                        <td><input type="text" id="publishYearFrom" name="publishYearFrom" placeholder="Từ Năm" class="form-control" /></td>
+                        <td><input type="text" id="publishYearTo" name="publishYearTo" placeholder="Đến Năm" class="form-control" /></td>
+                        <td>
+                            <select name="language" id="language" class="form-control">
+                                <option value="">Chọn ngôn ngữ</option>
+                                <option value="EN">Anh</option>
+                                <option value="US">Hoa Kỳ</option>
+                                <option value="FR">Pháp</option>
+                                <option value="JP">Nhật Bản</option>
+                                <option value="KR">Hàn Quốc</option>
+                                <option value="CN">Trung Quốc</option>
+                                <option value="DE">Đức</option>
+                                <option value="AU">Úc</option>
+                                <option value="IT">Ý</option>
+                                <option value="ES">Tây Ban Nha</option>
+                                <option value="CA">Canada</option>
+                                <option value="IN">Ấn Độ</option>
+                                <option value="BR">Brazil</option>
+                            </select>
+                        </td>
+                        <td><input type="number" id="isbn" name="isbn" placeholder="ISBN" class="form-control" /></td>
+                        <td><select name="Status" class="form-control" asp-items="ViewBag.StatusOptions"></select></td>
+                        <td><button type="submit" class="btn btn-primary">Tìm kiếm</button></td>
+                    </tr>
+                    <tr>
+                        <th></th>
+                        <th><span id="add-author" class="add-icon" style="cursor:pointer ">✓</span></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <div id="authors-container"></div>
+                    <input type="hidden" id="authorsList" name="authors" />
+                </tbody>
+            </table>
+            <input type="hidden" id="authorsList" name="authors" />
+        </form>
+        @if (Model.Any())
+    {
+        <!--<a asp-action="UploadImage" asp-controller="Book">UploadImage</a>-->
         <table class="table table-striped">
             <thead>
                 <tr>
                     <th>Tên sách</th>
+                    <th>ISBN</th>
                     <th>Tác giả</th>
                     <th>Năm phát hành</th>
                     <th>Trạng thái</th>
@@ -25,6 +89,7 @@
                 {
                     <tr>
                         <td>@item.Name</td>
+                        <td>@item.Isbn</td>
                         <td>
                             @{
                                 var isFirstAuth = true;
@@ -55,7 +120,7 @@
                             }
                         </td>
                         <td>
-                            <a asp-action="Detail" asp-route-id="@item.Id" class="btn btn-outline-secondary">
+                            <a asp-action="Detail" asp-controller="Book" asp-route-id="@item.Id" class="btn btn-outline-secondary">
                                 <div>
                                     Detail
                                 </div>
@@ -93,7 +158,9 @@
                 }
             </tbody>
         </table>
+        }
     </div>
+    
 
     <script>
             function showConfirmButtons(itemId) {
@@ -131,6 +198,90 @@
                 </a>
             `;
         }
+
+            const authorsContainer = document.getElementById('authors-container');
+        const authorInput = document.getElementById('author-input');
+        const addAuthorButton = document.getElementById('add-author');
+        const authorsList = document.getElementById('authorsList');
+
+        addAuthorButton.addEventListener('click', () => {
+            const authorName = authorInput.value.trim();
+            if (authorName) {
+                const tag = document.createElement('div');
+                tag.className = 'tag';
+                tag.textContent = authorName;
+
+                const removeBtn = document.createElement('span');
+                removeBtn.textContent = '✖';
+                removeBtn.onclick = () => {
+                    authorsContainer.removeChild(tag);
+                    updateAuthorsList();
+                };
+
+                tag.appendChild(removeBtn);
+                authorsContainer.appendChild(tag);
+
+                authorInput.value = '';
+                updateAuthorsList();
+            }
+        });
+
+        function updateAuthorsList() {
+            const authorNames = Array.from(authorsContainer.children).map(tag => tag.textContent.replace('✖', '').trim());
+            authorsList.value = authorNames.join(',');
+        }
+
+        authorInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                addAuthorButton.click();
+            }
+        });
+
+        $(document).ready(function () {
+            $('#toggleSearchFields').click(function () {
+                const additionalFields = $('#additionalFields');
+                const additionalSearchFields = $('#additionalSearchFields');
+                const isHidden = additionalFields.is(':hidden');
+                additionalFields.toggle();
+                additionalSearchFields.toggle();
+                sessionStorage.setItem('additionalFiltersVisible', !isHidden);
+                $(this).text(isHidden ? 'ẨN THÔNG TIN' : 'THÊM THÔNG TIN TÌM KIẾM');
+            });
+
+            const isFiltersVisible = sessionStorage.getItem('additionalFiltersVisible') === 'true';
+            if (isFiltersVisible) {
+                $('#additionalFields').show();
+                $('#additionalSearchFields').show();
+                $('#toggleSearchFields').text('ẨN THÔNG TIN');
+            } else {
+                $('#additionalFields').hide();
+                $('#additionalSearchFields').hide();
+                $('#toggleSearchFields').text('THÊM THÔNG TIN TÌM KIẾM');
+            }
+        });
+
+        $(document).ready(function () {
+            $('select').select2();
+        });
+        document.querySelector('form').addEventListener('submit', function (e) {
+            const yearFrom = document.getElementById('publishYearFrom').value;
+            const yearTo = document.getElementById('publishYearTo').value;
+
+            if (yearFrom && isNaN(yearFrom)) {
+                alert('Năm bắt đầu phải là số!');
+                e.preventDefault();
+            }
+
+            if (yearTo && isNaN(yearTo)) {
+                alert('Năm kết thúc phải là số!');
+                e.preventDefault();
+            }
+
+            if (yearFrom && yearTo && parseInt(yearFrom) > parseInt(yearTo)) {
+                alert('Năm bắt đầu không được lớn hơn năm kết thúc!');
+                e.preventDefault();
+            }
+        });
     </script>
 </div>
 

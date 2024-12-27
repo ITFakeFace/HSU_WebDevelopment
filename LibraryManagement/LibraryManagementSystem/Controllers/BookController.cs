@@ -61,8 +61,9 @@ namespace LibraryManagementSystem.Controllers
                     .ThenInclude(bib => bib.LibraryNavigation)
                 .Include(a => a.Categories.OrderBy(category => category.Name))
                 .Include(a => a.PublisherNavigation)
-                .Include(a => a.SeriesNavigation)
                 .Include(a => a.BookImgs)
+                .Include(a => a.SeriesNavigation)
+                .Include(a => a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
             var user = await _userManager.GetUserAsync(User);
             var roles = await _signInManager.UserManager.GetRolesAsync(user);
@@ -239,46 +240,76 @@ namespace LibraryManagementSystem.Controllers
 
         }
 
+        public IActionResult UploadImage()
+        {
+            return View();
+        }
 
-        public IActionResult Update(int id)
+        [HttpPost]
+        public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
         {
             Console.WriteLine("Id của sách là: " + id);
 
-            // Tìm thông tin cơ bản của sách
-            var book = _context.Books
-                .Where(e => e.Id == id)
-                .FirstOrDefault();
+            // Check if the book exists
+            var book = await _context.Books
+                .Include(b => b.BookImgs) // Include related images
+                .FirstOrDefaultAsync(b => b.Id == bookId);
 
-            // Tải các thông tin liên quan bằng các truy vấn riêng biệt
-            var vendorNavigation = _context.Vendors
-                .Where(v => v.Id == book.Vendor)
-                .FirstOrDefault();
+            if (book == null)
+            {
+                TempData["Message"] = "Book not found.";
+                return RedirectToAction("Index");
+            }
 
-            var publisherNavigation = _context.Publishers
-                .Where(p => p.Id == book.Publisher)
-                .FirstOrDefault();
+            if (imageFile != null && imageFile.Length > 0)
+            {
+                using var ms = new MemoryStream();
+                await imageFile.CopyToAsync(ms);
+                var imageBytes = ms.ToArray();
 
-            var seriesNavigation = _context.Series
-                .Where(s => s.Id == book.Series)
-                .FirstOrDefault();
+                // Check if an image already exists for this book
+                var existingBookImg = book.BookImgs.FirstOrDefault();
+                if (existingBookImg != null)
+                {
+                    // Update existing image
+                    existingBookImg.Image = imageBytes;
+                    _context.BookImgs.Update(existingBookImg);
+                }
+                else
+                {
+                    // Add new image
+                    var newBookImg = new BookImg
+                    {
+                        Book = bookId,
+                        Image = imageBytes
+                    };
+                    _context.BookImgs.Add(newBookImg);
+                }
 
-            var authors = _context.Authors
-                .Where(a => a.Books.Any(b => b.Id == id))
-                .ToList();
+                TempData["Message"] = $"Updated image for book ID '{bookId}'.";
+                await _context.SaveChangesAsync();
+            }
+            else
+            {
+                TempData["Message"] = "No image file selected.";
+            }
 
-            var bookImgs = _context.BookImgs
-                .Where(img => img.Book == id)
-                .ToList();
+            return RedirectToAction("Index", "Book");
+        }
 
-            // Đưa dữ liệu vào ViewData
-            ViewData["book"] = book;
-            ViewData["vendorNavigation"] = vendorNavigation;
-            ViewData["publisherNavigation"] = publisherNavigation;
-            ViewData["seriesNavigation"] = seriesNavigation;
-            ViewData["authors"] = authors;
-            ViewData["bookImgs"] = bookImgs;
+        [HttpGet]
+        public IActionResult GetBookImage(int bookId)
+        {
+            var bookImg = _context.BookImgs.FirstOrDefault(b => b.Book == bookId);
 
-            return View();
+            if (bookImg == null || bookImg.Image == null)
+            {
+                // Return a placeholder image if no image exists
+                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "");
+                return PhysicalFile(placeholderPath, "image/png");
+            }
+
+            return File(bookImg.Image, "image/jpeg"); // Adjust MIME type as needed
         }
 
 

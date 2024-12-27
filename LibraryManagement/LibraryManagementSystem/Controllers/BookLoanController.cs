@@ -17,7 +17,7 @@ namespace LibraryManagementSystem.Controllers
         {
             _context = context;
         }
-        public async Task<IActionResult> Index(string sortColumn, string sortDirection,string  id,string? fullname, string? status, string? isbn, int pagenumber = 1)
+        public async Task<IActionResult> Index(string sortColumn, string sortDirection,string  id,string? fullname, string? bookname,string? status, string? isbn, string? phone,string? email ,int pagenumber = 1)
         {
             var pagesize = 10;
             var bookloan = _context.BookLoans.AsQueryable();
@@ -31,8 +31,14 @@ namespace LibraryManagementSystem.Controllers
             }
             if (!string.IsNullOrEmpty(fullname))
                 bookloan = bookloan.Where(a => a.UserNavigation.Fullname.Contains(fullname));
+            if (!string.IsNullOrEmpty(phone))
+                bookloan = bookloan.Where(a => a.UserNavigation.PhoneNumber.Contains(phone));
+            if (!string.IsNullOrEmpty(email))
+                bookloan = bookloan.Where(a => a.UserNavigation.Email.Contains(email));
             if (!string.IsNullOrEmpty(isbn))
                 bookloan = bookloan.Where(a => a.BookNavigation.Isbn.Contains(isbn));
+            if (!string.IsNullOrEmpty(bookname))
+                bookloan = bookloan.Where(a => a.BookNavigation.Name.Contains(bookname));
             if (!string.IsNullOrEmpty(status))
             {
                 int parsedStatus;
@@ -54,6 +60,9 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.TotalPages = (int)Math.Ceiling((double)bookloan.Count() / pagesize);
             ViewBag.TotalBookloan = (double)bookloan.Count();
             ViewData["Id"] = id;
+            ViewData["BookName"] = bookname;
+            ViewData["Email"] = email;
+            ViewData["Phone"] = phone;
             ViewData["Fullname"] = fullname;
             ViewData["Status"] = status;
             ViewData["Isbn"] = isbn;
@@ -109,5 +118,6 @@ namespace LibraryManagementSystem.Controllers
             }
             return RedirectToAction("Index");
         }
+
     }
 }
