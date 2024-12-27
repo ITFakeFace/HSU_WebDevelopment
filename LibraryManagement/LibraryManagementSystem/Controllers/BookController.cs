@@ -248,7 +248,7 @@ namespace LibraryManagementSystem.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadImage(IFormFile imageFile, int bookId)
         {
-            Console.WriteLine("Id của sách là: " + id);
+            //Console.WriteLine("Id của sách là: " + id);
 
             // Check if the book exists
             var book = await _context.Books
@@ -396,20 +396,5 @@ namespace LibraryManagementSystem.Controllers
         }
 
 
-        [HttpGet]
-        public IActionResult GetBookImage(int bookId)
-        {
-            var bookImg = _context.BookImgs.FirstOrDefault(b => b.Book == bookId);
-
-            if (bookImg == null || bookImg.Image == null)
-            {
-                // Return a placeholder image if no image exists
-                var placeholderPath = Path.Combine(Directory.GetCurrentDirectory(), "");
-                return PhysicalFile(placeholderPath, "image/png");
-            }
-
-            return File(bookImg.Image, "image/jpeg"); // Adjust MIME type as needed
-        }
-
-    }
+           }
 }
