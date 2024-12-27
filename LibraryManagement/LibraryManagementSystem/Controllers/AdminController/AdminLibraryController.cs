@@ -73,7 +73,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
             _ctx.Add(lib);
             await _ctx.SaveChangesAsync();
-            return View(libraryDto);
+            return RedirectToAction("Index");
         }
     }
 }

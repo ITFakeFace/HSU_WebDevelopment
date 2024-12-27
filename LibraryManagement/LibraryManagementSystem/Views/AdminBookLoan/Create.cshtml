@@ -10,6 +10,9 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
+                <a asp-action="Index" asp-controller="AdminBookLoan">Quay về danh sách</a>
+            </div>
+            <div class="col-md-12">
                 <h1>Thông tin mượn sách</h1>
             </div>
             <div class="col-md-12">
@@ -41,7 +44,7 @@
                 <span asp-validation-for="Library" class="invalid-feedback"></span>
             </div>
             <div class="col-md-12">
-                <label for="book-select" class="form-label">Chi nhánh</label>
+                <label for="book-select" class="form-label">Tên sách</label>
                 <select asp-for="Book" id="book-select" class="form-control" required>
                     @if (libraries != null)
                     {
