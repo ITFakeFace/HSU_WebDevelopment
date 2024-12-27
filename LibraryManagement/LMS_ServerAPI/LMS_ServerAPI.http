@@ -1,4 +1,4 @@
-@LMS_ServerAPI_HostAddress = https://localhost:50282
+@LMS_ServerAPI_HostAddress = https://localhost:51917
 
 GET {{LMS_ServerAPI_HostAddress}}/api/author/getall
 Accept:application/json

@@ -25,50 +25,59 @@
 <link rel="stylesheet" href="~/features/Book/Detail/book.css?v=@DateTime.Now.Ticks" />
 
 <div class="book-detail">
-    <!-- Left Section -->
     <div class="book-detail-left">
         <div class="book-detail-left-img">
-            <!-- Hiển thị hình ảnh lớn trong một div riêng biệt với chiều cao và chiều rộng cố định -->
             <div class="large-image-container">
                 <img id="largeImage"
-                     src="data:image/jpeg;base64,@Convert.ToBase64String(Model.BookImgs.FirstOrDefault()?.Image)"
+                     src="@(Model.BookImgs.FirstOrDefault()?.Image != null ? "data:image/jpeg;base64," + Convert.ToBase64String(Model.BookImgs.FirstOrDefault().Image) : "/path/to/placeholder.jpg")"
                      alt="Book Image"
                      class="large-image" />
             </div>
         </div>
-
-        <!-- Hiển thị tất cả các hình ảnh của sách -->
         <div class="book-images-gallery">
             @foreach (var img in Model.BookImgs)
             {
                 <div class="book-image">
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(img.Image)"
+                    <img src="@(img.Image != null ? "data:image/jpeg;base64," + Convert.ToBase64String(img.Image) : "/path/to/placeholder.jpg")"
                          alt="Book Image"
                          class="small-image"
-                         onclick="changeLargeImage('@Convert.ToBase64String(img.Image)')" />
+                         onclick="changeLargeImage('@(img.Image != null ? Convert.ToBase64String(img.Image) : "")')" />
                 </div>
             }
         </div>
     </div>
-
-    <!-- Right Section -->
     <div class="book-detail-right">
-        <!-- Book Title and Authors -->
         <div class="book-title-authors">
             <h1>@Html.DisplayFor(model => model.Name)</h1>
             <p class="authors">
                 <span><b>Tác giả: </b></span>
                 @if (Model.Authors.Any())
                 {
-                    var isFirst = true;
-                    foreach (var author in Model.Authors)
+                    @if (User.IsInRole("ADMINISTRATOR"))
                     {
-                        if (!isFirst)
+                        var isFirst = true;
+                        foreach (var author in Model.Authors)
                         {
-                            @:<span>, </span>
+                            if (!isFirst)
+                            {
+                                @:<span>, </span>
+                            }
+                            <a asp-action="Detail" asp-controller="Author" asp-route-id="@author.Id">@author.Name</a>
+                            isFirst = false;
                         }
-                        <a>@author.Name</a>
-                        isFirst = false;
+                    }
+                    else
+                    {
+                        var isFirst = true;
+                        foreach (var author in Model.Authors)
+                        {
+                            if (!isFirst)
+                            {
+                                @:<span>, </span>
+                            }
+                            <a>@author.Name</a>
+                            isFirst = false;
+                        }
                     }
                 }
                 else
@@ -77,22 +86,26 @@
                 }
             </p>
         </div>
-
-        <!-- Description -->
         <div class="book-description">
             <p class="info-title"><b>Mô tả:</b></p>
             <p>@Html.DisplayFor(model => model.Description)</p>
         </div>
-
-        <!-- Basic Info -->
         <div class="book-basic-info">
             <div>
                 <p class="info-title">Ngày phát hành:</p>
+
                 <p>@Html.DisplayFor(model => model.PublishYear)</p>
             </div>
             <div>
                 <p class="info-title">Nhà phát hành:</p>
-                <p>@Html.DisplayFor(model => model.PublisherNavigation.Name)</p>
+                @if (User.IsInRole("ADMINISTRATOR"))
+                {
+                    <a asp-action="Detail" asp-controller="Publisher" asp-route-id="@Model.PublisherNavigation.Id">@Html.DisplayFor(model => model.PublisherNavigation.Name)</a>
+                }
+                else
+                {
+                    <p>@Html.DisplayFor(model => model.PublisherNavigation.Name)</p>
+                }
             </div>
             <div>
                 <p class="info-title">Ngôn ngữ:</p>
@@ -104,31 +117,51 @@
             </div>
         </div>
 
-        <!-- Categories -->
         <div class="book-categories">
             <p>
                 <b>Thể loại:</b>
-                @if (Model.Categories.Any())
+                @if (User.IsInRole("ADMINISTRATOR"))
                 {
-                    var isFirstCateg = true;
-                    foreach (var categ in Model.Categories)
+                    @if (Model.Categories.Any())
                     {
-                        if (!isFirstCateg)
+                        var isFirstCateg = true;
+                        foreach (var categ in Model.Categories)
                         {
-                            @:<span>, </span>
+                            if (!isFirstCateg)
+                            {
+                                @:<span>, </span>
+                            }
+                            <a asp-action="Detail" asp-controller="Category" asp-route-id="@categ.Id">@categ.Name</a>
+                            isFirstCateg = false;
                         }
-                        <a>@categ.Name</a>
-                        isFirstCateg = false;
+                    }
+                    else
+                    {
+                        <span>Chưa có thể loại</span>
                     }
                 }
                 else
                 {
-                    <span>Chưa có thể loại</span>
+                    @if (Model.Categories.Any())
+                    {
+                        var isFirstCateg = true;
+                        foreach (var categ in Model.Categories)
+                        {
+                            if (!isFirstCateg)
+                            {
+                                @:<span>, </span>
+                            }
+                            <a>@categ.Name</a>
+                            isFirstCateg = false;
+                        }
+                    }
+                    else
+                    {
+                        <span>Chưa có thể loại</span>
+                    }
                 }
             </p>
         </div>
-
-        <!-- Additional Info -->
         <div class="book-additional-info">
             <div>
                 <p><b>Thuộc series:</b> @Html.DisplayFor(model => model.SeriesNavigation.Name)</p>
@@ -144,11 +177,19 @@
                 <div>
                     <p>
                         <b>Nhà cung cấp:</b>
-                        <a asp-action="DetailVendor" asp-controller="Vendor" asp-route-id="@Model.Vendor">@Model.VendorNavigation.Name</a>
+                        @if (Model.VendorNavigation != null && Model.VendorNavigation.Name != null)
+                        {
+                            <a asp-action="Detail" asp-controller="Vendor" asp-route-id="@Model.PublisherNavigation.Id">@Model.VendorNavigation.Name</a>
+                        }
+                        else
+                        {
+                            <span>Chưa có nhà cung cấp</span>
+                        }
                     </p>
                 </div>
             }
         </div>
+
 
         <!-- Update Button for Admin -->
         @if (User.IsInRole("ADMINISTRATOR"))
@@ -162,6 +203,10 @@
     // Function to change the large image when a small image is clicked
     function changeLargeImage(imageBase64) {
         var largeImage = document.getElementById("largeImage");
-        largeImage.src = "data:image/jpeg;base64," + imageBase64;
+        if (imageBase64) {
+            largeImage.src = "data:image/jpeg;base64," + imageBase64;
+        } else {
+            largeImage.src = "/path/to/placeholder.jpg"; // Fallback if the clicked image is null
+        }
     }
 </script>

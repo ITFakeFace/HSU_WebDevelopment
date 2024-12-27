@@ -322,7 +322,49 @@ namespace LibraryManagementSystem.Controllers
                 TempData["Error"] = "Đã xảy ra lỗi khi tạo sách.";
                 return View();
             }
-        }       
+        }
+
+        public IActionResult Update(int id)
+        {
+            Console.WriteLine("Id của sách là: " + id);
+
+            // Tìm thông tin cơ bản của sách
+            var book = _context.Books
+                .Where(e => e.Id == id)
+                .FirstOrDefault();
+
+            // Tải các thông tin liên quan bằng các truy vấn riêng biệt
+            var vendorNavigation = _context.Vendors
+                .Where(v => v.Id == book.Vendor)
+                .FirstOrDefault();
+
+            var publisherNavigation = _context.Publishers
+                .Where(p => p.Id == book.Publisher)
+                .FirstOrDefault();
+
+            var seriesNavigation = _context.Series
+                .Where(s => s.Id == book.Series)
+                .FirstOrDefault();
+
+            var authors = _context.Authors
+                .Where(a => a.Books.Any(b => b.Id == id))
+                .ToList();
+
+            var bookImgs = _context.BookImgs
+                .Where(img => img.Book == id)
+                .ToList();
+
+            // Đưa dữ liệu vào ViewData
+            ViewData["book"] = book;
+            ViewData["vendorNavigation"] = vendorNavigation;
+            ViewData["publisherNavigation"] = publisherNavigation;
+            ViewData["seriesNavigation"] = seriesNavigation;
+            ViewData["authors"] = authors;
+            ViewData["bookImgs"] = bookImgs;
+
+            return View();
+        }
+
         [method: HttpPost]
         public async Task<IActionResult> Update(UpdateBookDTO updateBookDTO)
         {
