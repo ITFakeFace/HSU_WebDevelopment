@@ -32,7 +32,99 @@
     
 </head>
 <body>
-    @if (User != null && User.IsInRole("CUSTOMER"))
+    @if (User != null && User.IsInRole("LIBRARIAN"))
+    {
+        <nav class="custom-nav">
+            <div class="custom-navbar">
+                <div class="navbar-container d-flex align-items-center">
+                    <div class="navbar-left">
+                        <ul class="navbar-left-menu navbar-menu">
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">
+                                    <img src="~/assets/image/default/LMS_Logo.png" alt="Logo" class="navbar-logo">
+                                </a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">Trang Chủ</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Book" class="navbar-link-custom navbar-link-book">Danh Mục Sách</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="AdminBookLoan" class="navbar-link-custom">Quản lý mượn</a>
+                            </li>
+                        </ul>
+                    </div
+                    <div class="navbar-right">
+                        <partial name="_LoginPartial" />
+                    </div>
+
+                </div>
+                <div class="navbar-underline-box">
+                    <div class="navbar-underline-line"></div>
+                </div>
+            </div>
+        </nav>
+    }
+    else if (User != null && User.IsInRole("ADMINISTRATOR"))
+    {
+        <nav class="custom-nav">
+            <div class="custom-navbar">
+                <div class="navbar-container d-flex align-items-center">
+                    <div class="navbar-left">
+                        <ul class="navbar-left-menu navbar-menu">
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">
+                                    <img src="~/assets/image/default/LMS_Logo.png" alt="Logo" class="navbar-logo">
+                                </a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">Trang Chủ</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Book" class="navbar-link-custom navbar-link-book">Danh Mục Sách</a>
+                            </li>
+                            <li>
+                                <a asp-action="Index" asp-controller="AdminBook" class="navbar-link-custom">Sách</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Category" class="navbar-link-custom">Thể loại</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Author" class="navbar-link-custom">Tác giả</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Vendor" class="navbar-link-custom">Nhà cung cấp</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Publisher" class="navbar-link-custom">Nhà phát hành</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Series" class="navbar-link-custom">Series</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="AdminBookLoan" class="navbar-link-custom">Quản lý mượn</a>
+                            </li
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="AdminLibrary" class="navbar-link-custom">Thư viện</a>
+                            </li>
+                            <li class="navbar-item">
+                                <a asp-action="Index" asp-controller="Age" class="navbar-link-custom">Độ tuổi</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="navbar-right">
+                        <partial name="_LoginPartial" />
+                    </div>
+
+                </div>
+                <div class="navbar-underline-box">
+                    <div class="navbar-underline-line"></div>
+                </div>
+            </div>
+        </nav>
+    } 
+    else
     {
         
     <nav class="custom-nav">
@@ -50,9 +142,6 @@
                         </li>
                         <li class="navbar-item">
                             <a asp-action="Index" asp-controller="Book" class="navbar-link-custom navbar-link-book">Danh Mục Sách</a>
-                        </li>
-                        <li class="navbar-item">
-                            <a href="#book" class="navbar-link-custom">Về Chúng Tôi</a>
                         </li>
                     </ul>
                 </div>
@@ -130,94 +219,6 @@
                 </div>
             </div>
         </div> *@
-        </nav>
-    }
-    else if (User != null && User.IsInRole("LIBRARIAN"))
-    {
-        <nav class="custom-nav">
-            <div class="custom-navbar">
-                <div class="navbar-container d-flex align-items-center">
-                    <div class="navbar-left">
-                        <ul class="navbar-left-menu navbar-menu">
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">
-                                    <img src="~/assets/image/default/LMS_Logo.png" alt="Logo" class="navbar-logo">
-                                </a>
-                            </li>
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">Trang Chủ</a>
-                            </li>
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Book" class="navbar-link-custom navbar-link-book">Danh Mục Sách</a>
-                            </li>
-                            <li class="navbar-item">
-                                <a href="#book" class="navbar-link-custom">Về Chúng Tôi</a>
-                            </li>
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="AdminBookLoan" class="navbar-link-custom">Quản lý BookLoan</a>
-                            </li>
-                        </ul>
-                    </div
-                    <div class="navbar-right">
-                        <partial name="_LoginPartial" />
-                    </div>
-
-                </div>
-                <div class="navbar-underline-box">
-                    <div class="navbar-underline-line"></div>
-                </div>
-            </div>
-        </nav>
-    }
-    else if (User != null && User.IsInRole("ADMINISTRATOR"))
-    {
-        <nav class="custom-nav">
-            <div class="custom-navbar">
-                <div class="navbar-container d-flex align-items-center">
-                    <div class="navbar-left">
-                        <ul class="navbar-left-menu navbar-menu">
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">
-                                    <img src="~/assets/image/default/LMS_Logo.png" alt="Logo" class="navbar-logo">
-                                </a>
-                            </li>
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Home" class="navbar-link-custom">Trang Chủ</a>
-                            </li>
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Book" class="navbar-link-custom navbar-link-book">Danh Mục Sách</a>
-                            </li>
-                            <li class="navbar-item">
-                                <a href="#book" class="navbar-link-custom">Về Chúng Tôi</a>
-                            </li>
-                            <li class="navbar-item">
-                                <a asp-action="Index" asp-controller="Author" class="navbar-link-custom">Danh sách tác giả</a>
-                            </li>
-                                <li>
-                                    <a asp-action="Create" asp-controller="Book" class="navbar-link-custom">Thêm sách</a>
-                                </li>
-                                <li class="navbar-item">
-                                    <a asp-action="Index" asp-controller="AdminBookLoan" class="navbar-link-custom">Quản lý BookLoan</a>
-                                </li>
-                        </ul>
-                    </div>
-                    <div class="navbar-middle d-none d-md-flex flex-grow-1 d-none d-md-flex">
-                        <form action="" class="w-100 navbar-search-form">
-                            <div class="navbar-search-box">
-                                <i class="fas fa-search"></i>
-                                <input type="text" placeholder="Tìm kiếm...">
-                            </div>
-                        </form>
-                    </div>
-                    <div class="navbar-right">
-                        <partial name="_LoginPartial" />
-                    </div>
-
-                </div>
-                <div class="navbar-underline-box">
-                    <div class="navbar-underline-line"></div>
-                </div>
-            </div>
         </nav>
     }
     <div>

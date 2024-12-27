@@ -180,6 +180,10 @@ namespace LibraryManagementSystem.Controllers
 
         public IActionResult AccessDenied()
         {
+            if (_signInManager.IsSignedIn(User))
+            {
+                return RedirectToAction("Login");
+            }
             return View();
         }
 

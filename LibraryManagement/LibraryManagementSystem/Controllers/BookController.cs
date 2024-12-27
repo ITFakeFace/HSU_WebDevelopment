@@ -1,24 +1,24 @@
-using Microsoft.AspNetCore.Mvc;
-using LibraryManagementSystem.Models;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 using LibraryManagementSystem.DTO;
 using LibraryManagementSystem.DTO.BookDTO;
-using System;
-using System.Text.Json.Serialization.Metadata;
-using System.IO;
+using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Services;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis.CSharp;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using NuGet.Packaging;
-using LibraryManagementSystem.Services;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using System.Text;
+using NuGet.Packaging;
+using System;
+using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
+using System.Text;
+using System.Text.Json.Serialization.Metadata;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LibraryManagementSystem.Controllers
 {
@@ -153,9 +153,7 @@ namespace LibraryManagementSystem.Controllers
                 .Include(a => a.SeriesNavigation)
                 .Include(a => a.VendorNavigation)
                 .FirstOrDefaultAsync(b => b.Id == Id);
-            var user = await _userManager.GetUserAsync(User);
-            var roles = await _signInManager.UserManager.GetRolesAsync(user);
-            if (book == null || (book.Status == 0 && !roles.Contains("ADMINISTRATOR")))
+            if (book == null || book.Status == 0)
             {
                 return RedirectToAction("Index", "Book");
             }
