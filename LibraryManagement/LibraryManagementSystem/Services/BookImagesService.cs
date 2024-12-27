@@ -3,7 +3,7 @@
     public class BookImagesService
     {
         private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".gif" };
-
+       
         public async Task<List<byte[]?>> ProcessBookImagesAsync(List<IFormFile> bookImages)
         {
             List<byte[]?> processedImages = new List<byte[]?>();
