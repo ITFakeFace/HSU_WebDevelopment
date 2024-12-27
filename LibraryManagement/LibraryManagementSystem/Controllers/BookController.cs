@@ -236,13 +236,6 @@ namespace LibraryManagementSystem.Controllers
             }
         }
 
-        public IActionResult Create()
-        {
-
-            return View();
-
-        }
-
         public IActionResult UploadImage()
         {
             return View();
