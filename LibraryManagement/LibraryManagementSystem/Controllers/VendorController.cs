@@ -188,7 +188,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },
@@ -247,7 +246,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },

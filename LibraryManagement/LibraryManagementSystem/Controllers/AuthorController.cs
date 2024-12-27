@@ -208,6 +208,7 @@ namespace LibraryManagementSystem.Controllers
 
 
         // GET: Authors/Edit/5
+        [Route("Author/EditAuthor")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -261,7 +262,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },
@@ -277,6 +277,7 @@ namespace LibraryManagementSystem.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Route("Author/EditAuthor")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Gender,Nation,Status")] Author Author)
         {
             if (id != Author.Id)
@@ -354,7 +355,6 @@ namespace LibraryManagementSystem.Controllers
             ViewBag.StatusOptions = new SelectList(
                 new List<SelectListItem>
                 {
-                    new SelectListItem { Value = "", Text = "Không rõ" },
                     new SelectListItem { Value = "1", Text = "Đang hoạt động" },
                     new SelectListItem { Value = "0", Text = "Ngừng hoạt động" }
                 },
