@@ -3,11 +3,13 @@ using LMS_ServerAPI.Repositories;
 using LMS_ServerAPI.Repositories.AddressRepositories;
 //using LMS_ServerAPI.Repositories.BookRepository;
 using LMS_ServerAPI.Repositories.AuthorRepositories;
+using LMS_ServerAPI.Repositories.CategoryRepository;
 using LMS_ServerAPI.Repositories.PublisherRepository;
 using LMS_ServerAPI.Repositories.SeriesRepository;
 using LMS_ServerAPI.Repositories.VendorRepository;
 using LMS_ServerAPI.Services.AddressService;
 using LMS_ServerAPI.Services.AuthorService;
+using LMS_ServerAPI.Services.CategoryService;
 using LMS_ServerAPI.Services.PublisherService;
 using LMS_ServerAPI.Services.SeriesService;
 using LMS_ServerAPI.Services.VendorService;
@@ -46,10 +48,16 @@ builder.Services.AddCors(options =>
 // Author 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+// Publisher
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
-builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+// Category
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+//Vendor
 builder.Services.AddScoped<IVendorService, VendorService>();
+builder.Services.AddScoped<IVendorRepository, VendorRepository>();
+//Series
 builder.Services.AddScoped<ISeriesRepository, SeriesRepository>();
 builder.Services.AddScoped<ISeriesService, SeriesService>();
 // Address

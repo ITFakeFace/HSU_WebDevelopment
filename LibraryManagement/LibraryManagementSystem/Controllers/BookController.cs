@@ -273,7 +273,9 @@ namespace LibraryManagementSystem.Controllers
             {
                 // Lấy các thông tin khác từ DTO
                 List<Author> authors = _context.Authors.Where(e => createBookDTO.AuthorId.Contains(e.Id)).ToList();
+                List<Category> categories = _context.Categories.Where(e => createBookDTO.CategoriesId.Contains(e.Id)).ToList();
                 Publisher publisher = _context.Publishers.FirstOrDefault(e => e.Id == createBookDTO.PublisherID)!;
+
                 Vendor vendor = _context.Vendors.FirstOrDefault(e => e.Id == createBookDTO.VendorId)!;
 
                 // Tạo đối tượng Book
@@ -281,6 +283,7 @@ namespace LibraryManagementSystem.Controllers
                 {
                     Name = createBookDTO.Title,
                     Authors = authors,
+                    Categories = categories,
                     Isbn = createBookDTO.ISBN,
                     PublisherNavigation = publisher,
                     Description = createBookDTO.Description,
@@ -290,6 +293,7 @@ namespace LibraryManagementSystem.Controllers
                     Version = createBookDTO.Version,
                     Series = createBookDTO.SeriesId,
                     Vendor = createBookDTO.VendorId,
+                    Status = 1
                 };
 
                 // Thêm Book vào cơ sở dữ liệu
