@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BookLoan>
+@model IEnumerable<BookLoan>
 
 <div class="container">
     <div class="row col-md-12">
@@ -64,6 +64,23 @@
 
 @section Scripts{
     <script src="~/features/Admin/BookLoan/create.js"></script>
+    <script>
+        $(document).ready(function () {
+            $(`.delete-confirm-box`).hide();
+        });
+
+        $(document).on("click", ".btn-delete", function () {
+            let libId = $(this).parent().data("id")
+            $(`#action-box-${libId}`).hide();
+            $(`#delete-confirm-box-${libId}`).show();
+        });
+
+        $(document).on("click", ".btn-cancel", function () {
+            let libId = $(this).parent().data("id")
+            $(`#action-box-${libId}`).show();
+            $(`#delete-confirm-box-${libId}`).hide();
+        });
+    </script>
 }
     <script>
         $(document).ready(function () {

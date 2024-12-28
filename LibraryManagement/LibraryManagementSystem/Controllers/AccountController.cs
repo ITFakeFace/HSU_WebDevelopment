@@ -290,10 +290,13 @@ namespace LibraryManagementSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateAvatar(IFormFile inpAvatar)
         {
+            // Lấy thông tin người dùng hiện tại
+            var userId = _userManager.GetUserId(User);
+            var user = await _userManager.FindByIdAsync(userId);
             if (inpAvatar == null || inpAvatar.Length == 0)
             {
                 TempData["Error"] = "Vui lòng chọn một file ảnh hợp lệ.";
-                return RedirectToAction("Profile");
+                return RedirectToAction("Profile", new { id = userId });
             }
 
             try
@@ -305,7 +308,7 @@ namespace LibraryManagementSystem.Controllers
                 if (!allowedExtensions.Contains(fileExtension))
                 {
                     TempData["Error"] = "Định dạng file không hợp lệ. Chỉ hỗ trợ JPG, PNG, GIF.";
-                    return RedirectToAction("Profile");
+                    return RedirectToAction("Profile", new { id = userId });
                 }
 
                 // Đọc file vào mảng byte (blob)
@@ -313,9 +316,7 @@ namespace LibraryManagementSystem.Controllers
                 await inpAvatar.CopyToAsync(memoryStream);
                 var avatarBlob = memoryStream.ToArray();
 
-                // Lấy thông tin người dùng hiện tại
-                var userId = _userManager.GetUserId(User);
-                var user = await _userManager.FindByIdAsync(userId);
+
 
                 if (user == null)
                 {
@@ -342,7 +343,7 @@ namespace LibraryManagementSystem.Controllers
                 Console.WriteLine(ex.Message);
             }
 
-            return RedirectToAction("Profile");
+            return RedirectToAction("Profile", new { id = userId });
         }
 
         [HttpPost]
@@ -440,6 +441,39 @@ namespace LibraryManagementSystem.Controllers
                 }
             }
             return View(model);
+        }
+
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> AdminIndex()
+        {
+            var users = await _ctx.Users
+                .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .ToListAsync();
+            return View(users);
+        }
+
+        [Authorize(Roles = "ADMINISTRATOR")]
+        public async Task<IActionResult> ChangeStatus(string id)
+        {
+            var user = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user == null)
+            {
+                TempData["Error"] = "Không tìm thấy User";
+                return RedirectToAction("AdminIndex");
+            }
+            if (user.UserRoles.Any(u => u.Role.Name == "ADMINISTRATOR"))
+            {
+                TempData["Error"] = "Không thể ban Admin";
+                return RedirectToAction("AdminIndex");
+            }
+
+            user.Status = 0;
+            _ctx.Users.Update(user);
+            await _ctx.SaveChangesAsync();
+
+            TempData["Success"] = $"Đã khóa User {id}";
+            return RedirectToAction("AdminIndex");
         }
     }
 }

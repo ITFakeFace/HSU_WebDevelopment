@@ -1,4 +1,4 @@
-﻿@using LibraryManagementSystem.DTO.LibraryDTO
+@using LibraryManagementSystem.DTO.LibraryDTO
 @*
     For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 *@
@@ -56,6 +56,7 @@
         $(document).ready(function () {
             $(`.delete-confirm-box`).hide();
         });
+
         $(document).on("click", ".btn-delete", function () {
             let libId = $(this).parent().data("id")
             $(`#action-box-${libId}`).hide();

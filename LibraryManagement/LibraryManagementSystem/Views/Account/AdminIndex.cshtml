@@ -1,0 +1,94 @@
+﻿@model IEnumerable<User>
+
+@section Styles{
+
+}
+<div class="container">
+    <div class="row col-md-12">
+        <h1>Danh sách User</h1>
+    </div>
+    <a asp-action="Create" asp-controller="Account" class="btn btn-success">Tạo User mới</a>
+    @if (TempData["Error"] != null && TempData["Error"] != string.Empty)
+    {
+        <div class="row col-12 alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+    @if (TempData["Error"] != null && TempData["Error"] != string.Empty)
+    {
+        <div class="row col-12 alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+    <table class="table table-outline" id="data-table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>CCCD</th>
+                <th>Username</th>
+                <th>Fullname</th>
+                <th>Giới tính</th>
+                <th>Tình trạng</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.Id</td>
+                    <td>@user.Pid</td>
+                    <td>@user.UserName</td>
+                    <td>@user.Fullname</td>
+                    <td>@user.Gender</td>
+                    <td>
+                        @if (user.Status != null)
+                        {
+                            if (user.Status == 1)
+                            {
+                                <a asp-action="ChangeStatus" asp-controller="Account" asp-route-id="@user.Id" class="btn btn-success">Đang hoạt động</a>
+                            }
+                            else
+                            {
+                                <a asp-action="ChangeStatus" asp-controller="Account" asp-route-id="@user.Id" class="btn btn-danger">Đã bị khóa</a>
+                            }
+                        }
+                    </td>
+                    <td>
+                        <div class="flex action-box" id="action-box-@user.Id" data-id="@user.Id">
+                            <a asp-action="Details" asp-controller="Account" asp-route-id="@user.Id" class="btn btn-outline-primary btn-details" data-id="@user.Id">Details</a>
+                            <a asp-action="Update" asp-controller="Account" asp-route-id="@user.Id" class="btn btn-outline-success btn-update" data-id="@user.Id">Update</a>
+                            <a class="btn btn-danger btn-delete" data-id="@user.Id">Delete</a>
+                        </div>
+                        <div class="flex delete-confirm-box" id="delete-confirm-box-@user.Id" data-id="@user.Id">
+                            <a asp-action="Delete" asp-controller="Account" asp-route-id="@user.Id" class="btn btn-outline-success btn-confirm" data-id="@user.Id">Confirm</a>
+                            <a class="btn btn-outline-danger btn-cancel" data-id="@user.Id">Cancel</a>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#data-table').DataTable();
+            $(`.delete-confirm-box`).hide();
+        });
+
+        $(document).on("click", ".btn-delete", function () {
+            let libId = $(this).parent().data("id")
+            $(`#action-box-${libId}`).hide();
+            $(`#delete-confirm-box-${libId}`).show();
+        });
+
+        $(document).on("click", ".btn-cancel", function () {
+            let libId = $(this).parent().data("id")
+            $(`#action-box-${libId}`).show();
+            $(`#delete-confirm-box-${libId}`).hide();
+        });
+    </script>
+}
