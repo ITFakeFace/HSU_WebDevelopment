@@ -297,7 +297,6 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
         public IActionResult Update(int id)
         {
-            Console.WriteLine("Id của sách là: " + id);
 
             // Tìm thông tin cơ bản của sách
             var book = _context.Books
@@ -344,11 +343,9 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 var book = await _context.Books
                     .Include(b => b.Authors)
                     .Include(b => b.BookImgs)
+                    .Include(b => b.Categories)
                     .FirstOrDefaultAsync(b => b.Id == updateBookDTO.Id)!;
-                _context.BookImgs.RemoveRange(book.BookImgs);
-
-
-                book.BookImgs.Clear();
+               
 
                 await _context.SaveChangesAsync();
 
@@ -380,6 +377,10 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 // Lưu thay đổi vào cơ sở dữ liệu
                 _context.Books.Update(book); // Đánh dấu sách là cần cập nhật
                 await _context.SaveChangesAsync();
+
+                // Cập nhật BookImgs
+                _context.BookImgs.RemoveRange(book.BookImgs);
+                book.BookImgs.Clear();
 
                 if (updateBookDTO.NewBookImgs != null && updateBookDTO.NewBookImgs.Count() > 0)
                 {
