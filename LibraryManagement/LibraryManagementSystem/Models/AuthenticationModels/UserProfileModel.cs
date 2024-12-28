@@ -26,6 +26,6 @@ namespace LibraryManagementSystem.Models.AuthenticationModels
 
         public byte[]? Avatar { get; set; }
         public byte[]? CoverAvatar { get; set; }
-
+        public List<BookLoan> BookLoans { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using LibraryManagementSystem.Models;
 using LibraryManagementSystem.Models.AuthenticationModels;
 using LibraryManagementSystem.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -193,6 +194,7 @@ namespace LibraryManagementSystem.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> Profile(string id)
         {
             var user = await _userManager.GetUserAsync(User);
@@ -201,7 +203,12 @@ namespace LibraryManagementSystem.Controllers
                 return RedirectToAction("AccessDenied");
             }
             AddressService addrService = new AddressService(_ctx);
-
+            var tempU = await _ctx.Users.Include(u => u.BookLoans).FirstOrDefaultAsync(u => u.Id == id);
+            List<BookLoan> loans = await _ctx.BookLoans.Include(bl => bl.BookNavigation).Include(bl => bl.LibraryNavigation).Where(bl => bl.User == user.Id).ToListAsync();
+            if (loans == null)
+            {
+                loans = new List<BookLoan>();
+            }
             var userProfileModel = new UserProfileModel
             {
                 UserName = user.UserName,
@@ -214,7 +221,8 @@ namespace LibraryManagementSystem.Controllers
                 Phone = user.PhoneNumber,
                 Fullname = user.Fullname,
                 Pid = user.Pid,
-                Status = user.Status
+                Status = user.Status,
+                BookLoans = loans,
             };
             return View(userProfileModel);
         }

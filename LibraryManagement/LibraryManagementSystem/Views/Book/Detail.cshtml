@@ -53,7 +53,7 @@
                 <span><b>Tác giả: </b></span>
                 @if (Model.Authors.Any())
                 {
-                    @if (User.IsInRole("ADMINISTRATOR"))
+                    @if (User != null && User.IsInRole("ADMINISTRATOR"))
                     {
                         var isFirst = true;
                         foreach (var author in Model.Authors)
@@ -98,7 +98,7 @@
             </div>
             <div>
                 <p class="info-title">Nhà phát hành:</p>
-                @if (User.IsInRole("ADMINISTRATOR"))
+                @if (User != null && User.IsInRole("ADMINISTRATOR"))
                 {
                     <a asp-action="Detail" asp-controller="Publisher" asp-route-id="@Model.PublisherNavigation.Id">@Html.DisplayFor(model => model.PublisherNavigation.Name)</a>
                 }
@@ -120,7 +120,7 @@
         <div class="book-categories">
             <p>
                 <b>Thể loại:</b>
-                @if (User.IsInRole("ADMINISTRATOR"))
+                @if (User != null && User.IsInRole("ADMINISTRATOR"))
                 {
                     @if (Model.Categories.Any())
                     {
@@ -172,7 +172,7 @@
             <div>
                 <p><b>Phiên bản:</b> @Html.DisplayFor(model => model.Version)</p>
             </div>
-            @if (User.IsInRole("ADMINISTRATOR"))
+            @if (User != null && User.IsInRole("ADMINISTRATOR"))
             {
                 <div>
                     <p>
@@ -192,8 +192,10 @@
 
 
         <!-- Update Button for Admin -->
-        
-        <a asp-action="Update" asp-controller="adminbook" asp-route-id="@Model.Id" class="btn btn-primary">Cập nhật</a>
+        @if (User != null && User.IsInRole("ADMINISTRATOR"))
+        {
+            <a asp-action="Update" asp-controller="adminbook" asp-route-id="@Model.Id" class="btn btn-primary">Cập nhật</a>
+        }
     </div>
 </div>
 

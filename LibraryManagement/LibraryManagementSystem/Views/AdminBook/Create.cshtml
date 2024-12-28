@@ -3,7 +3,7 @@
 <div class="create-book-body">
     <section class="container">
         <header>Registration Form</header>
-        <form action="/Book/Create" method="post" enctype="multipart/form-data" class="form">
+        <form asp-action="Create" asp-controller="AdminBook" method="post" enctype="multipart/form-data" class="form">
             <div class="input-box">
                 <label>Book Name</label>
                 <input type="text" name="Title" placeholder="Enter book name" required />

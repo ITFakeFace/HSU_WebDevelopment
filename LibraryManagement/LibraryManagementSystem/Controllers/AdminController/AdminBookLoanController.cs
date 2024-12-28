@@ -137,6 +137,13 @@ namespace LibraryManagementSystem.Controllers.AdminController
             }
             bookLoan.Status = 1;
             bookLoan.IsReturned = 1;
+            bookLoan.ToDate = DateTime.Now;
+            var bib = await _ctx.BookInBranches.Where(b => b.Book == bookLoan.Book && b.Library == bookLoan.Library).FirstOrDefaultAsync();
+            if (bib != null)
+            {
+                bib.Amount += 1;
+            }
+            _ctx.BookInBranches.Update(bib);
             _ctx.BookLoans.Update(bookLoan);
             await _ctx.SaveChangesAsync();
             return RedirectToAction("Index");

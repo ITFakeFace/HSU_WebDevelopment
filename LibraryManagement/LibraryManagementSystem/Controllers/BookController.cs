@@ -259,12 +259,12 @@ namespace LibraryManagementSystem.Controllers
 
             return View(result);
         }
-        public IActionResult Create()
+        /*public IActionResult Create()
         {
             return View();
-        }
+        }*/
 
-        [method: HttpPost]
+        /*[method: HttpPost]
         public async Task<IActionResult> Create(CreateBookDTO createBookDTO)
         {
             try
@@ -447,7 +447,7 @@ namespace LibraryManagementSystem.Controllers
                 Console.WriteLine(ex.ToString());
                 return View();
             }
-        }
+        }*/
         [HttpGet("book/upload-image")]
         public IActionResult UploadImage()
         {

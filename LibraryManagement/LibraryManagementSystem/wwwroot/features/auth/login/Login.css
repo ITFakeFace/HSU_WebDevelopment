@@ -353,3 +353,7 @@ img {
         transform: translate(0rem, 0rem);
     }
 }
+
+.error-box:empty{
+    display:none;
+}

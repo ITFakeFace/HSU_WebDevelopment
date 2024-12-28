@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
+﻿using LibraryManagementSystem.DTO.BookDTO;
 using LibraryManagementSystem.Models;
+using LibraryManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using LibraryManagementSystem.DTO.BookDTO;
-using LibraryManagementSystem.Services;
 using NuGet.Packaging;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace LibraryManagementSystem.Controllers.AdminController
 {
-    //[Authorize(Roles = "ADMINISTRATOR")]
+    [Authorize(Roles = "ADMINISTRATOR")]
     public class AdminBookController : Controller
     {
         private readonly SignInManager<User> _signInManager;
@@ -29,17 +29,17 @@ namespace LibraryManagementSystem.Controllers.AdminController
         }
 
         public async Task<IActionResult> Index(string bookname,
-      string? isbn,
-      string? language,
-      int? vendor,
-      int? publisher,
-      int? publishYearFrom,
-      int? publishYearTo,
-      string version,
-      int? series,
-      string? status,
-      string authors,
-      List<int> categoryIds)
+            string? isbn,
+            string? language,
+            int? vendor,
+            int? publisher,
+            int? publishYearFrom,
+            int? publishYearTo,
+            string version,
+            int? series,
+            string? status,
+            string authors,
+            List<int> categoryIds)
         {
             var query = _context.Books
                 .Include(b => b.PublisherNavigation)
@@ -360,6 +360,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
                 // Cập nhật thông tin sách
                 book.Name = updateBookDTO.Title;
+                book.Isbn = updateBookDTO.ISBN;
                 book.Description = updateBookDTO.Description;
                 book.PublishYear = updateBookDTO.PublishYear;
                 book.PageNumber = updateBookDTO.PageNumber;
@@ -413,7 +414,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 await _context.SaveChangesAsync(); // Lưu thông tin ảnh vào cơ sở dữ liệu    
 
 
-                return RedirectToAction("Detail", new { id = book!.Id }); // Hoặc trang bạn muốn chuyển hướng
+                return RedirectToAction("Index"); // Hoặc trang bạn muốn chuyển hướng
             }
             catch (Exception ex)
             {

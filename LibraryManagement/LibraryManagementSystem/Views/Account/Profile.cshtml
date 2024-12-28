@@ -109,7 +109,7 @@
                     <div class="info-content">
                         <div class="info-title">Địa chỉ</div>
                         <div class="info-value info-value-address">
-                            <input type="text" value="40/14 Đường số 27, Sơn Kỳ, Tân Phú, TP.HCM aaaaaaaaaaaaaaaaaaa aaaaaaaaaaaaaa" required class="inp-personal inp-no-decor" readonly />
+                            <input type="text" value="40/14 Đường số 27, Sơn Kỳ, Tân Phú, TP.HCM" required class="inp-personal inp-no-decor" readonly />
                         </div>
                     </div>
                 </div>
@@ -178,144 +178,212 @@
                 </div>
             </div>
         </div>
+        @if (!User.IsInRole("ADMINISTRATOR") && !User.IsInRole("LIBRARIAN"))
+        {
+            
+        <div class="information-box">
+            <div class="personal-info-title">
+                <h2>
+                    Lịch sử mượn sách
+                </h2>
+                <div>
+                    <table class="table table-outline" id="data-table">
+                        <thead>
+                            <tr>
+                                <th>Chi nhánh</th>
+                                <th>Sách</th>
+                                <th>Thời hạn</th>
+                                <th>Tình trạng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.BookLoans != null)
+                            {
+                                @foreach (var loan in Model.BookLoans)
+                                {
+                                    <tr>
+                                        <td>@loan.LibraryNavigation.Name</td>
+                                        <td>
+                                            <a asp-action="Detail" asp-controller="Book" asp-route-id="@loan.Book">@loan.BookNavigation.Name</a>
+                                        </td>
+                                        <td>
+                                            @(loan.FromDate != null ? loan.FromDate.ToString("dd/MM/yyyy") : "N/A")
+                                            -
+                                            @(loan.ToDate != null ? loan.ToDate.ToString("dd/MM/yyyy") : "N/A")
+                                        </td>
+                                        <td>
+                                            @if (loan.IsReturned != null)
+                                            {
+                                                if (loan.IsReturned == 1)
+                                                {
+                                                    <button class="btn btn-success">Đã trả sách</button>
+                                                }
+                                                else
+                                                {
+                                                    if (DateTime.Now > loan.ToDate)
+                                                    {
+                                                        <button class="btn btn-danger">Quá hạn trả sách</button>
+                                                    }
+                                                    else
+                                                    {
+                                                        <button class="btn btn-warning">Chưa trả sách</button>
+
+                                                    }
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        }
     </div>
 </div>
 @* <div class="user-cover">
     <img src="cover-1.jpg" alt="User Cover" class="cover-img">
 </div> *@
+@section Scripts{
 
-<script>
-    $(document).ready(function () {
-      const $avatarBox = $('.avatar-box');
-      const $btnBox = $('.form-avatar-btn-box');
-      const $selectionBox = $('.form-avatar-selection-box');
-      const $inputAvatar = $('#inp-avatar');
-      const $previewImg = $('#avatar-preview');
-      const $prevImg = $('.user-avatar').attr("src");
-      // Khi chọn file
-      $inputAvatar.on('change', function (event) {
-        const file = event.target.files[0];
+    <script>
+        $(document).ready(function () {
+          const $avatarBox = $('.avatar-box');
+          const $btnBox = $('.form-avatar-btn-box');
+          const $selectionBox = $('.form-avatar-selection-box');
+          const $inputAvatar = $('#inp-avatar');
+          const $previewImg = $('#avatar-preview');
+          const $prevImg = $('.user-avatar').attr("src");
+          // Khi chọn file
+          $inputAvatar.on('change', function (event) {
+            const file = event.target.files[0];
 
-        if (file) {
-          const reader = new FileReader();
+            if (file) {
+              const reader = new FileReader();
 
-          reader.onload = function (e) {
-            // Hiển thị ảnh xem trước
-            $previewImg.attr('src', e.target.result);
+              reader.onload = function (e) {
+                // Hiển thị ảnh xem trước
+                $previewImg.attr('src', e.target.result);
 
-            // Hiển thị nút Yes/No, ẩn nút camera
-            $btnBox.hide();
-            $selectionBox.show();
-          };
+                // Hiển thị nút Yes/No, ẩn nút camera
+                $btnBox.hide();
+                $selectionBox.show();
+              };
 
-          reader.readAsDataURL(file);
-        }
-      });
+              reader.readAsDataURL(file);
+            }
+          });
 
-      // Xử lý khi người dùng bấm nút "Yes"
-      $('.btn-avatar-yes').on('click', function () {
-        // Ẩn các nút Yes/No, hiển thị lại nút camera
-        $selectionBox.hide();
-        $btnBox.show();
-      });
+          // Xử lý khi người dùng bấm nút "Yes"
+          $('.btn-avatar-yes').on('click', function () {
+            // Ẩn các nút Yes/No, hiển thị lại nút camera
+            $selectionBox.hide();
+            $btnBox.show();
+          });
 
-      // Xử lý khi người dùng bấm nút "No"
-      $('.btn-avatar-no').on('click', function () {
-        // Reset lại input và ảnh
-        $inputAvatar.val(''); // Xóa file đã chọn
-        $previewImg.attr('src', $prevImg); // Reset về ảnh mặc định
+          // Xử lý khi người dùng bấm nút "No"
+          $('.btn-avatar-no').on('click', function () {
+            // Reset lại input và ảnh
+            $inputAvatar.val(''); // Xóa file đã chọn
+            $previewImg.attr('src', $prevImg); // Reset về ảnh mặc định
 
-        // Ẩn các nút Yes/No, hiển thị lại nút camera
-        $selectionBox.hide();
-        $btnBox.show();
-      });
+            // Ẩn các nút Yes/No, hiển thị lại nút camera
+            $selectionBox.hide();
+            $btnBox.show();
+          });
 
-      $('.personal-edit-btn').on('click', function () {
-        // Ẩn các nút Yes/No, hiển thị lại nút camera
-        $('.personal-edit-btn').hide();
-        $('.btn-personal-box').show();
-        $('.inp-personal').removeClass("inp-no-decor");
-        $('.inp-personal').removeAttr("readonly");
+          $('.personal-edit-btn').on('click', function () {
+            // Ẩn các nút Yes/No, hiển thị lại nút camera
+            $('.personal-edit-btn').hide();
+            $('.btn-personal-box').show();
+            $('.inp-personal').removeClass("inp-no-decor");
+            $('.inp-personal').removeAttr("readonly");
 
-      });
+          });
 
-      $('.btn-personal-reset').on('click', function () {
-        // Ẩn các nút Yes/No, hiển thị lại nút camera
-        $('.personal-edit-btn').show();
-        $('.btn-personal-box').hide();
-        $('.inp-personal').addClass("inp-no-decor");
-        $('.inp-personal').attr("readonly", "true");
-      });
+          $('.btn-personal-reset').on('click', function () {
+            // Ẩn các nút Yes/No, hiển thị lại nút camera
+            $('.personal-edit-btn').show();
+            $('.btn-personal-box').hide();
+            $('.inp-personal').addClass("inp-no-decor");
+            $('.inp-personal').attr("readonly", "true");
+          });
 
-      $('.email-edit-btn').on('click', function () {
-        $('#dialog-confirm-email')[0].showModal();
-      })
-      $('.phone-edit-btn').on('click', function () {
-        $('#dialog-confirm-phone  ')[0].showModal();
-      })
-    });
+          $('.email-edit-btn').on('click', function () {
+            $('#dialog-confirm-email')[0].showModal();
+          })
+          $('.phone-edit-btn').on('click', function () {
+            $('#dialog-confirm-phone  ')[0].showModal();
+          })
+        });
 
-    $(document).on('click', '.btn-email-reset', function () {
-      $('#dialog-confirm-email')[0].close();
-    });
+        $(document).on('click', '.btn-email-reset', function () {
+          $('#dialog-confirm-email')[0].close();
+        });
 
-    $(document).on('click', '.btn-phone-reset', function () {
-      $('#dialog-confirm-phone')[0].close();
-    });
+        $(document).on('click', '.btn-phone-reset', function () {
+          $('#dialog-confirm-phone')[0].close();
+        });
 
-    $(document).on('click', '.btn-send-otp', function () {
-        const email = $("#inp-email-confirm").val();
-      $.ajax({
-        url: '/Account/SendOTP', // Đường dẫn đến Controller trong MVC
-        method: 'POST',
-        contentType: 'application/json',
-            data: JSON.stringify({ email: email,OTP:"" }),
-        success: function (response) {
-        if (JSON.parse(response).IsSuccess) {
+        $(document).on('click', '.btn-send-otp', function () {
+            const email = $("#inp-email-confirm").val();
+          $.ajax({
+            url: '/Account/SendOTP', // Đường dẫn đến Controller trong MVC
+            method: 'POST',
+            contentType: 'application/json',
+                data: JSON.stringify({ email: email,OTP:"" }),
+            success: function (response) {
+            if (JSON.parse(response).IsSuccess) {
+                    $('#otpStatus').show();
+                    $('#otpStatus').html(`OTP đã được gửi đến ${email}.`);
+                    $('#otpStatus').addClass('alert-success');
+                    $('#otpStatus').removeClass('alert-danger');
+                } else {
+                    $('#otpStatus').show();
+                    $('#otpStatus').html('Không thể gửi OTP. Vui lòng thử lại!');
+                    $('#otpStatus').removeClass('alert-success');
+                    $('#otpStatus').addClass('alert-danger');
+                }
+            },
+            error: function (xhr) {
+              $('#otpStatus').show();
+              $('#otpStatus').html('Không thể gửi OTP. Vui lòng thử lại !');
+              $('#otpStatus').removeClass('alert-success');
+              $('#otpStatus').addClass('alert-danger');
+            }
+          });
+        })
+        $(document).on('submit', '.form-confirm-email', function (e) {
+            e.preventDefault()
+          $.ajax({
+            url: '/Account/CheckOTP', // Đường dẫn đến Controller trong MVC
+            method: 'POST',
+            contentType: 'application/json',
+                data: JSON.stringify({ email: "", OTP: $("#inp-OTP-confirm").val() }),
+            success: function (response) {
+                if (JSON.parse(response).IsSuccess) {
+                $('.form-confirm-email').submit();
+              } else {
                 $('#otpStatus').show();
-                $('#otpStatus').html(`OTP đã được gửi đến ${email}.`);
-                $('#otpStatus').addClass('alert-success');
-                $('#otpStatus').removeClass('alert-danger');
-            } else {
-                $('#otpStatus').show();
-                $('#otpStatus').html('Không thể gửi OTP. Vui lòng thử lại!');
+                $('#otpStatus').html('Mã xác nhận không hợp lệ!');
                 $('#otpStatus').removeClass('alert-success');
                 $('#otpStatus').addClass('alert-danger');
-            }
-        },
-        error: function (xhr) {
-          $('#otpStatus').show();
-          $('#otpStatus').html('Không thể gửi OTP. Vui lòng thử lại !');
-          $('#otpStatus').removeClass('alert-success');
-          $('#otpStatus').addClass('alert-danger');
-        }
-      });
-    })
-    $(document).on('submit', '.form-confirm-email', function (e) {
-        e.preventDefault()
-      $.ajax({
-        url: '/Account/CheckOTP', // Đường dẫn đến Controller trong MVC
-        method: 'POST',
-        contentType: 'application/json',
-            data: JSON.stringify({ email: "", OTP: $("#inp-OTP-confirm").val() }),
-        success: function (response) {
-            if (JSON.parse(response).IsSuccess) {
-            $('.form-confirm-email').submit();
-          } else {
-            $('#otpStatus').show();
-            $('#otpStatus').html('Mã xác nhận không hợp lệ!');
-            $('#otpStatus').removeClass('alert-success');
-            $('#otpStatus').addClass('alert-danger');
             
-          }
-        },
-        error: function (xhr) {
-          $('#otpStatus').show();
-          $('#otpStatus').html('Mã xác nhận không hợp lệ!');
-          $('#otpStatus').removeClass('alert-success');
-          $('#otpStatus').addClass('alert-danger');
-            e.preventDefault();
-        }
-      });
-    });
-</script>
+              }
+            },
+            error: function (xhr) {
+              $('#otpStatus').show();
+              $('#otpStatus').html('Mã xác nhận không hợp lệ!');
+              $('#otpStatus').removeClass('alert-success');
+              $('#otpStatus').addClass('alert-danger');
+                e.preventDefault();
+            }
+          });
+        });
+        $(document).ready(function () {
+            $('#data-table').DataTable();
+        });
+    </script>
+}

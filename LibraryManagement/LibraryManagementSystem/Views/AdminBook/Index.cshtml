@@ -5,6 +5,9 @@
 }
 <link rel="stylesheet" href="~/features/Book/Index/book.css" />
 <h1> Welcome to Library</h1>
+<div>
+    <a asp-action="Create" asp-controller="AdminBook" class="btn btn-outline-success">Thêm sách</a>
+</div>
 <div class="book-list">
     <div>
         <form method="get" action="/AdminBook/Index" class="formsearch">
