@@ -254,7 +254,7 @@ namespace LibraryManagementSystem.Controllers
 
             if (!result.Any())
             {
-                ViewBag.Message = "fuck";
+                ViewBag.Message = "Không tìm thấy sách nào";
             }
 
             return View(result);

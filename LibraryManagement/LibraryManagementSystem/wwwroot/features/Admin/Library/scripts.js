@@ -1,5 +1,6 @@
 ﻿$(document).ready(function () {
     $('#data-table').DataTable();
+    $(`.delete-confirm-box`).hide();
 });
 
 $(document).on("click", ".btn-delete", function () {
