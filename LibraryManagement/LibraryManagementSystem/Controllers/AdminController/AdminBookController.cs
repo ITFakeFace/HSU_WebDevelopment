@@ -1,4 +1,4 @@
-﻿using LibraryManagementSystem.DTO.BookDTO;
+using LibraryManagementSystem.DTO.BookDTO;
 using LibraryManagementSystem.Models;
 using LibraryManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -329,6 +329,9 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
             var authors = _context.Authors
                 .Where(a => a.Books.Any(b => b.Id == id))
+                .ToList();            
+            var categories = _context.Categories
+                .Where(a => a.Books.Any(b => b.Id == id))
                 .ToList();
 
             var bookImgs = _context.BookImgs
@@ -341,6 +344,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             ViewData["publisherNavigation"] = publisherNavigation;
             ViewData["seriesNavigation"] = seriesNavigation;
             ViewData["authors"] = authors;
+            ViewData["categories"] = categories;
             ViewData["bookImgs"] = bookImgs;
 
             return View();
