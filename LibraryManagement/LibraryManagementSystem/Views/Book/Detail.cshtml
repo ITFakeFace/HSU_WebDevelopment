@@ -179,7 +179,7 @@
                         <b>Nhà cung cấp:</b>
                         @if (Model.VendorNavigation != null && Model.VendorNavigation.Name != null)
                         {
-                            <a asp-action="Detail" asp-controller="Vendor" asp-route-id="@Model.PublisherNavigation.Id">@Model.VendorNavigation.Name</a>
+                            <a asp-action="Detail" asp-controller="Vendor" asp-route-id="@Model.Vendor">@Model.VendorNavigation.Name</a>
                         }
                         else
                         {
