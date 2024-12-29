@@ -1,4 +1,4 @@
-﻿@{
+@{
     Book bookInfo = (Book)ViewData["book"]!;
     var vendorNavigation = ViewData["vendorNavigation"] as Vendor;
     var publisherNavigation = ViewData["publisherNavigation"] as Publisher;
@@ -43,7 +43,7 @@
             <div class="input-box">
                 <label>Author</label>
                 <select id="author" name="AuthorId" multiple="multiple" required>
-                    @if (authors.Count > 0)
+                    @if (authors != null && authors.Count > 0)
                     {
                         @foreach (var author in authors)
                         {

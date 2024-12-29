@@ -29,7 +29,7 @@ namespace LibraryManagementSystem.Controllers
 
             var paginatedAge = await ages
                 .OrderBy(a => a.FromAge)
-                .Include(b => b.Books)
+                .Include(a => a.Books.OrderBy(b => b.Name))
                 .ToListAsync();
 
             ViewBag.TotalAge = (double)ages.Count();

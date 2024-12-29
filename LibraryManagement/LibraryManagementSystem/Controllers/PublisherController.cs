@@ -49,7 +49,7 @@ namespace LibraryManagementSystem.Controllers
                 .OrderBy(a => a.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Include(a => a.Books)
+                .Include(a => a.Books.OrderBy(b => b.Name))
                 .ToListAsync();
 
             ViewBag.PageNumber = pageNumber;
@@ -116,6 +116,12 @@ namespace LibraryManagementSystem.Controllers
             if (publisher == null)
             {
                 return NotFound();
+            }
+
+            // Sắp xếp danh sách Books theo Book Name
+            if (publisher.Books != null)
+            {
+                publisher.Books = publisher.Books.OrderBy(b => b.Name).ToList();
             }
 
 
