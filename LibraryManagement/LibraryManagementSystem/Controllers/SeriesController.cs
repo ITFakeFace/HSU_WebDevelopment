@@ -49,7 +49,7 @@ namespace LibraryManagementSystem.Controllers
                 .OrderBy(a => a.Name)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
-                .Include(a => a.Books)
+                .Include(a => a.Books.OrderBy(b => b.Name))
                 .ToListAsync();
 
             ViewBag.PageNumber = pageNumber;
@@ -110,16 +110,22 @@ namespace LibraryManagementSystem.Controllers
                 return NotFound();
             }
 
-            var vendor = await _context.Vendors
+            var series = await _context.Vendors
                 .Include(a => a.Books) // Nạp các Book liên quan
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (vendor == null)
+            if (series == null)
             {
                 return NotFound();
             }
 
+            // Sắp xếp danh sách Books theo Book Name
+            if (series.Books != null)
+            {
+                series.Books = series.Books.OrderBy(b => b.Name).ToList();
+            }
 
-            return View("DetailVendor", vendor);
+
+            return View("DetailSeries", series);
         }
 
         // GET: Series/CreateSeries
