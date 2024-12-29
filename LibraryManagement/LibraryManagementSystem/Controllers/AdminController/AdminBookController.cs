@@ -162,8 +162,19 @@ namespace LibraryManagementSystem.Controllers.AdminController
             return RedirectToAction("Index");
         }
 
+
         public async Task<IActionResult> Delete(int? Id)
         {
+            var bookloan = _context.BookLoans.FirstOrDefault(m => m.Book == Id);
+            if (bookloan !=null) {
+                return RedirectToAction("Index");
+            }
+            var bookimg = _context.BookImgs.Where(m => m.Book == Id).ToList();
+            if (bookimg !=null)
+            {
+                _context.BookImgs.RemoveRange(bookimg);
+                _context.SaveChanges();
+            }
             var book = _context.Books.FirstOrDefault(m => m.Id == Id);
             if (book != null)
             {
