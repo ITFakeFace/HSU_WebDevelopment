@@ -1,4 +1,4 @@
-﻿using LibraryManagementSystem.DTO.BookDTO;
+using LibraryManagementSystem.DTO.BookDTO;
 using LibraryManagementSystem.Models;
 using LibraryManagementSystem.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -164,6 +164,22 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
         public async Task<IActionResult> Delete(int? Id)
         {
+            var bookloan = await _context.BookLoans
+                .FirstOrDefaultAsync(m => m.Book == Id);
+            if (bookloan !=null) {
+                return RedirectToAction("Index");
+            }
+            var bookimg = _context.BookImgs.Where(m => m.Book == Id).ToList();
+            if (bookimg !=null)
+            {
+                _context.BookImgs.RemoveRange(bookimg);
+                _context.SaveChanges();
+            }
+            if (bookimg !=null)
+            {
+                _context.BookImgs.RemoveRange(bookimg);
+                _context.SaveChanges();
+            }
             var book = _context.Books.FirstOrDefault(m => m.Id == Id);
             if (book != null)
             {
@@ -318,6 +334,9 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
             var authors = _context.Authors
                 .Where(a => a.Books.Any(b => b.Id == id))
+                .ToList();            
+            var categories = _context.Categories
+                .Where(a => a.Books.Any(b => b.Id == id))
                 .ToList();
 
             var bookImgs = _context.BookImgs
@@ -330,6 +349,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             ViewData["publisherNavigation"] = publisherNavigation;
             ViewData["seriesNavigation"] = seriesNavigation;
             ViewData["authors"] = authors;
+            ViewData["categories"] = categories;
             ViewData["bookImgs"] = bookImgs;
 
             return View();

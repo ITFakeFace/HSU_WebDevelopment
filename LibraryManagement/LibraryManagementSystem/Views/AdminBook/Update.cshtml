@@ -4,6 +4,7 @@
     var publisherNavigation = ViewData["publisherNavigation"] as Publisher;
     var seriesNavigation = ViewData["seriesNavigation"] as Series;
     var authors = ViewData["authors"] as List<Author> ?? new List<Author>();
+    var categories = ViewData["categories"] as List<Category> ?? new List<Category>();
     var bookImgs = ViewData["bookImgs"] as List<BookImg> ?? new List<BookImg>();
     Dictionary<int, string> imageDict = new Dictionary<int, string>();
     foreach (var img in bookImgs)
@@ -125,7 +126,14 @@
             <div class="input-box">
                 <label for="categories"></label>
                 <div>Category</div>
-                <select id="categories" name="CategoriesId">
+                <select id="categories" name="CategoriesId" , multiple="multiple">
+                        @if (categories.Count > 0)
+                        {
+                            @foreach (var cate in categories)
+                            {
+                                <option value="@cate.Id" selected>@cate.Name</option>
+                            }
+                        }
                 </select>
             </div>
 
