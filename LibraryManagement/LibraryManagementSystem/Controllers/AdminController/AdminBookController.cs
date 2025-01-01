@@ -164,11 +164,27 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
         public async Task<IActionResult> Delete(int? Id)
         {
-            var book = _context.Books.FirstOrDefault(m => m.Id == Id);
+            var book = await _context.Books.FirstOrDefaultAsync(m => m.Id == Id);
+            var images = await _context.BookImgs.Where(img => img.Book == book.Id).ToListAsync();
+            if (images.Any())
+            {
+                foreach (var img in images)
+                {
+                    _context.BookImgs.Remove(img);
+                }
+            }
+            var loans = await _context.BookLoans.Where(loan => loan.Book == book.Id).ToListAsync();
+            if (loans.Any())
+            {
+                TempData["Error"] = "Đã có sách được mượn";
+                book.Status = 0;
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index");
+            }
             if (book != null)
             {
                 _context.Books.Remove(book);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
