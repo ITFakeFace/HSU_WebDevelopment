@@ -184,7 +184,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             if (book != null)
             {
                 _context.Books.Remove(book);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
             return RedirectToAction("Index");
         }
