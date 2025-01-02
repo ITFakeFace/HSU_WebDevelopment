@@ -257,6 +257,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 // Lấy các thông tin khác từ DTO
                 List<Author> authors = _context.Authors.Where(e => createBookDTO.AuthorId.Contains(e.Id)).ToList();
                 List<Category> categories = _context.Categories.Where(e => createBookDTO.CategoriesId.Contains(e.Id)).ToList();
+                List<Age>? ages = _context.Ages.Where(e => createBookDTO.AgeId.Contains(e.Id)).ToList();
                 Publisher publisher = _context.Publishers.FirstOrDefault(e => e.Id == createBookDTO.PublisherID)!;
 
                 Vendor vendor = _context.Vendors.FirstOrDefault(e => e.Id == createBookDTO.VendorId)!;
@@ -334,6 +335,9 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
             var authors = _context.Authors
                 .Where(a => a.Books.Any(b => b.Id == id))
+                .ToList();   
+            var ages = _context.Ages
+                .Where(a => a.Books.Any(b => b.Id == id))
                 .ToList();            
             var categories = _context.Categories
                 .Where(a => a.Books.Any(b => b.Id == id))
@@ -349,6 +353,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
             ViewData["publisherNavigation"] = publisherNavigation;
             ViewData["seriesNavigation"] = seriesNavigation;
             ViewData["authors"] = authors;
+            ViewData["ages"] = ages;
             ViewData["categories"] = categories;
             ViewData["bookImgs"] = bookImgs;
 
@@ -364,6 +369,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                     .Include(b => b.Authors)
                     .Include(b => b.BookImgs)
                     .Include(b => b.Categories)
+                    .Include(b => b.Ages)
                     .FirstOrDefaultAsync(b => b.Id == updateBookDTO.Id)!;
                
 
@@ -372,6 +378,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 // Lấy các thông tin liên quan khác
                 var authors = _context.Authors.Where(e => updateBookDTO.AuthorId.Contains(e.Id)).ToList();
                 var categories = _context.Categories.Where(e => updateBookDTO.CategoriesId.Contains(e.Id)).ToList();
+                var ages = _context.Ages.Where(e => updateBookDTO.AgeId.Contains(e.Id)).ToList();
                 var publisher = _context.Publishers.FirstOrDefault(e => e.Id == updateBookDTO.PublisherID);
                 var vendor = _context.Vendors.FirstOrDefault(e => e.Id == updateBookDTO.VendorId);
 
@@ -390,6 +397,9 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 // Cập nhật tác giả (nếu cần)
                 book.Authors.Clear(); // Xóa các tác giả cũ
                 book.Authors.AddRange(authors); // Thêm tác giả mới
+                // Cập nhật tác giả (nếu cần)
+                book.Ages.Clear(); // Xóa các tác giả cũ
+                book.Ages.AddRange(ages); // Thêm tác giả mới
                 // Cập nhật tác giả (nếu cần)
                 book.Categories.Clear(); // Xóa các tác giả cũ
                 book.Categories.AddRange(categories); // Thêm tác giả mới

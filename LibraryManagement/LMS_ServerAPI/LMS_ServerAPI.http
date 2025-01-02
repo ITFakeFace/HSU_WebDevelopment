@@ -21,3 +21,6 @@ Accept:application/json
 GET {{LMS_ServerAPI_HostAddress}}/api/category/getall
 Accept:application/json
 ###
+GET {{LMS_ServerAPI_HostAddress}}/api/age/getall
+Accept:application/json
+###

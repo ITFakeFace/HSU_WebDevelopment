@@ -5,6 +5,7 @@
     var seriesNavigation = ViewData["seriesNavigation"] as Series;
     var authors = ViewData["authors"] as List<Author> ?? new List<Author>();
     var categories = ViewData["categories"] as List<Category> ?? new List<Category>();
+    var ages = ViewData["ages"] as List<Age> ?? new List<Age>();
     var bookImgs = ViewData["bookImgs"] as List<BookImg> ?? new List<BookImg>();
     Dictionary<int, string> imageDict = new Dictionary<int, string>();
     foreach (var img in bookImgs)
@@ -121,6 +122,24 @@
             <div class="input-box">
                 <label>Language</label>
                 <input type="text" name="Language" value="@(bookInfo.Language)" required />
+            </div>
+            <!-- Age -->
+            <div class="input-box">
+                <label for="ages">Age</label>
+                <select id="ages" name="AgeID" multiple="multiple">
+                    @if (ages != null && ages.Count > 0)
+                    {
+                        @foreach (var age in ages)
+                        {
+                            <option value="@age.Id" selected>@age.FromAge+" - " + @age.ToAge</option>
+                        }
+
+                    }
+                    else
+                    {
+                        <option value="">Select Ages</option>
+                    }
+                </select>
             </div>
 
             <div class="input-box">

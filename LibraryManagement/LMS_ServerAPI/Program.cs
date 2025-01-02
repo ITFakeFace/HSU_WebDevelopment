@@ -1,13 +1,15 @@
 ﻿using LMS_ServerAPI.Models;
 using LMS_ServerAPI.Repositories;
 using LMS_ServerAPI.Repositories.AddressRepositories;
-//using LMS_ServerAPI.Repositories.BookRepository;
+using LMS_ServerAPI.Repositories.AgeRepositories;
+
 using LMS_ServerAPI.Repositories.AuthorRepositories;
 using LMS_ServerAPI.Repositories.CategoryRepository;
 using LMS_ServerAPI.Repositories.PublisherRepository;
 using LMS_ServerAPI.Repositories.SeriesRepository;
 using LMS_ServerAPI.Repositories.VendorRepository;
 using LMS_ServerAPI.Services.AddressService;
+using LMS_ServerAPI.Services.AgeService;
 using LMS_ServerAPI.Services.AuthorService;
 using LMS_ServerAPI.Services.CategoryService;
 using LMS_ServerAPI.Services.PublisherService;
@@ -48,6 +50,9 @@ builder.Services.AddCors(options =>
 // Author 
 builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+// Age
+builder.Services.AddScoped<IAgeRepository, AgeRepository>();
+builder.Services.AddScoped<IAgeService, AgeService>();
 // Publisher
 builder.Services.AddScoped<IPublisherRepository, PublisherRepository>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();

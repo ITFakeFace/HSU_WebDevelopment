@@ -97,10 +97,38 @@ async function initializeSelect2MultiChoice(htmlElement, controller, placeholder
     }
 }
 
+async function initializeSelect2Age(htmlElement, controller, placeholder) {
+    try {
+        const builder = new ApiBuilder();
+        const api = builder.setController(controller).setAction("getAll").build();
+        const data = await callAPI(api, "get");
+        console.log("Dữ liệu")
+        console.log(data)
+
+        $(htmlElement).select2({
+            placeholder: `Select ${placeholder}`,
+            width: "100%",
+            tags: true,
+            closeOnSelect: false,
+            dropdownCssClass: "custom-dropdown",
+            selectionCssClass: "custom-selection",
+            data: data.map((item) => ({
+                id: item.Id,
+                text: item.FromAge+"-"+item.ToAge,
+            })),
+        });
+    } catch (error) {
+        console.error(`Error initializing Select2 for ${htmlElement}:`, error);
+    }
+}
+
+
+
 document.addEventListener("DOMContentLoaded", function () {
     initializeSelect2MultiChoice("#author", "author", "Author");
     initializeSelect2("#publisher", "publisher", "Publisher");
     initializeSelect2("#vendor", "vendor", "Vendor");
     initializeSelect2("#series", "series", "Series");
     initializeSelect2MultiChoice("#categories","category","Categories")
+    initializeSelect2Age("#ages","age","Ages")
 });
