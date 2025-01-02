@@ -175,7 +175,12 @@ namespace LibraryManagementSystem.Controllers.AdminController
                 _context.BookImgs.RemoveRange(bookimg);
                 _context.SaveChanges();
             }
-            var book = _context.Books.FirstOrDefault(m => m.Id == Id);
+            var book = _context.Books
+                .Include(b => b.Authors)
+                .Include(b=> b.Categories)
+                .FirstOrDefault(m => m.Id == Id);
+            book.Authors.Clear();
+            book.Categories.Clear();
             if (book != null)
             {
                 _context.Books.Remove(book);
