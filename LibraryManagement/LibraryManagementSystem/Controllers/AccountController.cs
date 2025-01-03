@@ -63,7 +63,11 @@ namespace LibraryManagementSystem.Controllers
 
             // Đăng nhập
             var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberMe, lockoutOnFailure: true);
-
+            if (user.Status == 0)
+            {
+                ModelState.AddModelError(string.Empty, "Tài khoản của bạn đã bị khóa.");
+                return View(model);
+            }
             if (result.Succeeded)
             {
                 return RedirectToAction("Index", "Home");
@@ -198,9 +202,10 @@ namespace LibraryManagementSystem.Controllers
         public async Task<IActionResult> Profile(string id)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user.Id != id && !_userManager.GetRolesAsync(user).Result.Contains("ADMINISTRATOR"))
+            var destUser = await _ctx.Users.FirstOrDefaultAsync(u => u.Id == id);
+            if (user.Id != id && _userManager.GetRolesAsync(user).Result.Contains("ADMINISTRATOR"))
             {
-                return RedirectToAction("AccessDenied");
+                user = destUser;
             }
             AddressService addrService = new AddressService(_ctx);
             var tempU = await _ctx.Users.Include(u => u.BookLoans).FirstOrDefaultAsync(u => u.Id == id);
@@ -264,7 +269,7 @@ namespace LibraryManagementSystem.Controllers
         {
             try
             {
-                Console.WriteLine($"\n\n{request.OTP}  {GeneratedOTP}\n\n");
+                Console.WriteLine($"\n\n{request.OTP}  {GeneratedOTP}: {request.OTP == GeneratedOTP}\n\n");
 
                 return JsonConvert.SerializeObject(new ResponseHandler<string>
                 {
@@ -468,11 +473,19 @@ namespace LibraryManagementSystem.Controllers
                 return RedirectToAction("AdminIndex");
             }
 
-            user.Status = 0;
+            if (user.Status == 0)
+            {
+                user.Status = 1;
+                TempData["Success"] = $"Đã mở khóa User {id}";
+            }
+            else
+            {
+                user.Status = 0;
+                TempData["Success"] = $"Đã khóa User {id}";
+            }
             _ctx.Users.Update(user);
             await _ctx.SaveChangesAsync();
 
-            TempData["Success"] = $"Đã khóa User {id}";
             return RedirectToAction("AdminIndex");
         }
     }

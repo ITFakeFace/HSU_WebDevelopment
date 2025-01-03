@@ -162,22 +162,22 @@ namespace LibraryManagementSystem.Controllers.AdminController
             return RedirectToAction("Index");
         }
 
-
         public async Task<IActionResult> Delete(int? Id)
         {
             var bookloan = _context.BookLoans.FirstOrDefault(m => m.Book == Id);
-            if (bookloan !=null) {
+            if (bookloan != null)
+            {
                 return RedirectToAction("Index");
             }
             var bookimg = _context.BookImgs.Where(m => m.Book == Id).ToList();
-            if (bookimg !=null)
+            if (bookimg != null)
             {
                 _context.BookImgs.RemoveRange(bookimg);
                 _context.SaveChanges();
             }
             var book = _context.Books
                 .Include(b => b.Authors)
-                .Include(b=> b.Categories)
+                .Include(b => b.Categories)
                 .FirstOrDefault(m => m.Id == Id);
             book.Authors.Clear();
             book.Categories.Clear();
@@ -335,10 +335,10 @@ namespace LibraryManagementSystem.Controllers.AdminController
 
             var authors = _context.Authors
                 .Where(a => a.Books.Any(b => b.Id == id))
-                .ToList();   
+                .ToList();
             var ages = _context.Ages
                 .Where(a => a.Books.Any(b => b.Id == id))
-                .ToList();            
+                .ToList();
             var categories = _context.Categories
                 .Where(a => a.Books.Any(b => b.Id == id))
                 .ToList();
@@ -371,7 +371,7 @@ namespace LibraryManagementSystem.Controllers.AdminController
                     .Include(b => b.Categories)
                     .Include(b => b.Ages)
                     .FirstOrDefaultAsync(b => b.Id == updateBookDTO.Id)!;
-               
+
 
                 await _context.SaveChangesAsync();
 

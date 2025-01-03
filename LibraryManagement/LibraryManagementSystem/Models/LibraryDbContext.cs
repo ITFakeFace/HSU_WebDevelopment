@@ -60,7 +60,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Name)
                 .HasMaxLength(511)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.StreetNavigation).WithMany(p => p.Addresses)
                 .HasForeignKey(d => d.Street)
@@ -85,7 +85,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Nation)
                 .HasMaxLength(2)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .IsFixedLength();
 
             entity.HasMany(d => d.Books).WithMany(p => p.Authors)
@@ -112,20 +112,20 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Isbn)
                 .HasMaxLength(13)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("ISBN");
             entity.Property(e => e.Language)
                 .HasMaxLength(2)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .IsFixedLength();
             entity.Property(e => e.Language)
                 .HasMaxLength(2)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .IsFixedLength();
             entity.Property(e => e.Name).HasMaxLength(511);
             entity.Property(e => e.Version)
                 .HasMaxLength(20)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.PublisherNavigation).WithMany(p => p.Books)
                 .HasForeignKey(d => d.Publisher)
@@ -175,7 +175,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.CallNumber)
                 .HasMaxLength(50)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.BookNavigation).WithMany(p => p.BookInBranches)
                 .HasForeignKey(d => d.Book)
@@ -244,7 +244,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Name)
                 .HasMaxLength(551)
-                .IsUnicode(false);
+                .IsUnicode(true);
         });
 
         modelBuilder.Entity<District>(entity =>
@@ -253,7 +253,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Name)
                 .HasMaxLength(551)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.CityNavigation).WithMany(p => p.Districts)
                 .HasForeignKey(d => d.City)
@@ -266,10 +266,10 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
-                .IsUnicode(false);
+                .IsUnicode(true);
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.AddressNavigation).WithMany(p => p.Libraries)
                 .HasForeignKey(d => d.Address)
@@ -309,7 +309,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Name)
                 .HasMaxLength(255)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.WardNavigation).WithMany(p => p.Streets)
                 .HasForeignKey(d => d.Ward)
@@ -325,7 +325,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
             entity.Property(e => e.NormalizedUserName).HasMaxLength(256);
             entity.Property(e => e.Pid)
                 .HasMaxLength(20)
-                .IsUnicode(false)
+                .IsUnicode(true)
                 .HasColumnName("PID");
             entity.Property(e => e.Gender).HasMaxLength(6);
             entity.Property(e => e.UserName).HasMaxLength(256);
@@ -391,7 +391,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
             entity.Property(e => e.Name).HasMaxLength(551);
             entity.Property(e => e.Phone)
                 .HasMaxLength(15)
-                .IsUnicode(false);
+                .IsUnicode(true);
         });
 
         modelBuilder.Entity<Ward>(entity =>
@@ -400,7 +400,7 @@ public partial class LibraryDbContext : IdentityDbContext<User, Role, string, Us
 
             entity.Property(e => e.Name)
                 .HasMaxLength(511)
-                .IsUnicode(false);
+                .IsUnicode(true);
 
             entity.HasOne(d => d.DistrictNavigation).WithMany(p => p.Wards)
                 .HasForeignKey(d => d.District)
